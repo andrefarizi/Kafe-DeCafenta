@@ -6,12 +6,10 @@ export default function LandingPage() {
       
       {/* ================= NAVBAR ================= */}
       <nav className="flex items-center justify-between px-8 py-5 bg-white shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {/* Placeholder Icon D Navbar */}
-          <div className="w-10 h-10 bg-gray-100 border-2 border-dashed border-gray-300 rounded flex items-center justify-center mr-1">
-            <span className="text-[10px] font-bold text-gray-400">Icon</span>
-          </div>
-          <span className="text-sm font-extrabold text-[#c8100e] tracking-widest mt-1">DE CAFENTA</span>
+          <img src="/Group 2 1.png" alt="Icon" className="w-10 h-10  object-contain" />
+          <span className="text-sm font-extrabold text-[#c8100e] tracking-widest mt-3">DE CAFENTA</span>
         </div>
         
         <div className="hidden md:flex items-center gap-10 text-sm font-bold">
@@ -39,6 +37,15 @@ export default function LandingPage() {
           alt="Coffee Background" 
           className="absolute inset-0 w-full h-full object-cover object-bottom z-0" 
         />
+
+        {/* Ornamen Shape Kanan Atas - Disesuaikan agar tidak melebihi kurva bawah */}
+        <div className="absolute inset-0 z-0 overflow-hidden flex justify-end items-start">
+          <img 
+            src="/Rectangle 2.png" 
+            alt="Shape Right" 
+            className="w-[40%] md:w-auto h-[50%] md:h-[60%] object-cover object-right-top opacity-90 -translate-y-8"
+          />
+        </div>
 
         {/* Konten Kiri */}
         <div className="w-full md:w-1/2 relative z-10 pt-4">
@@ -78,14 +85,14 @@ export default function LandingPage() {
 
         {/* Ilustrasi Kanan Placeholder */}
         <div className="w-full md:w-1/2 flex justify-end mt-16 md:mt-0 relative z-10 pr-10">
-          <div className="w-80 h-96 bg-white/20 border-2 border-dashed border-white/50 flex flex-col items-center justify-center p-6 backdrop-blur-sm rounded-xl">
-            <p className="text-center text-sm font-bold">Letakkan Gambar Cup Kopi (Figma) di sini</p>
+          <div className="w-180 h-100   flex flex-col items-center justify-center p-6  rounded-xl">
+            <img src="/Group 1.png" alt="image" className="w-full h-full object-contain" />
           </div>
         </div>
 
         {/* Gambar Biji Kopi Overlapping (Absolute Placeholder) */}
-        <div className="absolute right-0 -bottom-24 w-80 h-80 z-20 hidden md:flex items-center justify-center bg-black/20 rounded-full border-2 border-dashed border-black/30 backdrop-blur-sm">
-            <p className="text-center text-sm font-bold text-white px-8">Letakkan Gambar Biji Kopi (PNG) di sini</p>
+        <div className="absolute right-0 -bottom-24  h-120 z-20 hidden md:flex items-center justify-center ">
+            <img src="/—Pngtree—bunch of coffee raw beans_20488485 1.png" alt="image" className="w-full h-full object-contain" />
         </div>
 
       </section>
@@ -97,15 +104,15 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-6xl mx-auto px-1">
           {[
-            { id: 1, clip: "polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%)" }, // Trapesium mengerucut (miring) menghadap kanan
-            { id: 2, clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
-            { id: 3, clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
-            { id: 4, clip: "polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)" }, // Trapesium mengerucut (miring) menghadap kiri
+            { id: 1, img: "/Frame 26.png", clip: "polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%)" }, // Trapesium mengerucut (miring) menghadap kanan
+            { id: 2, img: "/Frame 20.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
+            { id: 3, img: "/Frame 19.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
+            { id: 4, img: "/Frame 26 (1).png", clip: "polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)" }, // Trapesium mengerucut (miring) menghadap kiri
           ].map((item) => (
             <div key={item.id} 
-                 className="relative overflow-hidden bg-gray-100 h-56 flex items-center justify-center border-[3px] border-dashed border-gray-300"
+                 className="relative overflow-hidden h-56 w-full"
                  style={{ clipPath: item.clip }}>
-               <p className="text-sm font-bold text-gray-500">Gambar Menu {item.id}</p>
+               <img src={item.img} alt={`Menu ${item.id}`} className="w-full h-full object-cover" />
             </div>
           ))}
         </div>
@@ -132,9 +139,9 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <PromoCard title="Hamburger" oldPrice="Rp 20.000" newPrice="Rp 10.000" />
-          <PromoCard title="Americano Caffe" oldPrice="Rp 24.000" newPrice="Rp 15.000" />
-          <PromoCard title="Steak" oldPrice="Rp 35.000" newPrice="Rp 21.000" />
+          <PromoCard title="Hamburger" oldPrice="Rp 20.000" newPrice="Rp 10.000" imgSrc="/Frame 26.png" />
+          <PromoCard title="Americano Caffe" oldPrice="Rp 24.000" newPrice="Rp 15.000" imgSrc="/Frame 26 (1).png" />
+          <PromoCard title="Steak" oldPrice="Rp 35.000" newPrice="Rp 21.000" imgSrc="/Frame 26 (2).png" />
         </div>
       </section>
 
@@ -144,10 +151,10 @@ export default function LandingPage() {
         <p className="text-base font-semibold text-[#a52016] mb-16">Berbagai Pelayanan dan Fasilitas demi kenyamanan anda</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
-          <ServiceCard title="Biji Kopi Terbaik" desc="Kami menggunakan biji kopi terbaik guna memberikan sensasi rasa yang bernilai" />
-          <ServiceCard title="Karyawan Berpengalaman" desc="Karyawan terlatih siap melayani pesanan anda dengan baik" />
-          <ServiceCard title="Tempat Nyaman" desc="Suasana estetik modern & santai dengan tempat yang aman dan nyaman" />
-          <ServiceCard title="Promo Terbaik" desc="Berbagai promo siap anda nikmati dan rasakan" />
+          <ServiceCard title="Biji Kopi Terbaik" desc="Kami menggunakan biji kopi terbaik guna memberikan sensasi rasa yang bernilai" iconSrc="/Group (1).png" />
+          <ServiceCard title="Karyawan Berpengalaman" desc="Karyawan terlatih siap melayani pesanan anda dengan baik" iconSrc="/BARISTA.png" />
+          <ServiceCard title="Tempat Nyaman" desc="Suasana estetik modern & santai dengan tempat yang aman dan nyaman" iconSrc="/Group (2).png" />
+          <ServiceCard title="Promo Terbaik" desc="Berbagai promo siap anda nikmati dan rasakan" iconSrc="/Food Icon Illustrations Kit.png" />
         </div>
       </section>
 
@@ -160,8 +167,8 @@ export default function LandingPage() {
           
           {/* Kiri: Ilustrasi Kotak Pos Placeholder */}
           <div className="w-full md:w-1/3 flex justify-center mb-10 md:mb-0 relative">
-             <div className="md:absolute md:-top-[220px] w-56 h-80 bg-white/20 rounded-2xl border-2 border-dashed border-white/50 flex flex-col items-center justify-center backdrop-blur-md shadow-lg">
-                <p className="text-white text-sm font-bold text-center px-4">Export 3D Mailbox Figma Letakkan Disini</p>
+             <div className="md:absolute md:-top-[300px] w-200 h-120 rounded-2xl flex flex-col items-center justify-center ">
+                <img src="/ikon-pos-3d-dengan-kotak-surat 1.png" alt="image" className="w-full h-full object-contain" />
              </div>
              <div className="hidden md:block w-56 h-10"></div> 
           </div>
@@ -175,8 +182,8 @@ export default function LandingPage() {
 
             <div className="flex flex-col md:flex-row gap-4 items-center mb-4">
               <div className="relative w-full">
-                <div className="absolute left-1.5 top-1.5 w-[42px] h-[42px] bg-[#f4d03f] rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <div className="absolute left-1.0 top-1.0 w-[52px] h-[52px] bg-[#f4d03f] rounded-full flex items-center justify-center">
+                  <img src="/ic_round-email.png" alt="Email Icon" className="w-8 h-8 text-white" />
                 </div>
                 <input 
                   type="text" 
@@ -184,7 +191,7 @@ export default function LandingPage() {
                   className="w-full pl-[70px] pr-6 py-[14px] rounded-full bg-white border-none focus:ring-4 focus:ring-[#f4d03f]/50 focus:outline-none text-black font-semibold shadow-inner text-base"
                 />
               </div>
-              <button className="w-full md:w-auto px-12 py-[14px] bg-[#f4d03f] text-black font-black rounded-full hover:bg-yellow-500 transition-colors whitespace-nowrap text-base shadow-lg">
+              <button className="w-full md:w-auto px-12 py-[14px] bg-[#f4d03f] text-white font-black rounded-full hover:bg-yellow-500 transition-colors whitespace-nowrap text-base shadow-lg">
                 Kirim
               </button>
             </div>
@@ -196,12 +203,12 @@ export default function LandingPage() {
 
         {/* Footer Text */}
         <footer className="text-center pt-8 pb-4 z-0 relative flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="flex items-center justify-center mb-6">
             {/* Placeholder D Footer */}
-            <div className="w-12 h-12 bg-black/10 border-2 border-dashed border-black/40 flex items-center justify-center">
-                <span className="text-[10px] font-bold text-black/60">Icon</span>
+            <div className="w-16 h-16 flex items-center justify-center">
+                <img src="/Group 2 1.png" alt="Icon" className="w-15 h-15 object-contain1 object-contain" />
             </div>
-            <span className="text-base font-extrabold text-white tracking-[0.2em] mt-1">DE CAFENTA</span>
+            <span className="text-base font-extrabold text-white tracking-[0.1em] mt-4">DE CAFENTA</span>
           </div>
           
           <div className="flex items-center justify-center gap-3 text-[#6b1d1d] font-bold text-sm mb-3">
@@ -218,13 +225,13 @@ export default function LandingPage() {
 
 // ================= Komponen Bantuan (Reusable) ================= //
 
-function PromoCard({ title, oldPrice, newPrice }: { title: string, oldPrice: string, newPrice: string }) {
+function PromoCard({ title, oldPrice, newPrice, imgSrc }: { title: string, oldPrice: string, newPrice: string, imgSrc: string }) {
   return (
     <div className="bg-white rounded-[32px] p-5 shadow-lg w-full max-w-[250px] mx-auto">
       
       {/* Image */}
-      <div className="bg-gray-200 rounded-[20px] h-[200px] flex items-center justify-center border-2 border-dashed border-gray-300">
-        <span className="text-gray-500 text-sm">Image {title}</span>
+      <div className="rounded-[20px] h-[200px] w-full overflow-hidden">
+        <img src={imgSrc} alt={title} className="w-full h-full object-cover" />
       </div>
 
       {/* Content */}
@@ -243,12 +250,12 @@ function PromoCard({ title, oldPrice, newPrice }: { title: string, oldPrice: str
   );
 }
 
-function ServiceCard({ title, desc }: { title: string, desc: string }) {
+function ServiceCard({ title, desc, iconSrc }: { title: string, desc: string, iconSrc: string }) {
   return (
     <div className="bg-[#fef9f9] border border-[#f4d4ce] rounded-3xl p-8 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-      {/* Icon Placeholder */}
-      <div className="w-16 h-16 bg-white rounded-xl mb-6 flex items-center justify-center border border-dashed border-[#f4d4ce] shadow-sm">
-        <span className="text-xs font-bold text-gray-400">Icon</span>
+      {/* Icon Image */}
+      <div className="w-25 h-25 rounded-[1.25rem] mb-6 flex items-center justify-center  p-1">
+        <img src={iconSrc} alt={`${title} Icon`} className="w-full h-full object-contain" />
       </div>
       <h3 className="font-black text-[#a52016] text-lg mb-3">{title}</h3>
       <p className="text-sm font-semibold text-gray-600 leading-relaxed">{desc}</p>
