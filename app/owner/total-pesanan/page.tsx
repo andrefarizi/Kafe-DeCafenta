@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronDown, Banknote, Wallet } from 'lucide-react';
 
-export default function DetailPendapatan() {
+export default function DetailPesanan() {
   const [selectedMonth, setSelectedMonth] = useState('Januari');
   const [selectedDate, setSelectedDate] = useState(1);
 
@@ -10,14 +10,16 @@ export default function DetailPendapatan() {
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
+  // Dummy data disesuaikan dengan mockup
   const chartData = [
-    { label: 'Tanggal 1 - 7', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 8 - 14', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 15 - 21', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 22 - Akhir Bulan', value: 'Rp 37.500.000', height: '100%' },
+    { label: 'Tanggal 1 - 7', value: '705 Pesanan', height: '100%' },
+    { label: 'Tanggal 8 - 14', value: '705 Pesanan', height: '100%' },
+    { label: 'Tanggal 15 - 21', value: '705 Pesanan', height: '100%' },
+    { label: 'Tanggal 22 - Akhir Bulan', value: '705 Pesanan', height: '100%' },
   ];
 
-  const dates = [1, 2, 3, 4, 5, 6, 7]; // Dummy dates for the slider
+  // Menggunakan urutan angka yang logis untuk slider tanggal
+  const dates = [1, 2, 3, 4, 5, 6, 7];
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto">
@@ -28,8 +30,8 @@ export default function DetailPendapatan() {
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
         </button>
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-black">Total Pendapatan</h1>
-          <p className="text-sm text-[#8B1A1A] font-bold mt-1">Lihat Laporan Pendapatan Secara Detail</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-black">Total Pesanan</h1>
+          <p className="text-sm text-[#8B1A1A] font-bold mt-1">Lihat Laporan Pesanan Secara Detail</p>
         </div>
       </div>
 
@@ -61,14 +63,14 @@ export default function DetailPendapatan() {
       {/* Ringkasan Bulan */}
       <div className="mb-10 text-center">
         <h2 className="text-2xl font-bold text-black mb-6 text-left">Bulan {selectedMonth}</h2>
-        <p className="text-sm font-bold text-black mb-2">Total Pendapatan</p>
-        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">Rp 150.000.000</p>
+        <p className="text-sm font-bold text-black mb-2">Total Pesanan</p>
+        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">2820 Pesanan</p>
         <hr className="border-t border-gray-400" />
       </div>
 
-      {/* Grafik Pendapatan */}
+      {/* Grafik Pesanan */}
       <div className="mb-16">
-        <h3 className="text-sm font-extrabold text-black mb-8">Grafik Pendapatan</h3>
+        <h3 className="text-sm font-extrabold text-black mb-8">Grafik Pesanan</h3>
         
         <div className="relative pt-8">
           {/* Chart Container */}
@@ -80,7 +82,7 @@ export default function DetailPendapatan() {
                   className="w-full bg-[#FFC700] relative group transition-all"
                   style={{ height: data.height }}
                 >
-                  {/* Value Text inside/above bar */}
+                  {/* Value Text inside bar (top aligned) */}
                   <span className="absolute top-4 left-0 w-full text-center text-[10px] md:text-xs font-medium text-black px-1">
                     {data.value}
                   </span>
@@ -101,9 +103,9 @@ export default function DetailPendapatan() {
         </div>
       </div>
 
-      {/* Rincian Pendapatan */}
+      {/* Rincian Pesanan */}
       <div>
-        <h3 className="text-sm font-extrabold text-black mb-4">Rincian Pendapatan</h3>
+        <h3 className="text-sm font-extrabold text-black mb-4">Rincian Pesanan</h3>
         
         {/* Date Selector Slider */}
         <div className="flex overflow-x-auto space-x-3 pb-4 mb-6 scrollbar-hide">
@@ -131,18 +133,18 @@ export default function DetailPendapatan() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <Banknote size={20} className="text-black" />
-              <span className="text-xs font-bold text-black">Pendapatan Pesanan Cash</span>
+              <span className="text-xs font-bold text-black">Total Pesanan Cash</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp 2.832.023</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">30 Pesanan</span>
           </div>
 
           {/* E-Wallet / Transfer */}
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <Wallet size={20} className="text-black" />
-              <span className="text-xs font-bold text-black">Pendapatan Pesanan E-Wallet/Transfer</span>
+              <span className="text-xs font-bold text-black">Total Pesanan E-Wallet/Transfer</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp 4.836.029</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">50 Pesanan</span>
           </div>
         </div>
       </div>
