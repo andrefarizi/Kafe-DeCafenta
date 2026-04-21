@@ -64,8 +64,8 @@ export default function OwnerSidebar() {
 
       {/* ── Logo ── */}
       <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
-        <div className="w-9 h-9 bg-[#f4d03f] rounded-md flex items-center justify-center shrink-0">
-          <span className="text-[#8b1c1c] font-black text-lg leading-none">D</span>
+        <div className="w-10 h-10 flex items-center justify-center shrink-0">
+          <img src="/Group 2 1.png" alt="Logo D" className="w-full h-full object-contain" />
         </div>
         <span className="text-white font-extrabold text-sm tracking-widest leading-tight">
           DE CAFENTA

@@ -4,20 +4,12 @@ import Link from 'next/link';
 
 export default function TopBar() {
   return (
-    <header className="w-full bg-[#f4d03f] flex items-center justify-between px-6 py-3 shrink-0">
-      {/* Logo kiri */}
-      <Link href="/owner/beranda" className="flex items-center gap-2">
-        <div className="w-9 h-9 bg-[#8b1c1c] rounded-md flex items-center justify-center">
-          <span className="text-[#f4d03f] font-black text-lg leading-none">D</span>
-        </div>
-        <span className="text-[#8b1c1c] font-extrabold text-sm tracking-widest">DE CAFENTA</span>
-      </Link>
-
+    <header className="w-full bg-[#f4d03f] flex items-center justify-end px-6 py-3 shrink-0">
       {/* Avatar kanan */}
       <button
         id="owner-avatar-btn"
         aria-label="Profile owner"
-        className="w-9 h-9 rounded-full bg-[#8b1c1c] flex items-center justify-center hover:opacity-80 transition-opacity"
+        className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#8b1c1c] flex items-center justify-center hover:opacity-80 transition-opacity"
       >
         {/* User icon */}
         <svg
