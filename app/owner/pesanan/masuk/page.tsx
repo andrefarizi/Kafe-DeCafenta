@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { 
   Search, 
@@ -99,7 +101,7 @@ export default function PesananMasuk() {
       {/* Table Section */}
       <div className="w-full mb-12">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] border-collapse">
+          <table className="w-full min-w-200 border-collapse">
             {/* Table Header */}
             <thead>
               <tr className="bg-[#FADCD9] text-left">
@@ -163,7 +165,7 @@ export default function PesananMasuk() {
       {/* Pagination Section */}
       <div className="flex justify-center items-center space-x-2 pb-8">
         {/* Previous Arrow */}
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+        <button aria-label="Halaman Sebelumnya" title="Sebelumnya" className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
           <ChevronLeft size={16} />
         </button>
         
@@ -194,7 +196,7 @@ export default function PesananMasuk() {
         </button>
         
         {/* Next Arrow */}
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+        <button aria-label="Halaman Selanjutnya" title="Selanjutnya" className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
           <ChevronRight size={16} />
         </button>
       </div>

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { 
   Search, 
@@ -155,7 +157,7 @@ export default function PesananMasukFiltered() {
 
       {/* Pagination Section */}
       <div className="flex justify-center items-center space-x-2 pb-8">
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+        <button aria-label="Halaman Sebelumnya" title="Sebelumnya" className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
           <ChevronLeft size={16} />
         </button>
         
@@ -181,7 +183,7 @@ export default function PesananMasukFiltered() {
           Akhir
         </button>
         
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+        <button aria-label="Halaman Selanjutnya" title="Selanjutnya" className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
           <ChevronRight size={16} />
         </button>
       </div>

@@ -56,7 +56,7 @@ export default function DetailPesananDimasak() {
       
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+        <button aria-label="Kembali" title="Kembali" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
         </button>
         <h1 className="text-2xl md:text-3xl font-extrabold text-black">Detail Pesanan</h1>
@@ -101,15 +101,15 @@ export default function DetailPesananDimasak() {
         <h3 className="text-sm font-extrabold text-[#8B1A1A] mb-8">Status Pesanan</h3>
         
         {/* Tracker */}
-        <div className="relative flex justify-between items-center px-4 md:px-12 mb-8">
+        <div className="relative flex justify-between px-4 md:px-12 mb-8 z-0">
           {/* Connecting Line (Background Gray) */}
-          <div className="absolute left-8 right-8 md:left-14 md:right-14 top-1/2 -translate-y-1/2 h-2 bg-gray-300 -z-20"></div>
+          <div className="absolute left-[12.5%] right-[12.5%] top-7 -translate-y-1/2 h-2.5 bg-[#E5E7EB] z-[-20]"></div>
           
           {/* Connecting Line (Gradient Active Yellow to Red) */}
-          <div className="absolute left-8 md:left-14 top-1/2 -translate-y-1/2 h-2 bg-gradient-to-r from-[#FFC700] to-[#8B1A1A] w-[30%] md:w-[33%] -z-10"></div>
+          <div className="absolute left-[12.5%] w-[25%] top-7 -translate-y-1/2 h-2.5 bg-gradient-to-r from-[#FFC700] to-[#8B1A1A] z-[-10]"></div>
           
           {/* Step 1: Masuk */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full border-4 border-[#FFC700] bg-white flex items-center justify-center mb-2 z-10">
               <ClipboardList size={24} className="text-[#FFC700]" />
             </div>
@@ -117,27 +117,27 @@ export default function DetailPesananDimasak() {
           </div>
 
           {/* Step 2: Dimasak (Active State) */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full border-4 border-[#8B1A1A] bg-white flex items-center justify-center mb-2 z-10">
               <CookingPot size={24} className="text-[#8B1A1A]" />
             </div>
-            <span className="text-xs font-bold text-black">Dimasak</span>
+            <span className="text-xs font-bold text-black mt-auto">Dimasak</span>
           </div>
 
           {/* Step 3: Siap Diambil */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full bg-gray-300 flex items-center justify-center mb-2 z-10 border-4 border-white">
               <Package size={24} className="text-white" />
             </div>
-            <span className="text-xs font-bold text-black">Siap Diambil</span>
+            <span className="text-xs font-bold text-black mt-auto">Siap Diambil</span>
           </div>
 
           {/* Step 4: Selesai */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mb-2 z-10 border-4 border-white shadow-sm">
               <Check size={32} className="text-white stroke-[3]" />
             </div>
-            <span className="text-xs font-bold text-black">Selesai</span>
+            <span className="text-xs font-bold text-black mt-auto">Selesai</span>
           </div>
         </div>
 

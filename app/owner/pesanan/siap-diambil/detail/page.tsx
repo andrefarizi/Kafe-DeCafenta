@@ -56,7 +56,7 @@ export default function DetailPesananSiapDiambil() {
       
       {/* Header */}
       <div className="flex items-center mb-8">
-        <button className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+        <button aria-label="Kembali" title="Kembali" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
         </button>
         <h1 className="text-2xl md:text-3xl font-extrabold text-black">Detail Pesanan</h1>
@@ -101,20 +101,18 @@ export default function DetailPesananSiapDiambil() {
         <h3 className="text-sm font-extrabold text-[#8B1A1A] mb-8">Status Pesanan</h3>
         
         {/* Tracker */}
-        <div className="relative flex justify-between items-center px-4 md:px-12 mb-8 z-0">
+        <div className="relative flex justify-between px-4 md:px-12 mb-8 z-0">
           
           {/* Background Connecting Lines Wrapper */}
-          <div className="absolute left-10 right-10 md:left-16 md:right-16 top-1/2 -translate-y-1/2 h-2 flex -z-10">
+          <div className="absolute left-[12.5%] right-[12.5%] top-7 -translate-y-1/2 h-2.5 flex bg-[#E5E7EB] z-[-20]">
             {/* Masuk -> Dimasak (Yellow to Red) */}
-            <div className="h-full w-1/3 bg-gradient-to-r from-[#FFC700] to-[#8B1A1A]"></div>
+            <div className="h-full w-[33.33%] bg-gradient-to-r from-[#FFC700] to-[#8B1A1A]"></div>
             {/* Dimasak -> Siap Diambil (Red to Blue) */}
-            <div className="h-full w-1/3 bg-gradient-to-r from-[#8B1A1A] to-[#2563EB]"></div>
-            {/* Siap Diambil -> Selesai (Gray) */}
-            <div className="h-full w-1/3 bg-gray-300"></div>
+            <div className="h-full w-[33.33%] bg-gradient-to-r from-[#8B1A1A] to-[#2563EB]"></div>
           </div>
           
           {/* Step 1: Masuk */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full border-4 border-[#FFC700] bg-white flex items-center justify-center mb-2 z-10">
               <ClipboardList size={24} className="text-[#FFC700]" />
             </div>
@@ -122,27 +120,27 @@ export default function DetailPesananSiapDiambil() {
           </div>
 
           {/* Step 2: Dimasak */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full border-4 border-[#8B1A1A] bg-white flex items-center justify-center mb-2 z-10">
               <CookingPot size={24} className="text-[#8B1A1A]" />
             </div>
-            <span className="text-xs font-bold text-black">Dimasak</span>
+            <span className="text-xs font-bold text-black mt-auto">Dimasak</span>
           </div>
 
           {/* Step 3: Siap Diambil (Active State) */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full border-4 border-[#2563EB] bg-white flex items-center justify-center mb-2 z-10">
               <Package size={24} className="text-[#2563EB]" />
             </div>
-            <span className="text-xs font-bold text-black">Siap Diambil</span>
+            <span className="text-xs font-bold text-black mt-auto">Siap Diambil</span>
           </div>
 
           {/* Step 4: Selesai */}
-          <div className="flex flex-col items-center bg-white px-2">
+          <div className="flex flex-col items-center w-1/4">
             <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center mb-2 z-10 border-4 border-white shadow-sm">
               <Check size={32} className="text-white stroke-[3]" />
             </div>
-            <span className="text-xs font-bold text-black">Selesai</span>
+            <span className="text-xs font-bold text-black mt-auto">Selesai</span>
           </div>
         </div>
 
