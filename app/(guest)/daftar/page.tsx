@@ -4,20 +4,28 @@ export default function RegisterPage() {
   return (
     // Background utama merah gelap
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8">
+
+       {/* Ornamen Desain Figma */}
+      <img 
+        src="/Rectangle%205%20(1).png" 
+        alt="Ornament Bottom Left" 
+        className="absolute bottom-6 left-0 w-40 md:w-60 lg:w-40 object-contain pointer-events-none z-0" 
+      />
+      <img 
+        src="/Rectangle%205.png" 
+        alt="Ornament Top Right" 
+        className="absolute top-6 right-0 w-40 md:w-72 lg:w-45 object-contain pointer-events-none z-0" 
+      />
       
       {/* Container Card Utama */}
       {/* Menggunakan gradient dari kuning redup di kiri ke pink/krem di kanan */}
-      <div className="w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] border-blue-400">
+      <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
         
         {/* Kolom Kiri: Ilustrasi (Hanya tampil di layar md ke atas) */}
         <div className="hidden md:flex md:w-1/2 relative items-center justify-center p-8">
           {/* Tempat untuk menaruh aset ilustrasi teko & cangkir kopi dari Figma */}
           <div className="w-full h-full min-h-[400px] flex items-center justify-center">
-            {/* GANTI TAG INI DENGAN <img src="/ilustrasi-kopi.png" /> HASIL EXPORT FIGMA */}
-            <div className="text-center p-6 border-2 border-dashed border-[#8b1c1c]/30 rounded-2xl bg-white/20 backdrop-blur-sm">
-               <p className="text-[#8b1c1c] font-semibold">Area Ilustrasi Teko & Kopi</p>
-               <p className="text-sm text-gray-700 mt-2">Export dari Figma (SVG/PNG) letakkan di sini.</p>
-            </div>
+            <img src="/Group (4).png" alt="Group 4" className="w-full h-full object-contain" />
           </div>
         </div>
 
@@ -28,13 +36,13 @@ export default function RegisterPage() {
         <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center relative">
           
           {/* Logo */}
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-6">
-            <span className="text-3xl font-extrabold text-black">D</span>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <img src="/Group 2 1.png" alt="Logo D" className="h-8 object-contain" />
             <span className="text-sm font-bold text-[#6b1d1d] tracking-widest mt-1">DE CAFENTA</span>
           </div>
 
           {/* Judul */}
-          <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-8 drop-shadow-sm text-center md:text-left">Daftar</h1>
+          <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-8 drop-shadow-sm text-center">Daftar</h1>
 
           {/* Form Inputs */}
           <form className="space-y-4 flex flex-col">
@@ -101,15 +109,15 @@ export default function RegisterPage() {
           {/* Social Login Buttons */}
           <div className="flex flex-wrap md:flex-nowrap justify-between gap-2 md:gap-3 mb-6">
             <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-blue-500 text-lg">G</span>
+              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14 1 (1).png" alt="Google" className="h-5 object-contain" />
               <span className="text-sm font-bold text-black hidden sm:block">Google</span>
             </button>
             <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-black text-lg"></span>
+              <img src="/Apple-Logo-PNG-Free-Image 2.png" alt="Apple" className="h-5 object-contain" />
               <span className="text-sm font-bold text-black hidden sm:block">Apple</span>
             </button>
             <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-blue-600 text-lg">f</span>
+              <img src="/image-removebg-preview (1) 1.png" alt="Facebook" className="h-5 object-contain" />
               <span className="text-sm font-bold text-black hidden sm:block">Facebook</span>
             </button>
           </div>
