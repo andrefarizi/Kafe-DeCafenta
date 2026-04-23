@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ChevronLeft, Pencil, Star } from 'lucide-react';
 
 // --- Dummy Data Ulasan ---
@@ -9,7 +10,7 @@ const ulasanData = [
     tanggal: '31 Februari 2026',
     rating: '5.0',
     komentar: 'keren',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' // Placeholder Avatar
+    avatar: '/Ellipse 9.png' // Placeholder Avatar
   },
   {
     id: 2,
@@ -17,7 +18,7 @@ const ulasanData = [
     tanggal: '31 Februari 2026',
     rating: '5.0',
     komentar: 'luar biasa yes yes yes',
-    avatar: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=150&q=80' // Placeholder Kucing
+    avatar: '/Ellipse 9 (1).png' // Placeholder Kucing
   }
 ];
 
@@ -38,9 +39,9 @@ export default function DetailMenu() {
         
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           {/* Kolom Kiri: Gambar Menu */}
-          <div className="relative w-full md:w-1/2 aspect-square max-w-sm mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
+          <div className="relative w-full md:w-1/2 aspect-square max-w-sm flex items-center justify-center mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
             <img 
-              src="https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=800&q=80" 
+              src="/kentang goreng.png" 
               alt="Kentang Goreng" 
               className="w-full h-full object-cover"
             />
@@ -113,9 +114,9 @@ export default function DetailMenu() {
         {/* Header Ulasan */}
         <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
           <h3 className="text-xl font-extrabold text-black">Ringkasan Ulasan (3rb ulasan)</h3>
-          <button className="text-[#8B1A1A] font-extrabold text-sm hover:underline">
+          <Link href="/owner/ulasan" className="text-[#8B1A1A] font-extrabold text-sm hover:underline">
             Lihat Semua
-          </button>
+          </Link>
         </div>
 
         {/* Daftar Ulasan */}

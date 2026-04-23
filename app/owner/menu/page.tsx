@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Plus, Search, ChevronDown, Star } from 'lucide-react';
 
 // --- Types ---
@@ -13,22 +14,22 @@ interface MenuItem {
 // --- Dummy Data ---
 // Menggunakan placeholder gambar dari Unsplash yang relevan dengan makanan
 const menuList: MenuItem[] = [
-  { id: 1, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80' },
-  { id: 2, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80' },
-  { id: 3, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80' },
-  { id: 4, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80' },
-  { id: 5, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=400&q=80' },
-  { id: 6, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=400&q=80' },
-  { id: 7, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=400&q=80' },
-  { id: 8, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=400&q=80' },
-  { id: 9, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1589733955437-062d1d73c73f?auto=format&fit=crop&w=400&q=80' },
-  { id: 10, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1589733955437-062d1d73c73f?auto=format&fit=crop&w=400&q=80' },
-  { id: 11, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1589733955437-062d1d73c73f?auto=format&fit=crop&w=400&q=80' },
-  { id: 12, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1589733955437-062d1d73c73f?auto=format&fit=crop&w=400&q=80' },
-  { id: 13, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
-  { id: 14, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
-  { id: 15, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
-  { id: 16, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=400&q=80' },
+  { id: 1, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: '/nasi goreng.png' },
+  { id: 2, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: '/nasi goreng.png' },
+  { id: 3, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: '/nasi goreng.png' },
+  { id: 4, name: 'Nasgor wira', price: 'Rp 15.000', rating: '5.0', image: '/nasi goreng.png' },
+  { id: 5, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: '/kentang goreng.png' },
+  { id: 6, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: '/kentang goreng.png' },
+  { id: 7, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: '/kentang goreng.png' },
+  { id: 8, name: 'Kentang Goreng', price: 'Rp 12.000', rating: '5.0', image: '/kentang goreng.png' },
+  { id: 9, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: '/jus semangka.png' },
+  { id: 10, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: '/jus semangka.png' },
+  { id: 11, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: '/jus semangka.png' },
+  { id: 12, name: 'Semangka Enjely', price: 'Rp 7.000', rating: '5.0', image: '/jus semangka.png' },
+  { id: 13, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: '/bakso.png' },
+  { id: 14, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: '/bakso.png' },
+  { id: 15, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: '/bakso.png' },
+  { id: 16, name: 'Mie Bakso Zhrn', price: 'Rp 20.000', rating: '5.0', image: '/bakso.png' },
 ];
 
 export default function ManajemenMenu() {
@@ -38,10 +39,10 @@ export default function ManajemenMenu() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <h1 className="text-3xl font-extrabold text-black">Manajemen Menu</h1>
-        <button className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+        <Link href="/owner/menu/tambah" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
           <Plus size={16} strokeWidth={3} />
           <span>Tambah Menu</span>
-        </button>
+        </Link>
       </div>
 
       {/* Sub-Header & Controls */}
@@ -49,9 +50,9 @@ export default function ManajemenMenu() {
         <h2 className="text-xl font-extrabold text-[#8B1A1A] mb-4">Daftar Menu</h2>
         
         {/* Search Bar */}
-        <div className="flex items-center w-full border-[2.5px] border-[#FFC700] rounded-full overflow-hidden mb-4 shadow-sm">
-          <div className="bg-[#FFC700] p-3 md:p-3.5 flex justify-center items-center">
-            <Search className="text-white w-5 h-5" />
+        <div className="flex items-center w-full border-[2.5px] border-[#FFC700] rounded-full mb-4 shadow-sm bg-white">
+          <div className="bg-[#FFC700] w-12 h-12 md:w-12 md:h-12 rounded-full flex justify-center items-center ">
+            <Search className="text-white w-5 h-5 md:w-6 md:h-6" />
           </div>
           <input
             type="text"
@@ -97,9 +98,9 @@ export default function ManajemenMenu() {
               </div>
               
               <div className="mt-auto pt-4">
-                <button className="w-full bg-[#8B1A1A] hover:bg-red-900 text-white font-bold text-xs py-2 rounded-lg transition-colors shadow-sm">
+                <Link href="/owner/menu/edit" className="block w-full bg-[#8B1A1A] hover:bg-red-900 text-white font-bold text-xs py-2 rounded-lg transition-colors shadow-sm text-center">
                   Detail
-                </button>
+                </Link>
               </div>
             </div>
             

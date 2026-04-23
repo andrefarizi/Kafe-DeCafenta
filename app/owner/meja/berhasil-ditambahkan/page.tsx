@@ -1,66 +1,37 @@
 import React from 'react';
 
-export default function ModalTambahMeja() {
+export default function ModalSuksesTambahMeja() {
   return (
-    // Wrapper luar ini berfungsi sebagai overlay gelap jika dijadikan modal popup.
-    // Jika hanya ingin melihat card-nya saja, fokus pada elemen <div className="bg-white...">
+    // Wrapper luar ini berfungsi sebagai overlay gelap untuk modal popup.
     <div className="min-h-screen bg-gray-900/40 flex items-center justify-center p-4 font-sans">
       
       {/* Modal Card Container */}
-      <div className="bg-white border-2 border-[#8B1A1A] rounded-[1.5rem] w-full max-w-2xl p-8 md:p-12 shadow-2xl relative">
+      <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
         
-        {/* Title */}
-        <h2 className="text-3xl font-extrabold text-[#8B1A1A] mb-10">
-          Tambah Meja
+        {/* Illustration */}
+        <div className="w-28 h-28 md:w-32 md:h-32 mb-6 flex items-center justify-center">
+          {/* Ganti src di bawah ini dengan path gambar ilustrasi toko kamu, misal: "/assets/shop-illustration.png" */}
+          <img 
+            src="/Group (6).png" 
+            alt="Ilustrasi Toko" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+
+        {/* Success Message */}
+        <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-8">
+          Meja Berhasil <br /> Ditambahkan
         </h2>
 
-        {/* Form Section */}
-        <form className="space-y-8">
-          
-          {/* Input Nama Meja */}
-          <div>
-            <label className="block text-lg font-extrabold text-black mb-3">
-              Nama Meja
-            </label>
-            <input
-              type="text"
-              placeholder="contoh : Meja 13"
-              className="w-full bg-[#F4F5F7] border border-gray-300 rounded-xl px-5 py-3.5 text-sm text-black placeholder-gray-500 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#8B1A1A] transition-all"
-            />
-          </div>
-
-          {/* Input Kode Meja (Read Only / Disabled) */}
-          <div className="mb-12">
-            <label className="block text-lg font-extrabold text-black mb-3">
-              Kode Meja
-            </label>
-            <input
-              type="text"
-              disabled
-              placeholder="Terbuat Otomatis ,contoh : #MJ013"
-              className="w-full bg-[#F4F5F7] border border-gray-300 rounded-xl px-5 py-3.5 text-sm text-black placeholder-gray-500 placeholder:italic cursor-not-allowed opacity-80"
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 pt-4">
-            <button 
-              type="button"
-              className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] font-extrabold py-3.5 rounded-xl hover:bg-red-50 transition-colors shadow-sm"
-            >
-              Batalkan
-            </button>
-            <button 
-              type="submit"
-              className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white font-extrabold py-3.5 rounded-xl hover:bg-red-900 transition-colors shadow-sm"
-            >
-              Tambahkan Meja
-            </button>
-          </div>
-
-        </form>
+        {/* Action Button */}
+        <button 
+          className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
+        >
+          Lanjutkan
+        </button>
 
       </div>
+      
     </div>
   );
 }

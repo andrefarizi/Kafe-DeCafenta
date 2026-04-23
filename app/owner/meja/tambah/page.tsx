@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function ModalTambahMeja() {
   return (
@@ -44,18 +45,18 @@ export default function ModalTambahMeja() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 pt-4">
-            <button 
-              type="button"
-              className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] font-extrabold py-3.5 rounded-xl hover:bg-red-50 transition-colors shadow-sm"
+            <Link 
+              href="/owner/meja"
+              className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] font-extrabold py-3.5 rounded-xl hover:bg-red-50 transition-colors shadow-sm block text-center"
             >
               Batalkan
-            </button>
-            <button 
-              type="submit"
-              className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white font-extrabold py-3.5 rounded-xl hover:bg-red-900 transition-colors shadow-sm"
+            </Link>
+            <Link 
+              href="/owner/meja/berhasil-ditambahkan"
+              className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white font-extrabold py-3.5 rounded-xl hover:bg-red-900 transition-colors shadow-sm block text-center"
             >
               Tambahkan Meja
-            </button>
+            </Link>
           </div>
 
         </form>

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function LandingPage() {
   return (
@@ -14,17 +15,17 @@ export default function LandingPage() {
         
         <div className="hidden md:flex items-center gap-10 text-sm font-bold">
           <a href="#" className="text-[#8b1c1c]">Tentang Kami</a>
-          <a href="#" className="text-black hover:text-[#8b1c1c] transition-colors">Menu</a>
-          <a href="#" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
+          <Link href="/menu" className="text-black hover:text-[#8b1c1c] transition-colors">Menu</Link>
+          <a href="#footer" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="px-8 py-2.5 bg-[#8b1c1c] text-white text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors">
+          <Link href="/login" className="px-8 py-2.5 bg-[#8b1c1c] text-white text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors">
             Masuk
-          </button>
-          <button className="px-8 py-2.5 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors">
+          </Link>
+          <Link href="/daftar" className="px-8 py-2.5 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors">
             Daftar
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -49,21 +50,21 @@ export default function LandingPage() {
 
         {/* Konten Kiri */}
         <div className="w-full md:w-1/2 relative z-10 pt-4">
-          <p className="text-lg font-bold mb-3 tracking-wide">Work & Coffee Starts Here</p>
+          <p className="text-lg font-bold mb-3 tracking-wide">Work &amp; Coffee Starts Here</p>
           <h1 className="text-5xl md:text-[64px] font-black leading-[1.1] mb-6">
-            Nikmati Kopi & Makanan Terbaik di <span className="text-[#f4d03f]">De Cafenta</span>
+            Nikmati Kopi &amp; Makanan Terbaik di <span className="text-[#f4d03f]">De Cafenta</span>
           </h1>
           <p className="text-base md:text-lg font-medium mb-10 text-white/90">
-            Tempat nyaman dengan WIFI gratis untuk kerja & santai
+            Tempat nyaman dengan WIFI gratis untuk kerja &amp; santai
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mb-14">
-            <button className="px-10 py-4 bg-[#f4d03f] text-black font-extrabold rounded-[10px] hover:bg-yellow-500 transition-colors">
+            <Link href="/login" className="px-10 py-4 bg-[#f4d03f] text-black font-extrabold rounded-[10px] hover:bg-yellow-500 transition-colors">
               Pesan Sekarang
-            </button>
-            <button className="px-10 py-4 bg-transparent border-2 border-white text-white font-extrabold rounded-[10px] hover:bg-white hover:text-[#a52016] transition-colors">
+            </Link>
+            <Link href="/menu" className="px-10 py-4 bg-transparent border-2 border-white text-white font-extrabold rounded-[10px] hover:bg-white hover:text-[#a52016] transition-colors">
               Lihat Menu
-            </button>
+            </Link>
           </div>
 
           {/* Statistik */}
@@ -104,10 +105,10 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-6xl mx-auto px-1">
           {[
-            { id: 1, img: "/Frame 26.png", clip: "polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%)" }, // Trapesium mengerucut (miring) menghadap kanan
-            { id: 2, img: "/Frame 20.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
-            { id: 3, img: "/Frame 19.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" }, // Persegi panjang
-            { id: 4, img: "/Frame 26 (1).png", clip: "polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)" }, // Trapesium mengerucut (miring) menghadap kiri
+            { id: 1, img: "/Frame 26.png", clip: "polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%)" },
+            { id: 2, img: "/Frame 20.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" },
+            { id: 3, img: "/Frame 19.png", clip: "polygon(0% 10%, 100% 10%, 100% 90%, 0% 90%)" },
+            { id: 4, img: "/Frame 26 (1).png", clip: "polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)" },
           ].map((item) => (
             <div key={item.id} 
                  className="relative overflow-hidden h-56 w-full"
@@ -160,7 +161,7 @@ export default function LandingPage() {
 
       {/* ================= KONTAK & FOOTER ================= */}
       {/* Background Section Full Solid Pink, tidak digradasi */}
-      <div className="relative bg-[#ff9c9c] pt-16 pb-8 px-4 md:px-8 overflow-visible">
+      <div id="footer" className="relative bg-[#ff9c9c] pt-16 pb-8 px-4 md:px-8 overflow-visible">
         
         {/* Kotak Kontak Merah di Tengah */}
         <div className="relative max-w-[1000px] mx-auto bg-[#c40202] rounded-[2.5rem] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between shadow-2xl z-10 mb-20 md:min-h-[280px] -mt-55">

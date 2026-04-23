@@ -1,12 +1,9 @@
+"use client";
+
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   Search, 
-  ShoppingBasket, 
-  Store, 
-  CookingPot, 
-  PackageCheck, 
-  CheckCircle2,
-  FileText,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -33,11 +30,11 @@ const orderList: OrderData[] = [
 ];
 
 const tabs = [
-  { label: 'Semua', icon: ShoppingBasket },
-  { label: 'Masuk', icon: Store },
-  { label: 'Dimasak', icon: CookingPot },
-  { label: 'Siap Diambil', icon: PackageCheck },
-  { label: 'Selesai', icon: CheckCircle2 },
+  { label: 'Semua', icon: '/Group 135.png', href: '/owner/pesanan/masuk' },
+  { label: 'Masuk', icon: '/Food Icon Illustrations Kit (1).png', href: '/owner/pesanan/masuk/1' },
+  { label: 'Dimasak', icon: '/Food Icon Illustrations Kit (2).png', href: '/owner/pesanan/dimasak' },
+  { label: 'Siap Diambil', icon: '/Food Icon Illustrations Kit (3).png', href: '/owner/pesanan/siap-diambil' },
+  { label: 'Selesai', icon: '/Food Icon Illustrations Kit (4).png', href: '/owner/pesanan/selesai' },
 ];
 
 export default function PesananSiapDiambilFiltered() {
@@ -57,11 +54,11 @@ export default function PesananSiapDiambilFiltered() {
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
       
-      <h1 className="text-3xl font-extrabold mb-6 text-black">Pesanan Masuk</h1>
+      <h1 className="text-3xl font-extrabold mb-6 text-black">Pesanan Siap Diambil</h1>
 
       {/* Search Bar */}
       <div className="flex items-center w-full border-2 border-[#FFC700] rounded-full overflow-hidden mb-8">
-        <div className="bg-[#FFC700] p-3 md:p-4 flex justify-center items-center">
+        <div className="bg-[#FFC700] w-12 h-12 rounded-full flex justify-center items-center ">
           <Search className="text-white w-6 h-6" />
         </div>
         <input
@@ -74,21 +71,24 @@ export default function PesananSiapDiambilFiltered() {
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-4 mb-8">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.label;
           return (
-            <button
+            <Link
               key={tab.label}
-              onClick={() => setActiveTab(tab.label)}
+              href={tab.href}
               className={`flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
                 isActive 
                   ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white' 
                   : 'bg-white border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50'
               }`}
             >
-              <Icon size={18} className={isActive ? "text-white" : "text-[#8B1A1A]"} />
+              <img 
+                src={tab.icon} 
+                alt={tab.label} 
+                className={`w-5 h-5 object-contain ${isActive ? 'invert brightness-0' : ''}`}
+              />
               <span>{tab.label}</span>
-            </button>
+            </Link>
           );
         })}
       </div>
@@ -98,7 +98,7 @@ export default function PesananSiapDiambilFiltered() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px] border-collapse">
             <thead>
-              <tr className="bg-[#FADCD9] text-left">
+              <tr className="bg-[#e9b7b7fb] text-left">
                 <th className="py-4 px-4 rounded-l-lg font-bold text-black w-1/3 text-sm">Nama Pelanggan</th>
                 <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm">Jumlah Pesanan</th>
                 <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm">Harga</th>
@@ -111,10 +111,7 @@ export default function PesananSiapDiambilFiltered() {
                   {/* Kolom Nama */}
                   <td className="py-5 px-4 flex items-center space-x-4">
                     <div className="relative text-[#8B1A1A]">
-                      <FileText size={32} strokeWidth={2} />
-                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full">
-                        <CheckCircle2 size={16} className="text-[#8B1A1A] fill-white" />
-                      </div>
+                      <img src="/material-symbols_order-approve-outline-rounded.png" alt="icon" className="w-8 h-8 object-contain" />
                     </div>
                     <div>
                       <p className="font-extrabold text-black text-[15px]">{order.nama}</p>
@@ -156,37 +153,37 @@ export default function PesananSiapDiambilFiltered() {
       </div>
 
       {/* Pagination Section */}
-      <div className="flex justify-center items-center space-x-2 pb-8">
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
-          <ChevronLeft size={16} />
-        </button>
-        
-        <button className="px-6 py-1.5 bg-white border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors">
-          Awal
-        </button>
-        
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-[#8B1A1A] text-white font-bold text-sm shadow-sm">
-          1
-        </button>
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
-          2
-        </button>
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
-          3
-        </button>
-        
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
-          ...
-        </button>
-        
-        <button className="px-6 py-1.5 bg-white border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors">
-          Akhir
-        </button>
-        
-        <button className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
-          <ChevronRight size={16} />
-        </button>
-      </div>
+            <div className="flex justify-center items-center space-x-2 pb-8">
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-lg text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+                <ChevronLeft size={16} />
+              </button>
+              
+              <button className="px-6 py-1.5 bg-gray-200 border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+                Awal
+              </button>
+              
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-[#8B1A1A] text-white font-bold text-sm shadow-sm">
+                1
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
+                2
+              </button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200  border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
+                3
+              </button>
+              
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm hover:bg-gray-50 transition-colors">
+                ...
+              </button>
+              
+              <button className="px-6 py-1.5 bg-gray-200 border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+                Akhir
+              </button>
+              
+              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors">
+                <ChevronRight size={16} />
+              </button>
+            </div>
 
     </div>
   );
