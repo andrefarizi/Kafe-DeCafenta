@@ -11,7 +11,7 @@ const NavItem = ({ icon, label, active = false }: { icon: any, label: string, ac
 
 const Sidebar = ({ activeMenu }: { activeMenu?: string }) => {
   return (
-    <aside className="w-64 bg-[#8A0000] text-white flex flex-col h-screen sticky top-0">
+    <aside className="w-54 bg-[#8A0000] text-white flex flex-col h-screen sticky top-0">
       <div className="p-6 flex items-center gap-2">
         <div className="relative w-8 h-8 flex items-center justify-center">
           <Image 
