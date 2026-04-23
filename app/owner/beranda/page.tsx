@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Home, ChevronRight, ChevronDown } from 'lucide-react';
 
 // --- Types ---
@@ -56,27 +57,27 @@ export default function DashboardOwner() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
           {/* Card Pendapatan */}
-          <div className="bg-[#FFF5F5] rounded-2xl border border-red-200 p-6 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="bg-[#e9b7b7fb] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pendapatan</h2>
               <p className="text-xs text-red-400 mt-1">Maret 2026</p>
             </div>
             <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">Rp 150.000.000</p>
-            <button className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
+            <Link href="/owner/total-pendapatan" className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
               Selengkapnya <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
 
           {/* Card Pesanan */}
-          <div className="bg-[#FFF5F5] rounded-2xl border border-red-200 p-6 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="bg-[#e9b7b7fb] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pesanan</h2>
               <p className="text-xs text-red-400 mt-1">Maret 2026</p>
             </div>
             <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">2820 Pesanan</p>
-            <button className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
+            <Link href="/owner/total-pesanan" className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
               Selengkapnya <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -95,18 +96,25 @@ export default function DashboardOwner() {
           </div>
 
           {/* Chart Wrapper */}
-          <div className="relative pl-4 border-l-4 border-black py-2">
-            <div className="flex flex-col space-y-4">
+          <div className="flex w-full mt-4">
+            {/* Labels Column */}
+            <div className="w-20 shrink-0 flex flex-col space-y-4 py-4">
               {menuTerfavorit.map((menu, index) => (
-                <div key={index} className="flex items-center w-full">
-                  <span className="w-20 text-sm font-medium">{menu.name}</span>
-                  <div className="flex-1 flex items-center">
-                    <div 
-                      className="bg-[#FFC700] h-8 rounded-r-md flex items-center justify-end px-4"
-                      style={{ width: menu.width }}
-                    >
-                      <span className="text-white font-bold text-sm">{menu.porsi} Porsi</span>
-                    </div>
+                <div key={`label-${index}`} className="h-10 flex items-center">
+                  <span className="text-sm font-medium text-black">{menu.name}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bars Column */}
+            <div className="flex-1 border-l-[4px] border-black flex flex-col space-y-4 py-4">
+              {menuTerfavorit.map((menu, index) => (
+                <div key={`bar-${index}`} className="h-10 flex items-center">
+                  <div 
+                    className="bg-[#FFC700] h-full rounded-r-md flex items-center justify-end px-4"
+                    style={{ width: menu.width }}
+                  >
+                    <span className="text-white font-bold text-sm">{menu.porsi} Porsi</span>
                   </div>
                 </div>
               ))}
@@ -128,10 +136,10 @@ export default function DashboardOwner() {
       <div>
         <h2 className="text-2xl font-bold mb-6">Ketersediaan Meja</h2>
         
-        <div className="bg-[#FCF9F9] border border-red-200 rounded-3xl p-8 relative">
+        <div className="bg-gray-200 border border-red-700 rounded-3xl p-8 relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {ketersediaanMeja.map((meja, index) => (
-              <div key={index} className="bg-white border border-red-200 rounded-xl p-4 flex flex-col justify-between h-28">
+              <div key={index} className="bg-white border border-red-700 rounded-xl p-4 flex flex-col justify-between h-28">
                 <div className="flex justify-between items-start">
                   <h3 className="font-bold text-lg">{meja.name}</h3>
                   <span className="text-red-700 font-semibold text-sm">{meja.id}</span>
@@ -140,7 +148,7 @@ export default function DashboardOwner() {
                   <span className="text-[10px] text-gray-500 mb-1">Status</span>
                   <span 
                     className={`px-4 py-1 rounded-full text-xs font-bold text-white ${
-                      meja.status === 'Tersedia' ? 'bg-[#22C55E]' : 'bg-[#E53E3E]'
+                      meja.status === 'Tersedia' ? 'bg-[#22C55E]' : 'bg-[#b43636]'
                     }`}
                   >
                     {meja.status}
@@ -152,12 +160,12 @@ export default function DashboardOwner() {
 
           {/* Footer Link for Table */}
           <div className="flex justify-end">
-            <button className="flex items-center text-xs text-red-700 font-medium group hover:underline">
+            <Link href="/owner/meja" className="flex items-center text-xs text-red-700 font-medium group hover:underline">
               Selengkapnya 
-              <div className="ml-2 border border-red-700 rounded-full p-[2px]">
+              <div className="ml-2 border border-red-700 rounded-full p-[2px] group-hover:translate-x-1 transition-transform">
                  <ChevronRight size={12} />
               </div>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

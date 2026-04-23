@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { 
   ChevronLeft, 
   ClipboardList, 
@@ -28,7 +29,7 @@ const products: ProductOrder[] = [
     category: 'Nasi',
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=150&q=80' // Placeholder Nasi Goreng
+    image: '/nasi goreng.png'
   },
   {
     id: 2,
@@ -37,7 +38,7 @@ const products: ProductOrder[] = [
     category: 'Mie', // Mengikuti persis seperti di gambar mockup
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=150&q=80'
+    image: '/nasi goreng.png'
   },
   {
     id: 3,
@@ -46,7 +47,7 @@ const products: ProductOrder[] = [
     category: 'Minuman',
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80' // Placeholder Kopi
+    image: '/Americano.png'
   }
 ];
 
@@ -64,18 +65,11 @@ export default function DetailPesanan() {
 
       {/* Customer Card */}
       <div className="border border-[#8B1A1A] rounded-2xl p-6 flex items-center mb-6">
-        {/* Custom Avatar Icon (Replicating the red smiley) */}
-        <div className="w-14 h-14 bg-[#8B1A1A] rounded-full flex items-center justify-center relative overflow-hidden mr-4 shadow-sm">
-           <div className="w-10 h-10 bg-white rounded-full absolute -bottom-2 flex justify-center">
-              {/* Eyes */}
-              <div className="absolute top-2 w-full flex justify-center space-x-3">
-                <div className="w-1.5 h-1.5 bg-[#8B1A1A] rounded-full"></div>
-                <div className="w-1.5 h-1.5 bg-[#8B1A1A] rounded-full"></div>
-              </div>
-              {/* Mouth */}
-              <div className="absolute top-5 w-3 h-1.5 border-b-2 border-[#8B1A1A] rounded-b-full"></div>
-           </div>
-        </div>
+        <img 
+          src="/mdi_face-man.png" 
+          alt="Avatar" 
+          className="w-14 h-14 object-contain mr-4" 
+        />
         <div>
           <p className="text-[10px] text-gray-500 font-medium">Nama Pelanggan</p>
           <p className="text-lg font-extrabold text-[#8B1A1A]">Andre Ganteng</p>
@@ -139,8 +133,10 @@ export default function DetailPesanan() {
           {/* Step 4: Selesai */}
           <div className="flex flex-col items-center w-1/4">
           {/* Status Selesai tidak memakai efek double ring di gambar, hanya solid gray dengan border putih tebal */}
-          <div className="w-[68px] h-[68px] rounded-full bg-gray-300 border-[6px] border-white flex items-center justify-center z-10">
-            <Check size={36} className="text-white stroke-[4]" />
+          <div className="w-[68px] h-[68px] rounded-full border-[4px] bg-white border-gray-300 p-[3px] flex items-center justify-center z-10">
+             <div className="w-full h-full rounded-full bg-gray-300 flex items-center justify-center">
+               <Check size={36} className="text-white " strokeWidth={2.5} />
+             </div>
           </div>
           <span className="text-sm md:text-base font-extrabold text-black mt-3">Selesai</span>
         </div>
@@ -221,10 +217,10 @@ export default function DetailPesanan() {
       {/* Invoice Section */}
       <div className="flex flex-col items-end mb-8">
         <p className="text-sm font-extrabold text-black mb-2">Cek Invoice</p>
-        <button className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
+        <Link href="/owner/invoice" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
           <FileText size={16} />
           <span className="text-xs font-bold">Invoice</span>
-        </button>
+        </Link>
       </div>
 
       {/* Cancel Button */}

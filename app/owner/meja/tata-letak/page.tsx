@@ -1,5 +1,8 @@
-import React from 'react';
-import { MinusCircle, Plus } from 'lucide-react';
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { MinusCircle, Plus, CheckCircle2 } from 'lucide-react';
 
 // --- Types ---
 interface MejaItem {
@@ -8,30 +11,30 @@ interface MejaItem {
 }
 
 // --- Dummy Data ---
-// Mengikuti data yang ada di mockup gambar
 const diletakkan: MejaItem[] = [
   { id: 1, kode: '#MJ01' }, { id: 2, kode: '#MJ02' },
   { id: 3, kode: '#MJ03' }, { id: 4, kode: '#MJ04' },
-  { id: 5, kode: '#MJ05' }, { id: 6, kode: '#MJ06' }, // Mockup tertulis Meja 6 #MJ04 (typo di mockup, tapi saya ikuti visual)
+  { id: 5, kode: '#MJ05' }, { id: 6, kode: '#MJ06' },
   { id: 11, kode: '#MJ011' }, { id: 12, kode: '#MJ012' },
   { id: 7, kode: '#MJ07' }, { id: 8, kode: '#MJ08' },
   { id: 9, kode: '#MJ09' }, { id: 10, kode: '#MJ010' },
 ];
 
 const belumDigunakan: MejaItem[] = [
-  { id: 13, kode: '#MJ01' },
-  { id: 14, kode: '#MJ02' },
-  { id: 15, kode: '#MJ03' },
+  { id: 13, kode: '#MJ013' },
+  { id: 14, kode: '#MJ014' },
+  { id: 15, kode: '#MJ015' },
 ];
 
 export default function TataLetakMeja() {
-  
+  const [showModal, setShowModal] = useState(false);
+
   // Komponen Helper untuk Kartu Meja di dalam Denah
   const MejaCanvasCard = ({ meja }: { meja: MejaItem }) => (
     <div className="border border-[#8B1A1A] rounded-xl p-3 flex flex-col justify-between h-28 bg-white shadow-sm hover:shadow-md transition-shadow cursor-move">
       <div>
         <p className="font-extrabold text-sm text-black">Meja {meja.id}</p>
-        <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">{meja.kode === '#MJ06' && meja.id === 6 ? '#MJ04' : meja.kode}</p> 
+        <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">{meja.kode}</p>
       </div>
       
       <div className="flex justify-end mt-auto">
@@ -62,9 +65,7 @@ export default function TataLetakMeja() {
           </div>
 
           {/* --- WALLS / SEKAT RUANGAN --- */}
-          {/* Garis Vertikal */}
           <div className="absolute top-0 bottom-[30%] left-[48%] w-[4px] bg-[#8B1A1A] z-0"></div>
-          {/* Garis Horizontal */}
           <div className="absolute top-[32%] left-[58%] right-0 h-[4px] bg-[#8B1A1A] z-0"></div>
 
           {/* --- TABLE PLACEMENT GROUPS --- */}
@@ -118,13 +119,57 @@ export default function TataLetakMeja() {
 
       {/* --- SECTION 3: ACTION BUTTONS --- */}
       <div className="flex flex-col sm:flex-row justify-end items-center gap-4 border-t border-gray-300 pt-6">
-        <button className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm">
+        <Link href="/owner/meja" className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center">
           Batalkan
-        </button>
-        <button className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white hover:bg-red-900 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm">
+        </Link>
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white hover:bg-red-900 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center"
+        >
           Simpan
         </button>
       </div>
+
+      {/* ====== MODAL TATA KELOLA BERHASIL ====== */}
+      {showModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
+        >
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[360px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
+            
+            {/* Ikon Sukses */}
+            <div className="mb-4">
+              <CheckCircle2 size={72} className="text-[#22C55E] mx-auto" strokeWidth={1.5} />
+            </div>
+
+            {/* Ilustrasi */}
+            <div className="w-24 h-24 mb-4 flex items-center justify-center">
+              <img 
+                src="/Group (6).png" 
+                alt="Ilustrasi Toko" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Pesan Sukses */}
+            <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-3">
+              Tata Letak Berhasil <br /> Disimpan!
+            </h2>
+            <p className="text-xs text-gray-500 font-medium mb-8">
+              Perubahan tata letak meja telah berhasil disimpan.
+            </p>
+
+            {/* Tombol Kembali ke Meja */}
+            <Link
+              href="/owner/meja"
+              className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm text-center block"
+            >
+              Kembali ke Kelola Meja
+            </Link>
+          </div>
+        </div>
+      )}
 
     </div>
   );

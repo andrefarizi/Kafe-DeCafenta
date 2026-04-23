@@ -12,7 +12,7 @@ export default function ModalSuksesTambahMenu() {
         <div className="w-28 h-28 md:w-32 md:h-32 mb-6 flex items-center justify-center">
           {/* Ganti src di bawah ini dengan path gambar aset ilustrasi mesin kopi kamu */}
           <img 
-            src="https://via.placeholder.com/150/FFFFFF/000000?text=Mesin+Kopi" 
+            src="/Group (5).png" 
             alt="Ilustrasi Mesin Kopi" 
             className="w-full h-full object-contain"
           />

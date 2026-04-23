@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { 
   ChevronLeft, 
   ClipboardList, 
@@ -28,7 +29,7 @@ const products: ProductOrder[] = [
     category: 'Nasi',
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=150&q=80'
+    image: '/nasi goreng.png'
   },
   {
     id: 2,
@@ -37,7 +38,7 @@ const products: ProductOrder[] = [
     category: 'Mie', 
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=150&q=80'
+    image: '/nasi goreng.png'
   },
   {
     id: 3,
@@ -46,7 +47,7 @@ const products: ProductOrder[] = [
     category: 'Minuman',
     qty: 1,
     price: 'Rp 20.000',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=150&q=80'
+    image: '/Americano.png'
   }
 ];
 
@@ -64,16 +65,11 @@ export default function DetailPesananSelesai() {
 
       {/* Customer Card */}
       <div className="border border-[#8B1A1A] rounded-2xl p-6 flex items-center mb-6">
-        {/* Custom Avatar Icon */}
-        <div className="w-14 h-14 bg-[#8B1A1A] rounded-full flex items-center justify-center relative overflow-hidden mr-4 shadow-sm">
-           <div className="w-10 h-10 bg-white rounded-full absolute -bottom-2 flex justify-center">
-              <div className="absolute top-2 w-full flex justify-center space-x-3">
-                <div className="w-1.5 h-1.5 bg-[#8B1A1A] rounded-full"></div>
-                <div className="w-1.5 h-1.5 bg-[#8B1A1A] rounded-full"></div>
-              </div>
-              <div className="absolute top-5 w-3 h-1.5 border-b-2 border-[#8B1A1A] rounded-b-full"></div>
-           </div>
-        </div>
+        <img 
+          src="/mdi_face-man.png" 
+          alt="Avatar" 
+          className="w-14 h-14 object-contain mr-4" 
+        />
         <div>
           <p className="text-[10px] text-gray-500 font-medium">Nama Pelanggan</p>
           <p className="text-lg font-extrabold text-[#8B1A1A]">Andre Ganteng</p>
@@ -101,51 +97,64 @@ export default function DetailPesananSelesai() {
         <h3 className="text-sm font-extrabold text-[#8B1A1A] mb-8">Status Pesanan</h3>
         
         {/* Tracker */}
-        <div className="relative flex justify-between px-4 md:px-12 mb-2 z-0">
+        <div className="relative flex justify-between px-2 md:px-8 mb-8 z-0">
+          {/* Connecting Line (Background) */}
+          <div className="absolute left-[12.5%] right-[12.5%] top-[34px] -translate-y-1/2 h-2.5 bg-gray-300 z-[-1]"></div>
           
-          {/* Complete 3-Step Gradient Line */}
-          <div className="absolute left-[12.5%] right-[12.5%] top-7 -translate-y-1/2 h-2.5 flex bg-[#E5E7EB] z-[-10]">
-            {/* Masuk -> Dimasak (Yellow to Red) */}
-            <div className="h-full w-[33.33%] bg-gradient-to-r from-[#FFC700] to-[#8B1A1A]"></div>
-            {/* Dimasak -> Siap Diambil (Red to Blue) */}
-            <div className="h-full w-[33.33%] bg-gradient-to-r from-[#8B1A1A] to-[#2563EB]"></div>
-            {/* Siap Diambil -> Selesai (Blue to Green) */}
-            <div className="h-full w-[33.33%] bg-gradient-to-r from-[#2563EB] to-[#22C55E]"></div>
-          </div>
+          {/* Line 1: Masuk -> Dimasak */}
+          <div className="absolute left-[12.5%] w-[25%] top-[34px] -translate-y-1/2 h-2.5 bg-gradient-to-r from-[#FFC700] to-[#8B1A1A] z-[-1]"></div>
           
-          {/* Step 1: Masuk */}
-          <div className="flex flex-col items-center w-1/4">
-            <div className="w-14 h-14 rounded-full border-4 border-[#FFC700] bg-white flex items-center justify-center mb-2 z-10">
-              <ClipboardList size={24} className="text-[#FFC700]" />
-            </div>
-            <span className="text-xs font-extrabold text-black">Masuk</span>
-          </div>
+          {/* Line 2: Dimasak -> Siap Diambil */}
+          <div className="absolute left-[37.5%] w-[25%] top-[34px] -translate-y-1/2 h-2.5 bg-gradient-to-r from-[#8B1A1A] to-[#2563EB] z-[-1]"></div>
 
-          {/* Step 2: Dimasak */}
-          <div className="flex flex-col items-center w-1/4">
-            <div className="w-14 h-14 rounded-full border-4 border-[#8B1A1A] bg-white flex items-center justify-center mb-2 z-10">
-              <CookingPot size={24} className="text-[#8B1A1A]" />
-            </div>
-            <span className="text-xs font-extrabold text-black mt-auto">Dimasak</span>
-          </div>
+          {/* Line 3: Siap Diambil -> Selesai */}
+          <div className="absolute left-[59.5%] w-[25%] top-[34px] -translate-y-1/2 h-2.5 bg-gradient-to-r from-[#2563EB] to-[#22C55E] z-[-1]"></div>
 
-          {/* Step 3: Siap Diambil */}
-          <div className="flex flex-col items-center w-1/4">
-            <div className="w-14 h-14 rounded-full border-4 border-[#2563EB] bg-white flex items-center justify-center mb-2 z-10">
-              <Package size={24} className="text-[#2563EB]" />
+          {/* Step 1: Masuk (Active) */}
+        <div className="flex flex-col items-center w-1/4">
+          <div className="w-[68px] h-[68px] rounded-full border-[4px] border-[#FFC700] bg-white p-[3px] flex items-center justify-center z-10">
+            <div className="w-full h-full rounded-full bg-[#FFC700] flex items-center justify-center">
+              <ClipboardList size={26} className="text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-xs font-extrabold text-black mt-auto">Siap Diambil</span>
           </div>
+          <span className="text-sm md:text-base font-extrabold text-black mt-3">Masuk</span>
+        </div>
 
-          {/* Step 4: Selesai (Active Final State) */}
-          <div className="flex flex-col items-center w-1/4">
-            <div className="w-14 h-14 rounded-full border-4 border-white bg-[#22C55E] flex items-center justify-center mb-2 z-10 shadow-sm">
-              <Check size={32} className="text-white stroke-[4]" />
+          {/* Step 2: Dimasak (Active) */}
+        <div className="flex flex-col items-center w-1/4">
+          <div className="w-[68px] h-[68px] rounded-full border-[4px] border-[#8B1A1A] bg-white p-[3px] flex items-center justify-center z-10">
+            <div className="w-full h-full rounded-full bg-[#8B1A1A] flex items-center justify-center">
+              <CookingPot size={26} className="text-white" strokeWidth={2.5} />
             </div>
-            <span className="text-xs font-extrabold text-black mt-auto">Selesai</span>
           </div>
+          <span className="text-sm md:text-base font-extrabold text-black mt-3">Dimasak</span>
+        </div>
+
+           {/* Step 3: Siap Diambil (Inactive) */}
+        <div className="flex flex-col items-center w-1/4">
+          <div className="w-[68px] h-[68px] rounded-full border-[4px] border-[#2563EB] bg-white p-[3px] flex items-center justify-center z-10">
+            <div className="w-full h-full rounded-full bg-[#2563EB] flex items-center justify-center">
+              <Package size={26} className="text-white" strokeWidth={2.5} />
+            </div>
+          </div>
+          <span className="text-sm md:text-base font-extrabold text-black mt-3 text-center whitespace-nowrap">Siap Diambil</span>
+        </div>
+
+          
+           {/* Step 4: Selesai */}
+          <div className="flex flex-col items-center w-1/4">
+          {/* Status Selesai  */}
+          <div className="w-[68px] h-[68px] rounded-full border-[4px] bg-white border-[#22C55E] p-[3px] flex items-center justify-center z-10">
+            <div className="w-full h-full rounded-full bg-[#22C55E] flex items-center justify-center">
+            <Check size={36} className="text-white " strokeWidth={2.5} />
+            </div>
+          </div>
+          <span className="text-sm md:text-base font-extrabold text-black mt-3">Selesai</span>
+        </div>
         </div>
       </div>
+     
+      
 
       {/* General Information */}
       <div className="mb-10 space-y-5">
@@ -213,10 +222,10 @@ export default function DetailPesananSelesai() {
       {/* Invoice Section */}
       <div className="flex flex-col items-end mb-12">
         <p className="text-sm font-extrabold text-black mb-2">Cek Invoice</p>
-        <button className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
+        <Link href="/owner/invoice" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
           <FileText size={16} />
           <span className="text-xs font-bold">Invoice</span>
-        </button>
+        </Link>
       </div>
 
       {/* Final State Text (Replacing Cancel Button) */}

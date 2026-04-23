@@ -1,5 +1,8 @@
-import React from 'react';
-import { Plus, LayoutGrid, Trash2 } from 'lucide-react';
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Plus, LayoutGrid, Trash2, CheckCircle2 } from 'lucide-react';
 
 // --- Types ---
 type StatusMeja = 'Tersedia' | 'Dipakai';
@@ -11,7 +14,6 @@ interface Meja {
 }
 
 // --- Dummy Data ---
-// Mengikuti data yang ada di mockup gambar
 const mejaData: Meja[] = [
   { id: 1, kode: '#MJ01', status: 'Tersedia' },
   { id: 2, kode: '#MJ02', status: 'Dipakai' },
@@ -27,14 +29,18 @@ const mejaData: Meja[] = [
   { id: 12, kode: '#MJ012', status: 'Tersedia' },
 ];
 
+type ModalState = 'none' | 'tambah' | 'berhasil';
+
 export default function ManajemenMeja() {
-  
+  const [modalState, setModalState] = useState<ModalState>('none');
+  const [hapusMeja, setHapusMeja] = useState<Meja | null>(null);
+
   // Komponen Helper untuk Kartu Meja di dalam Denah
   const DenahCard = ({ meja }: { meja: Meja }) => (
     <div className="relative border border-[#8B1A1A] rounded-xl p-3 flex flex-col justify-between h-28 bg-white shadow-sm">
       {/* Badge Status */}
       <div 
-        className={`absolute -top-2.5 right-2 px-2 py-0.5 rounded text-[8px] font-bold border border-white tracking-wide ${
+        className={`absolute top-2 right-2 px-2 py-0.5 rounded text-[8px] font-bold tracking-wide ${
           meja.status === 'Tersedia' 
             ? 'bg-[#22C55E] text-white' 
             : 'bg-[#FFC700] text-[#8B1A1A]'
@@ -68,7 +74,10 @@ export default function ManajemenMeja() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <h1 className="text-3xl font-extrabold text-black">Manajemen Meja</h1>
-        <button className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-2 rounded-md font-bold text-sm transition-colors shadow-sm">
+        <button 
+          onClick={() => setModalState('tambah')}
+          className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-2 rounded-md font-bold text-sm transition-colors shadow-sm"
+        >
           <Plus size={16} strokeWidth={3} />
           <span>Tambah Meja</span>
         </button>
@@ -84,10 +93,10 @@ export default function ManajemenMeja() {
           </div>
 
           {/* Button Atur Tata Letak */}
-          <button className="absolute top-4 right-4 flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-1.5 rounded-md text-[10px] font-bold transition-colors z-10 shadow-sm">
+          <Link href="/owner/meja/tata-letak" className="absolute top-4 right-4 flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-1.5 rounded-md text-[10px] font-bold transition-colors z-10 shadow-sm">
             <LayoutGrid size={14} />
             <span>Atur Tata Letak</span>
-          </button>
+          </Link>
 
           {/* Label Pintu Masuk */}
           <div className="absolute -bottom-[3px] left-[20%] transform translate-y-1/2 bg-white px-6 py-1.5 border-[3px] border-[#8B1A1A] rounded-lg text-[#8B1A1A] font-extrabold text-[11px] z-10">
@@ -96,7 +105,7 @@ export default function ManajemenMeja() {
 
           {/* --- WALLS / SEKAT RUANGAN --- */}
           {/* Garis Vertikal */}
-          <div className="absolute top-0 bottom-[22%] left-[48%] w-[3px] bg-[#8B1A1A] z-0"></div>
+          <div className="absolute top-0 bottom-[64%] left-[48%] w-[3px] bg-[#8B1A1A] z-0"></div>
           {/* Garis Horizontal */}
           <div className="absolute top-[35%] left-[60%] right-0 h-[3px] bg-[#8B1A1A] z-0"></div>
 
@@ -138,8 +147,11 @@ export default function ManajemenMeja() {
                 <p className="text-xs text-[#8B1A1A] font-bold mt-1">{meja.kode}</p>
               </div>
               
-              <div className="flex justify-center mt-auto">
-                <button className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-2 px-5 rounded-md transition-colors w-fit">
+              <div className="flex justify-end items-end w-full">
+                <button
+                  onClick={() => setHapusMeja(meja)}
+                  className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-2 px-5 rounded-md transition-colors w-fit"
+                >
                   <Trash2 size={12} strokeWidth={2.5} />
                   <span>Hapus Meja</span>
                 </button>
@@ -148,6 +160,140 @@ export default function ManajemenMeja() {
           ))}
         </div>
       </div>
+
+      {/* ====== MODAL HAPUS MEJA ====== */}
+      {hapusMeja && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans"
+          onClick={(e) => { if (e.target === e.currentTarget) setHapusMeja(null); }}
+        >
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+            
+            {/* Warning Icon (Red Circle with Exclamation) */}
+            <div className="w-20 h-20 bg-[#FF4C4C] rounded-full flex items-center justify-center mb-6 shadow-sm">
+              <span className="text-white text-[40px] font-black leading-none mt-1">
+                !
+              </span>
+            </div>
+
+            {/* Confirmation Message */}
+            <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-8">
+              Yakin Ingin <br /> Menghapus Meja?
+            </h2>
+
+            {/* Action Buttons Container */}
+            <div className="w-full flex flex-col space-y-4">
+              
+              {/* Lanjutkan Button (Primary / Destructive Action) */}
+              <button
+                onClick={() => setHapusMeja(null)}
+                className="w-full bg-[#8B1A1A] border-2 border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
+              >
+                Lanjutkan
+              </button>
+              
+              {/* Batal Button (Secondary Action) */}
+              <button
+                onClick={() => setHapusMeja(null)}
+                className="w-full bg-white border-2 border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
+              >
+                Batal
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ====== MODAL TAMBAH / BERHASIL ====== */}
+      {modalState !== 'none' && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setModalState('none'); }}
+        >
+          {/* ── Modal Tambah Meja ── */}
+          {modalState === 'tambah' && (
+            <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-sm p-8 flex flex-col items-center text-center shadow-2xl relative">
+              {/* Tombol tutup */}
+              <button 
+                onClick={() => setModalState('none')}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Ilustrasi */}
+              <div className="w-28 h-28 mb-5 flex items-center justify-center">
+                <img src="/Group (6).png" alt="Ilustrasi Meja" className="w-full h-full object-contain" />
+              </div>
+
+              <h2 className="text-xl font-extrabold text-black mb-2">Tambah Meja Baru</h2>
+              <p className="text-xs text-gray-500 font-medium mb-6">Masukkan nama atau nomor meja baru yang akan ditambahkan ke denah.</p>
+
+              {/* Input Nomor Meja */}
+              <div className="w-full mb-4">
+                <label className="block text-left text-sm font-extrabold text-black mb-2">Nomor Meja</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Meja 13"
+                  className="w-full border-[2px] border-[#8B1A1A] rounded-xl px-4 py-3 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8B1A1A]/30 transition-all"
+                />
+              </div>
+
+              {/* Input Kode Meja */}
+              <div className="w-full mb-8">
+                <label className="block text-left text-sm font-extrabold text-black mb-2">Kode Meja</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: #MJ013"
+                  className="w-full border-[2px] border-[#8B1A1A] rounded-xl px-4 py-3 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8B1A1A]/30 transition-all"
+                />
+              </div>
+
+              {/* Tombol Tambahkan Meja */}
+              <button
+                onClick={() => setModalState('berhasil')}
+                className="w-full bg-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
+              >
+                Tambahkan Meja
+              </button>
+            </div>
+          )}
+
+          {/* ── Modal Berhasil Ditambahkan ── */}
+          {modalState === 'berhasil' && (
+            <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
+              {/* Ilustrasi */}
+              <div className="w-28 h-28 md:w-32 md:h-32 mb-6 flex items-center justify-center">
+                <img 
+                  src="/Group (6).png" 
+                  alt="Ilustrasi Toko" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              {/* Ikon centang sukses */}
+              <div className="mb-4">
+                <CheckCircle2 size={48} className="text-[#22C55E] mx-auto" strokeWidth={1.5} />
+              </div>
+
+              {/* Pesan Sukses */}
+              <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-8">
+                Meja Berhasil <br /> Ditambahkan
+              </h2>
+
+              {/* Tombol Lanjutkan */}
+              <button 
+                onClick={() => setModalState('none')}
+                className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
+              >
+                Lanjutkan
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   );

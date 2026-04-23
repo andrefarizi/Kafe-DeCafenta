@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ChevronLeft, Star, ChevronRight } from 'lucide-react';
 
 // --- Types ---
@@ -17,42 +18,42 @@ const reviewList: ReviewItem[] = [
     nama: 'Gojo Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1563396983906-b3795f56a0d1?auto=format&fit=crop&w=150&q=80' // Placeholder Avatar 1
+    avatar: '/Frame 397.png'
   },
   {
     id: 2,
     nama: 'Gojo Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1563396983906-b3795f56a0d1?auto=format&fit=crop&w=150&q=80'
+    avatar: '/Frame 397.png'
   },
   {
     id: 3,
     nama: 'Gojo Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1563396983906-b3795f56a0d1?auto=format&fit=crop&w=150&q=80'
+    avatar: '/Frame 397.png'
   },
   {
     id: 4,
     nama: 'Flins Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1606122017369-d782bbb7857d?auto=format&fit=crop&w=150&q=80' // Placeholder Avatar 2
+    avatar: '/Ellipse 9.png'
   },
   {
     id: 5,
     nama: 'Flins Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1606122017369-d782bbb7857d?auto=format&fit=crop&w=150&q=80'
+    avatar: '/Ellipse 9.png'
   },
   {
     id: 6,
     nama: 'Flins Sitorus',
     tanggal: '31 Februari 2026',
     komentar: 'kentang goreng nya enak banget, kentangnya kentang banget!!',
-    avatar: 'https://images.unsplash.com/photo-1606122017369-d782bbb7857d?auto=format&fit=crop&w=150&q=80'
+    avatar: '/Ellipse 9.png'
   },
 ];
 
@@ -62,9 +63,9 @@ export default function Ulasan() {
       
       {/* Header Section */}
       <div className="flex items-center mb-8">
-        <button className="mr-4 p-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        <Link href="/owner/menu" className="mr-4 p-2 border border-gray-300 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
-        </button>
+        </Link>
         <h1 className="text-3xl font-extrabold text-black">Ulasan</h1>
       </div>
 
@@ -82,7 +83,7 @@ export default function Ulasan() {
         {reviewList.map((review) => (
           <div 
             key={review.id} 
-            className="bg-[#FFF4F4] border border-[#FADCD9] rounded-2xl p-4 md:p-5 flex items-center gap-4 md:gap-5 shadow-sm hover:shadow-md transition-shadow"
+            className="bg-[#f3cccc] border border-[#e9c3c0] rounded-2xl p-4 md:p-5 flex items-center gap-4 md:gap-5 shadow-sm hover:shadow-md transition-shadow"
           >
             {/* Avatar */}
             <img 
