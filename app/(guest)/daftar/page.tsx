@@ -15,7 +15,7 @@ export default function RegisterPage() {
           <div className="w-full h-full min-h-[400px] flex items-center justify-center">
             {/* GANTI TAG INI DENGAN <img src="/ilustrasi-kopi.png" /> HASIL EXPORT FIGMA */}
             <div className="text-center p-6 border-2 border-dashed border-[#8b1c1c]/30 rounded-2xl bg-white/20 backdrop-blur-sm">
-               <p className="text-[#8b1c1c] font-semibold">Area Ilustrasi Teko & Kopi</p>
+               <p className="text-[#8b1c1c] font-semibold">Area Ilustrasi Teko & Kopii</p>
                <p className="text-sm text-gray-700 mt-2">Export dari Figma (SVG/PNG) letakkan di sini.</p>
             </div>
           </div>
