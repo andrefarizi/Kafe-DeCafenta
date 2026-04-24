@@ -11,6 +11,7 @@ import {
   Copy
 } from 'lucide-react';
 
+
 const DetailPesanan = () => {
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
@@ -106,29 +107,12 @@ const DetailPesanan = () => {
             <div className="space-y-4 text-left">
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-black">Metode Pembayaran</h3>
-                <p className="text-xs text-gray-700 font-medium">Gopay</p>
+                <p className="text-xs text-gray-700 font-medium">Cash</p>
               </div>
 
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-black">Tipe Pesanan</h3>
                 <p className="text-xs text-gray-700 font-medium">Makan Ditempat</p>
-              </div>
-            </div>
-
-            <div className="text-left">
-              <h3 className="text-sm font-bold text-black mb-2">Kode QR</h3>
-              <div className="w-24 h-24 border-1 border-[#8A0000] rounded-lg p-1.5 flex items-center justify-center bg-[#FFECEC]">
-                <div className="w-full h-full bg-white rounded flex items-center justify-center overflow-hidden">
-                  <img src="/Frame 363.png" alt="QR" className="w-full h-full object-contain" />
-                </div>
-              </div>
-            </div>
-
-            <div className="text-left">
-              <h3 className="text-sm font-bold text-black mb-1">Nomor Virtual Account</h3>
-              <div className="flex items-center gap-2">
-                <Copy size={14} className="text-red-700 cursor-pointer hover:text-red-900" />
-                <span className="text-xs font-mono font-bold text-gray-700">190138615933481029498</span>
               </div>
             </div>
 
@@ -162,10 +146,6 @@ const DetailPesanan = () => {
               <h2 className="text-l font-bold text-[#8A0000]">Total 3 Menu : Rp 60.000</h2>
             </div>
           </div>
-
-          <button className="w-full bg-[#8A0000] text-white py-2.5 rounded-lg font-bold text-[11px] hover:bg-red-900 mb-10 uppercase transition-all">
-            Batalkan Pesanan
-          </button>
         </div>
       </main>
     </div>
