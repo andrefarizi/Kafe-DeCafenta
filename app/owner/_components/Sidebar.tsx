@@ -47,25 +47,23 @@ const IconReview = () => (
 );
 
 const navItems = [
-  { label: 'Beranda',        href: '/owner/beranda',          match: '/owner/beranda',          icon: <IconHome /> },
-  { label: 'Pesanan',        href: '/owner/pesanan/masuk',    match: '/owner/pesanan',          icon: <IconOrder /> },
-  { label: 'Manajemen Menu', href: '/owner/menu',             match: '/owner/menu',             icon: <IconMenu /> },
-  { label: 'Data Staff',     href: '/owner/data-staff',       match: '/owner/data-staff',       icon: <IconStaff /> },
-  { label: 'Kelola Meja',    href: '/owner/meja',             match: '/owner/meja',             icon: <IconTable /> },
-  { label: 'Pendapatan',     href: '/owner/total-pendapatan', match: '/owner/total-pendapatan', icon: <IconRevenue /> },
-  { label: 'Ulasan',         href: '/owner/ulasan',           match: '/owner/ulasan',           icon: <IconReview /> },
+  { label: 'Beranda',        href: '/owner/beranda',          match: '/owner/beranda',          icon: '/mi_home.png' },
+  { label: 'Pesanan',        href: '/owner/pesanan/masuk',    match: '/owner/pesanan',          icon: '/lsicon_work-order-outline.png' },
+  { label: 'Manajemen Menu', href: '/owner/menu',             match: '/owner/menu',             icon: '/simple-icons_justeat.png' },
+  { label: 'Data Staff',     href: '/owner/data-staff',       match: '/owner/data-staff',       icon: '/majesticons_user-box-line.png' },
+  { label: 'Kelola Meja',    href: '/owner/meja',             match: '/owner/meja',             icon: '/Vector (4).png' },
 ];
 
 export default function OwnerSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-52 min-h-screen bg-[#8b1c1c] text-white flex flex-col shrink-0">
+    <aside className="w-52 min-h-screen bg-[#9b0d0d] text-white flex flex-col shrink-0">
 
       {/* ── Logo ── */}
       <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
-        <div className="w-9 h-9 bg-[#f4d03f] rounded-md flex items-center justify-center shrink-0">
-          <span className="text-[#8b1c1c] font-black text-lg leading-none">D</span>
+        <div className="w-10 h-10 flex items-center justify-center shrink-0">
+          <img src="/Group 2 1.png" alt="Logo D" className="w-full h-full object-contain" />
         </div>
         <span className="text-white font-extrabold text-sm tracking-widest leading-tight">
           DE CAFENTA
@@ -88,7 +86,7 @@ export default function OwnerSidebar() {
                   }`}
                 >
                   {/* Icon kiri */}
-                  {item.icon}
+                  <img src={item.icon} alt={item.label} className={`w-5 h-5 shrink-0 object-contain ${isActive ? 'invert brightness-0' : ''}`} style={{ filter: isActive ? 'brightness(0) invert(1)' : 'brightness(0) invert(1) opacity(0.75)' }} />
                   {/* Label kanan */}
                   <span>{item.label}</span>
                 </Link>

@@ -18,28 +18,28 @@ export default function LoginPage() {
       />
 
       {/* Container Card Utama */}
-      <div className="relative z-10 w-full max-w-7xl bg-gradient-to-br from-[#f0e8e1] to-[#e6d8cb] rounded-[2rem] shadow-xl overflow-hidden flex flex-col md:flex-row border-4 border-blue-400/20">
+      <div className="relative z-10 w-full max-w-7xl bg-gradient-to-br from-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-xl overflow-hidden flex flex-col md:flex-row border-4 border-blue-400/20">
         
         {/* Kolom Kiri: Form */}
         <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
           
           {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <span className="text-3xl font-extrabold text-black">D</span>
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <img src="/Group%202%201.png" alt="Logo D" className="h-8 object-contain" />
             <span className="text-sm font-bold text-[#6b1d1d] tracking-widest mt-1">DE CAFENTA</span>
           </div>
 
           {/* Judul */}
-          <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-10 drop-shadow-sm">MASUK</h1>
+          <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-10 drop-shadow-sm text-center">MASUK</h1>
 
           {/* Form Inputs */}
           <form className="space-y-5 flex flex-col">
             
             {/* Input Email */}
             <div className="relative flex items-center">
-              <div className="absolute left-1 w-10 h-10 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
+              <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
                 {/* Ikon Amplop Sederhana */}
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               </div>
               <input 
                 type="email" 
@@ -59,9 +59,9 @@ export default function LoginPage() {
                  {/* Ikon Eye */}
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
               </div>
-              <div className="absolute right-1 w-10 h-10 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
+              <div className="absolute right-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
                 {/* Ikon Gembok */}
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
               </div>
             </div>
 
@@ -89,15 +89,15 @@ export default function LoginPage() {
           {/* Social Login Buttons */}
           <div className="flex justify-between gap-3 mb-8">
             <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-blue-500 text-lg">G</span>
+              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14%201%20(1).png" alt="Google" className="w-5 h-5 object-contain" />
               <span className="text-sm font-bold text-black">Google</span>
             </button>
             <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-black text-lg"></span>
+              <img src="/Apple-Logo-PNG-Free-Image%202.png" alt="Apple" className="w-5 h-5 object-contain" />
               <span className="text-sm font-bold text-black">Apple</span>
             </button>
             <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <span className="font-bold text-blue-600 text-lg">f</span>
+              <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain" />
               <span className="text-sm font-bold text-black">Facebook</span>
             </button>
           </div>
