@@ -3,108 +3,75 @@ import Image from 'next/image';
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
 
-export default function PesananPage() {
+export default function PesananMasukPage() {
   const orders = Array(5).fill(['Masuk', '#D8A700']);
 
   return (
     <div
       className="min-h-screen bg-[#f4f7fb] flex"
-      style={{ fontFamily: 'Poppins, Arial, sans-serif' }}
+      style={{ fontFamily: 'Poppins, sans-serif' }}
     >
       <Sidebar activeMenu="pesanan" />
 
-<<<<<<< HEAD
-       {/* Ornamen Desain Figma */}
-      <img 
-        src="/Rectangle%205%20(1).png" 
-        alt="Ornament Bottom Left" 
-        className="absolute bottom-6 left-0 w-40 md:w-60 lg:w-40 object-contain pointer-events-none z-0" 
-      />
-      <img 
-        src="/Rectangle%205.png" 
-        alt="Ornament Top Right" 
-        className="absolute top-6 right-0 w-40 md:w-72 lg:w-45 object-contain pointer-events-none z-0" 
-      />
-      
-      {/* Container Card Utama */}
-      {/* Menggunakan gradient dari kuning redup di kiri ke pink/krem di kanan */}
-      <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
-        
-        {/* Kolom Kiri: Ilustrasi (Hanya tampil di layar md ke atas) */}
-        <div className="hidden md:flex md:w-1/2 relative items-center justify-center p-8">
-          {/* Tempat untuk menaruh aset ilustrasi teko & cangkir kopi dari Figma */}
-          <div className="w-full h-full min-h-[400px] flex items-center justify-center">
-<<<<<<< HEAD
-            {/* GANTI TAG INI DENGAN <img src="/ilustrasi-kopi.png" /> HASIL EXPORT FIGMA */}
-            <div className="text-center p-6 border-2 border-dashed border-[#8b1c1c]/30 rounded-2xl bg-white/20 backdrop-blur-sm">
-               <p className="text-[#8b1c1c] font-semibold">Area Ilustrasi Teko & Kopii</p>
-               <p className="text-sm text-gray-700 mt-2">Export dari Figma (SVG/PNG) letakkan di sini.</p>
-            </div>
-=======
-            <img src="/Group (4).png" alt="Group 4" className="w-full h-full object-contain" />
->>>>>>> 1081340 (Menyelesaikan Tampilan Guest)
-          </div>
-        </div>
-=======
       <div className="flex-1">
         <Topbar />
->>>>>>> 59899ee (menambah page customer)
 
         <main className="px-[26px] pt-[28px]">
-          <h1 className="mb-[30px] text-[40px] font-black">
+          <h1 className="mb-[30px] text-[40px] font-black text-black">
             Pesanan Saya
           </h1>
 
-          {/* SEARCH */}
           <div className="mb-[34px] flex h-[76px] items-center rounded-full border-2 border-[#ffc400] bg-white">
             <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#ffc400]">
               <span className="text-[40px] text-white">⌕</span>
             </div>
-            <span className="ml-4 text-[16px] text-[#444]">
+            <span className="ml-4 text-[17px] font-medium text-[#444]">
               Contoh : #DFC001
             </span>
           </div>
 
-          {/* TAB */}
-          <div className="mb-[34px] flex justify-center items-center gap-[40px]">
+          <div className="mb-[34px] flex items-center justify-center gap-[38px]">
             <Tab
-              icon={<Image src="/group 135.png" alt="" width={24} height={24} />}
+              icon={<Image src="/group 135.png" alt="Semua" width={24} height={24} />}
               text="Semua"
               width="w-[170px]"
             />
             <Tab
               active
-              icon={<Image src="/Food Icon Illustrations Kit (1).png" alt="" width={24} height={24} />}
+              icon={<Image src="/Food Icon Illustrations Kit (1).png" alt="Masuk" width={24} height={24} />}
               text="Masuk"
               width="w-[170px]"
             />
             <Tab
-              icon={<Image src="/Food Icon Illustrations Kit (2).png" alt="" width={24} height={24} />}
+              icon={<Image src="/Food Icon Illustrations Kit (2).png" alt="Dimasak" width={24} height={24} />}
               text="Dimasak"
               width="w-[170px]"
             />
             <Tab
-              icon={<Image src="/Food Icon Illustrations Kit (3).png" alt="" width={24} height={24} />}
+              icon={<Image src="/Food Icon Illustrations Kit (3).png" alt="Siap Diambil" width={24} height={24} />}
               text="Siap Diambil"
               width="w-[190px]"
             />
             <Tab
-              icon={<Image src="/Food Icon Illustrations Kit (4).png" alt="" width={24} height={24} />}
+              icon={<Image src="/Food Icon Illustrations Kit (4).png" alt="Selesai" width={24} height={24} />}
               text="Selesai"
               width="w-[170px]"
             />
           </div>
 
-          {/* LIST */}
           <div>
             {orders.map(([status, color], i) => (
-              <div key={i} className="flex h-[84px] items-center border-b border-[#333]">
+              <div
+                key={i}
+                className="flex h-[84px] items-center border-b border-[#333]"
+              >
                 <div className="mr-[22px]">
                   <Image
                     src="/material-symbols_order-approve-outline-rounded.png"
                     alt="Pesanan"
                     width={52}
                     height={52}
+                    className="object-contain"
                   />
                 </div>
 
@@ -112,8 +79,8 @@ export default function PesananPage() {
                   <div className="text-[23px] font-black text-[#9b0000]">
                     #DCF001
                   </div>
-                  <div className="mt-1 text-[14px]">
-                    Total 3 Menu - Rp 60.000
+                  <div className="mt-1 text-[14px] text-black">
+                    Total 3 Menu&nbsp; - Rp 60.000
                   </div>
                 </div>
 
@@ -121,7 +88,7 @@ export default function PesananPage() {
                   <div className="text-[14px] font-extrabold" style={{ color }}>
                     {status}
                   </div>
-                  <div className="mt-[14px] text-[14px]">
+                  <div className="mt-[14px] text-[14px] text-black">
                     8 Apr 2026, 10 : 30
                   </div>
                 </div>
@@ -133,8 +100,7 @@ export default function PesananPage() {
             ))}
           </div>
 
-          {/* PAGINATION */}
-          <div className="mt-[60px] mb-10 flex justify-center items-center gap-3">
+          <div className="mt-[70px] mb-10 flex w-full items-center justify-center gap-3">
             <PageBtn text="‹" small />
             <PageBtn text="Awal" wide />
             <PageBtn text="1" active />
@@ -149,8 +115,6 @@ export default function PesananPage() {
     </div>
   );
 }
-
-/* ================= COMPONENT ================= */
 
 function Tab({
   icon,
@@ -168,10 +132,12 @@ function Tab({
       className={`flex h-[56px] items-center justify-center gap-[13px] rounded-[22px] text-[18px] font-black ${width} ${
         active
           ? 'bg-[#9b0000] text-white'
-          : 'border-[3px] border-[#9b0000] bg-white'
+          : 'border-[3px] border-[#9b0000] bg-white text-black'
       }`}
     >
-      {icon}
+      <span className="flex h-[28px] w-[28px] items-center justify-center">
+        {icon}
+      </span>
       <span>{text}</span>
     </button>
   );
@@ -190,17 +156,13 @@ function PageBtn({
 }) {
   return (
     <button
-      className={`flex items-center justify-center h-[46px] rounded-md shadow-md ${
+      className={`flex h-[46px] items-center justify-center rounded-md shadow-[0_4px_8px_rgba(0,0,0,0.18)] ${
         wide
           ? 'w-[155px] text-[15px] font-normal'
           : small
-          ? 'w-[48px] text-[22px] font-semibold'
-          : 'w-[48px] text-[15px] font-semibold'
-      } ${
-        active
-          ? 'bg-[#9b0000] text-white'
-          : 'bg-white text-[#9b0000]'
-      }`}
+          ? 'w-[48px] text-[22px] font-bold'
+          : 'w-[48px] text-[15px] font-bold'
+      } ${active ? 'bg-[#9b0000] text-white' : 'bg-white text-[#9b0000]'}`}
     >
       {text}
     </button>
