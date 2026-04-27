@@ -1,13 +1,10 @@
 'use client';
+import Sidebar from '@/app/customer/components/sidebar';
+import Topbar from '@/app/customer/components/topbar';
 import React, { useState } from 'react'; 
 import { 
-  Home, 
-  UtensilsCrossed, 
-  ShoppingCart, 
-  ClipboardList, 
   ChevronLeft, 
   ChevronRight,
-  User,
   Star
 } from 'lucide-react';
 
@@ -46,52 +43,25 @@ const ReviewPage = () => {
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
-      {/* Sidebar - Tetap 64 */}
-      <aside className="w-64 bg-[#8B0000] text-white flex flex-col shrink-0 fixed h-full">
-        <div className="p-6 flex items-center gap-2">
-          <div className="w-9 h-9 bg-yellow-500 rounded-sm flex items-center justify-center shadow-sm">
-             <span className="font-bold text-black text-xl italic">D</span>
-          </div>
-          <span className="font-bold tracking-tight text-sm">DE CAFENTA</span>
+      <Sidebar activeMenu='menu' />
+
+      <div className="flex-1 flex flex-col min-h-screen relative">
+        
+        <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
+          <Topbar />
         </div>
 
-        <nav className="mt-8 flex-1">
-          <SidebarItem icon={<Home size={20} />} label="Beranda" />
-          <SidebarItem icon={<UtensilsCrossed size={20} />} label="Menu" active />
-          <SidebarItem icon={<ShoppingCart size={20} />} label="Keranjang" />
-          <SidebarItem icon={<ClipboardList size={20} />} label="Pesanan" />
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col ml-64 min-h-screen">
-        <header className="h-14 bg-[#FFD700] flex items-center justify-end px-8 sticky top-0 z-20 shrink-0">
-          <div className="w-9 h-9 bg-[#8B0000] rounded-full flex items-center justify-center border-2 border-white">
-            <User className="text-white" size={20} fill="currentColor" />
-          </div>
-        </header>
-
-        {/* Content Area - max-w-4xl dan padding dikurangi */}
-        <div className="p-6 lg:p-10">
+        <main className="p-6 lg:p-10 flex-1">
           <div className="max-w-4xl mx-auto">
-            
-            {/* Title Section */}
+
             <div className="flex items-center gap-4 mb-5">
-              <button className={`
-                        p-1.5
-                        bg-white
-                        rounded-md
-                        border border-gray-100
-                        shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5),0_2px_4px_-1px_rgba(0,0,0,0.2)]
-                        hover:bg-gray-50
-                        transition-all
-                        `}>
-                    <ChevronLeft size={20} strokeWidth={3} className="text-[#8B0000]" />
-                </button>
+              <button className="p-1.5 bg-white rounded-md border border-gray-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.5),0_2px_4px_-1px_rgba(0,0,0,0.2)] hover:bg-gray-50 transition-all">
+                <ChevronLeft size={20} strokeWidth={3} className="text-[#8B0000]" />
+              </button>
               <h1 className="text-2xl font-bold text-black tracking-tight">Ulasan</h1>
             </div>
 
-            {/* Rating Pill - Ukuran dikecilkan */}
+            {/* Rating Pill */}
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-[#8B0000] text-white px-3 py-1 rounded-lg flex items-center gap-1.5 font-bold shadow-sm">
                 <span className="text-yellow-400 text-lg">★</span> 
@@ -100,7 +70,7 @@ const ReviewPage = () => {
               <span className="text-lg font-bold text-black">Ulasan ({reviews.length} ulasan)</span>
             </div>
 
-            {/* Review List - Struktur Vertikal Tetap, tapi Padding Dikecilkan */}
+            {/* Review List */}
             <div className="space-y-3 mb-8">
               {currentReviews.map((review) => (
                 <div key={review.id} className="bg-[#FFF0F0] border border-pink-50 rounded-2xl p-4 flex gap-4 shadow-sm">
@@ -125,7 +95,7 @@ const ReviewPage = () => {
               ))}
             </div>
 
-            {/* Pagination - Dibuat Lebih Compact */}
+            {/* Pagination */}
             <div className="flex justify-center items-center gap-2 mt-6 pb-10">
               <PaginationButton 
                   icon={<ChevronLeft size={18} />} 
@@ -154,20 +124,13 @@ const ReviewPage = () => {
               />
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
 
-/* Sub-components */
-const SidebarItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-  <div className={`flex items-center gap-5 px-8 py-4 cursor-pointer transition-all text-white ${active ? 'bg-[#5A0000] font-bold' : 'hover:bg-[#5A0000] font-medium'}`}>
-    <div className="w-5 flex justify-center">{icon}</div>
-    <span className="text-base tracking-wide">{label}</span>
-  </div>
-);
-
+/* Sub-component */
 const PaginationButton = ({ label, icon, active = false, onClick }: { label?: string, icon?: any, active?: boolean, onClick?: () => void }) => {
   const isLargeButton = label === "Awal" || label === "Akhir";
   return (

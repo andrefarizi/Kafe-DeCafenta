@@ -1,46 +1,23 @@
 'use client';
-
+import Sidebar from '@/app/customer/components/sidebar';
+import Topbar from '@/app/customer/components/topbar';
 import React from 'react';
 import { 
-  Home, 
-  UtensilsCrossed, 
-  ShoppingCart, 
-  ClipboardList, 
   ChevronLeft, 
   Printer,
-  User
 } from 'lucide-react';
 
 const InvoicePage = () => {
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
-      {/* Sidebar - Dibuat Fixed dan Ukuran Item Disesuaikan */}
-      <aside className="w-64 bg-[#8B0000] text-white flex flex-col fixed h-full shrink-0">
-        <div className="p-6 flex items-center gap-2">
-          <div className="w-9 h-9 bg-yellow-500 rounded-sm flex items-center justify-center">
-             <span className="font-bold text-black text-xl italic">D</span>
-          </div>
-          <span className="font-bold tracking-tighter text-sm uppercase">DE CAFENTA</span>
+      <Sidebar activeMenu="pesanan" />
+
+      <main className="flex-1 flex flex-col min-h-screen relative">
+
+        <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
+          <Topbar />
         </div>
 
-        <nav className="mt-8 flex-1">
-          <SidebarItem icon={<Home size={20} />} label="Beranda" />
-          <SidebarItem icon={<UtensilsCrossed size={20} />} label="Menu" />
-          <SidebarItem icon={<ShoppingCart size={20} />} label="Keranjang" />
-          <SidebarItem icon={<ClipboardList size={20} />} label="Pesanan" active />
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 ml-64 bg-gray-50 min-h-screen flex flex-col">
-        {/* Top Header - Tinggi dikurangi sedikit agar lega */}
-        <header className="h-14 bg-[#FFD700] flex items-center justify-end px-8 sticky top-0 z-20 shadow-sm shrink-0">
-          <div className="w-9 h-9 bg-[#8B0000] rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-            <User className="text-white" size={20} fill="currentColor" />
-          </div>
-        </header>
-
-        {/* Content Area - Padding dikurangi agar tidak ngezoom */}
         <div className="p-6 lg:p-10">
           <div className="max-w-4xl mx-auto">
             {/* Header Invoice */}
@@ -68,7 +45,7 @@ const InvoicePage = () => {
               </button>
             </div>
 
-            {/* White Invoice Paper - Padding & Spacing dioptimalkan */}
+            {/* White Invoice Paper */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
               
               {/* Logo & ID Section */}
@@ -76,9 +53,9 @@ const InvoicePage = () => {
                 <div className="flex items-center gap-4">
                   <div className="flex-shrink-0">
                     <img 
-                      src="logo 4.png" 
+                      src="/Logo 4.png" 
                       alt="Logo De Cafenta"
-                      className="h-20 w-auto object-contain" /* Logo tidak terlalu besar */
+                      className="h-20 w-auto object-contain"
                     />
                   </div>
                   <div>
@@ -97,7 +74,7 @@ const InvoicePage = () => {
 
               <hr className="border-dashed border-gray-200 mb-6" />
 
-              {/* Customer Details Table - Ukuran font dikecilkan sedikit */}
+              {/* Customer Details Table */}
               <div className="space-y-3 mb-8 px-2">
                 <DetailRow label="NAMA PELANGGAN" value="Andre Ganteng" />
                 <DetailRow label="METODE PEMBAYARAN" value="Gopay" />
@@ -105,7 +82,7 @@ const InvoicePage = () => {
                 <DetailRow label="KASIR" value="Wira Crypto" />
               </div>
 
-              {/* Items Table - Spasi vertikal baris dikurangi */}
+              {/* Items Table */}
               <table className="w-full mb-6 border-collapse">
                 <thead>
                   <tr className="bg-[#FFD1D1] text-black font-bold text-xs uppercase tracking-wider">
@@ -122,7 +99,7 @@ const InvoicePage = () => {
                 </tbody>
               </table>
 
-              {/* Total Calculation - Lebih ramping */}
+              {/* Total Calculation */}
               <div className="flex flex-col items-end gap-2 mt-8">
                 <div className="flex justify-between w-56 text-base font-bold">
                   <span className="text-black font-bold">Subtotal</span>
@@ -153,7 +130,7 @@ const InvoicePage = () => {
   );
 };
 
-/* Helper Component - Ukuran Font disesuaikan */
+/* Helper Components tetap di bawah */
 const DetailRow = ({ label, value }: { label: string, value: string }) => (
   <div className="flex justify-between max-w-full">
     <span className="font-bold text-black text-sm tracking-tight w-1/2">{label}</span>
@@ -171,13 +148,6 @@ const ProductRow = ({ name, note, price, qty, total }: any) => (
     <td className="py-3.5 px-4 text-center font-semibold text-black">{qty}</td>
     <td className="py-3.5 px-4 text-right font-bold text-black">Rp {total}</td>
   </tr>
-);
-
-const SidebarItem = ({ icon, label, active = false }: any) => (
-  <div className={`flex items-center gap-5 px-8 py-4 cursor-pointer text-white transition-colors ${active ? 'bg-[#5A0000] font-bold border-l-4 border-yellow-500 shadow-inner' : 'hover:bg-[#5A0000] opacity-80 hover:opacity-100 font-medium'}`}>
-    <div className="w-5 flex justify-center">{icon}</div>
-    <span className="text-sm tracking-wide">{label}</span>
-  </div>
 );
 
 export default InvoicePage;

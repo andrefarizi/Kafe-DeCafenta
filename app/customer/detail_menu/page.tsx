@@ -1,26 +1,26 @@
 'use client';
+import Sidebar from '@/app/customer/components/sidebar';
+import Topbar from '@/app/customer/components/topbar';
 import React, { useState } from 'react';
 import { 
-  Home, 
-  UtensilsCrossed, 
-  ShoppingCart, 
-  ClipboardList, 
   ChevronLeft, 
-  User, 
   Star,
   Plus,
   Minus,
   X,
-  FileText
+  FileText,
+  CheckCircle2
 } from 'lucide-react';
 
 const ProductDetailPage = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
+  const [reviewText, setReviewText] = useState(""); // State untuk teks ulasan
   
-  // State untuk Modal
+  // State untuk Modal dan Toast
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [showReviewToast, setShowReviewToast] = useState(false); 
   const [quantity, setQuantity] = useState(1);
   const pricePerItem = 20000;
 
@@ -30,34 +30,29 @@ const ProductDetailPage = () => {
     setIsSuccessOpen(true);
   };
 
+  // Fungsi saat berhasil mengirim ulasan
+  const handleSendReview = () => {
+    if (selectedRating === 0) return; // Validasi minimal pilih rating
+
+    setShowReviewToast(true);
+    
+    // 1. Reset input setelah kirim
+    setSelectedRating(0);
+    setReviewText(""); 
+    
+    // 3. Hilang otomatis setelah 3 detik
+    setTimeout(() => setShowReviewToast(false), 3000);
+  };
+
   return (
-    <div className="flex min-h-screen bg-[#F8F9FA] font-sans overflow-hidden">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-[#8B0000] text-white flex flex-col shrink-0 fixed h-full z-30">
-        <div className="p-6 flex items-center gap-3">
-          <div className="bg-yellow-500 p-1 rounded shadow-sm">
-             <div className="w-8 h-8 flex items-center justify-center">
-                <span className="text-black font-black text-2xl italic">D</span>
-             </div>
-          </div>
-          <span className="font-bold tracking-tighter text-sm">DE CAFENTA</span>
+    <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
+      <Sidebar activeMenu="menu" />
+
+      <main className="flex-1 flex flex-col min-h-screen relative">
+        
+        <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
+          <Topbar />
         </div>
-
-        <nav className="mt-8 flex-1">
-          <SidebarItem icon={<Home size={22} />} label="Beranda" />
-          <SidebarItem icon={<UtensilsCrossed size={22} />} label="Menu" active />
-          <SidebarItem icon={<ShoppingCart size={22} />} label="Keranjang" />
-          <SidebarItem icon={<ClipboardList size={22} />} label="Pesanan" />
-        </nav>
-      </aside>
-
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col ml-64 h-screen overflow-y-auto">
-        <header className="h-16 bg-[#FFD700] flex items-center justify-end px-8 sticky top-0 z-20 shadow-sm shrink-0">
-          <div className="w-10 h-10 bg-[#8B0000] rounded-full flex items-center justify-center border-2 border-white shadow-md">
-            <User className="text-white" size={24} fill="currentColor" />
-          </div>
-        </header>
 
         <div className="p-6 lg:p-8">
           <div className="max-w-4xl mx-auto space-y-6">
@@ -100,24 +95,44 @@ const ProductDetailPage = () => {
             </div>
 
             {/* RINGKASAN ULASAN */}
-            <div className="p-6 flex items-center justify-between -mt-8">
+            <div className="p-6 -mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-black tracking-tight">
+                  Ringkasan Ulasan (3rb ulasan)
+                </h3>
+                <button className="text-[#8B0000] font-bold hover:text-red-700 text-sm transition-colors shrink-0">
+                  Lihat Semua
+                </button>
+              </div>
+
               <div className="flex items-center gap-5">
                 <div className="bg-[#8B0000] rounded-3xl p-5 px-4 text-center border-2 border-[#FFF0F0] shrink-0">
-                    <p className="bg-white rounded-xl p-2 px-4 text-[#8B0000] font-bold text-[15px] uppercase tracking-widest mb-4 -mt-3">Rating</p>
-                    <div className="flex items-center justify-center gap-1.5">
-                        <Star size={18} fill="#FACD11" className="text-[#FACD11]" />
-                        <span className="text-2xl font-black text-white leading-none">5.0</span>
-                    </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-black tracking-tight mb-3">Ringkasan Ulasan (3rb ulasan)</h3>
-                  <div className="flex items-center gap-20">
-                    <MiniReview name="Flins" date="31 Februari 2026" text="keren" rating="5.0" img="https://i.pinimg.com/736x/f5/2c/90/f52c90a4a29c43006c86b3b26ac12174.jpg" />
-                    <MiniReview name="Andre wira pratama" date="31 Februari 2026" text="luar biasa yes yes yes" rating="5.0" img="https://i.pinimg.com/736x/54/c2/bc/54c2bcc1bcde783510c439b8aebf8b38.jpg" />
+                  <p className="bg-white rounded-xl p-2 px-4 text-[#8B0000] font-bold text-[15px] uppercase tracking-widest mb-4 -mt-3">
+                    Rating
+                  </p>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Star size={18} fill="#FACD11" className="text-[#FACD11]" />
+                    <span className="text-2xl font-black text-white leading-none">5.0</span>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-8 overflow-hidden">
+                  <MiniReview 
+                    name="Flins" 
+                    date="31 Februari 2026" 
+                    text="keren" 
+                    rating="5.0" 
+                    img="https://i.pinimg.com/736x/f5/2c/90/f52c90a4a29c43006c86b3b26ac12174.jpg" 
+                  />
+                  <MiniReview 
+                    name="Andre wira pratama" 
+                    date="31 Februari 2026" 
+                    text="luar biasa yes yes yes" 
+                    rating="5.0" 
+                    img="https://i.pinimg.com/736x/54/c2/bc/54c2bcc1bcde783510c439b8aebf8b38.jpg" 
+                  />
+                </div>
               </div>
-              <button className="text-[#8B0000] font-bold hover:text-red-700 text-sm transition-colors shrink-0 self-start mt-3 -ml-5 ">Lihat Semua</button>
             </div>
 
             {/* BAGIAN INPUT RATING */}
@@ -141,8 +156,18 @@ const ProductDetailPage = () => {
                     ))}
                   </div>
                   <div className="flex flex-col items-end gap-3">
-                    <textarea placeholder="Berikan ulasan Anda..." className="w-full bg-[#F9FAFB] text-black placeholder:text-black rounded-xl p-4 text-xs focus:outline-none border border-gray-300 focus:border-gray-400 min-h-[80px] shadow-inner transition-all" />
-                    <button className="bg-[#8B0000] text-white px-8 py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-all active:scale-[0.95] shadow-md">Kirim Ulasan</button>
+                    <textarea 
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      placeholder="Berikan ulasan Anda..." 
+                      className="w-full bg-[#F9FAFB] text-black placeholder:text-black rounded-xl p-4 text-xs focus:outline-none border border-gray-300 focus:border-gray-400 min-h-[80px] shadow-inner transition-all" 
+                    />
+                    <button 
+                      onClick={handleSendReview}
+                      className="bg-[#8B0000] text-white px-8 py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-all active:scale-[0.95] shadow-md"
+                    >
+                      Kirim Ulasan
+                    </button>
                   </div>
                 </div>
               </div>
@@ -150,9 +175,38 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
+        {/* TOAST NOTIFIKASI */}
+        {showReviewToast && (
+          <div className="fixed top-5 right-5 z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="relative bg-white shadow-[0_10px_30px_-5px_rgba(0,0,0,0.15)] rounded-xl overflow-hidden p-4 flex items-center gap-3 min-w-[280px] border border-gray-100">
+              <div className="bg-green-100 p-1.5 rounded-full">
+                <CheckCircle2 size={18} className="text-green-600" />
+              </div>
+              <div>
+                <p className="text-[13px] font-bold text-gray-800 leading-none mb-1">Berhasil!</p>
+                <p className="text-[11px] text-gray-500 leading-none">Ulasan Anda telah terkirim.</p>
+              </div>
+              <button onClick={() => setShowReviewToast(false)} className="ml-auto text-gray-400 hover:text-gray-600">
+                <X size={14} />
+              </button>
+              <div className="absolute bottom-0 left-0 h-1 bg-green-500 animate-progress-shrink w-full origin-left"></div>
+            </div>
+          </div>
+        )}
+
+        <style jsx>{`
+          @keyframes progress-shrink {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+          }
+          .animate-progress-shrink {
+            animation: progress-shrink 3s linear forwards;
+          }
+        `}</style>
+
         {/* MODAL POPUP RINCIAN PEMBELIAN */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setIsModalOpen(false)}></div>
             <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
               <button 
@@ -208,12 +262,11 @@ const ProductDetailPage = () => {
           </div>
         )}
 
-        {/* MODAL SUKSES DITAMBAHKAN - UKURAN DIKECILKAN */}
+        {/* MODAL SUKSES DITAMBAHKAN */}
         {isSuccessOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setIsSuccessOpen(false)}></div>
             <div className="relative bg-white w-full max-w-[380px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
-              
               <div className="mb-4">
                 <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M25 35C25 32.2386 27.2386 30 30 30H70C72.7614 30 75 32.2386 75 35V75C75 80.5228 70.5228 85 65 85H35C29.4772 85 25 80.5228 25 75V35Z" fill="#E55050"/>
@@ -226,25 +279,13 @@ const ProductDetailPage = () => {
                   <path d="M40 30C40 25 45 22 50 22C55 22 60 25 60 30" stroke="#F3D0D0" strokeWidth="6" strokeLinecap="round"/>
                 </svg>
               </div>
-
               <h2 className="text-xl font-black text-black mb-2">Menu Sukses ditambahkan!</h2>
               <p className="text-xs font-medium text-black leading-relaxed mb-6 px-4">
                 Selamat menu kamu telah berhasil ditambahkan silahkan periksa keranjang anda sekarang
               </p>
-
               <div className="w-full space-y-2.5">
-                <button 
-                  onClick={() => setIsSuccessOpen(false)}
-                  className="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#6A0000] transition-all shadow-md active:scale-[0.98]"
-                >
-                  Periksa Keranjang
-                </button>
-                <button 
-                  onClick={() => setIsSuccessOpen(false)}
-                  className="w-full bg-white text-[#8B0000] border-2 border-[#8B0000] py-3 rounded-xl font-bold text-sm hover:bg-red-50 transition-all active:scale-[0.98]"
-                >
-                  Lanjut Memesan
-                </button>
+                <button onClick={() => setIsSuccessOpen(false)} className="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#6A0000] transition-all shadow-md active:scale-[0.98]">Periksa Keranjang</button>
+                <button onClick={() => setIsSuccessOpen(false)} className="w-full bg-white text-[#8B0000] border-2 border-[#8B0000] py-3 rounded-xl font-bold text-sm hover:bg-red-50 transition-all active:scale-[0.98]">Lanjut Memesan</button>
               </div>
             </div>
           </div>
@@ -254,15 +295,8 @@ const ProductDetailPage = () => {
   );
 };
 
-const SidebarItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-  <div className={`flex items-center gap-5 px-8 py-4 cursor-pointer transition-all ${active ? 'bg-[#5A0000] border-l-4 border-yellow-500 shadow-inner' : 'hover:bg-[#5A0000] opacity-80 hover:opacity-100'}`}>
-    <div className="w-5 flex justify-center text-white">{icon}</div>
-    <span className={`text-sm tracking-wide ${active ? 'font-bold' : 'font-medium'}`}>{label}</span>
-  </div>
-);
-
 const MiniReview = ({ name, date, text, rating, img }: any) => (
-  <div className="flex gap-3 items-start w-[280px]">
+  <div className="flex gap-3 items-start w-[280px] shrink-0">
     <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-gray-50 shadow-sm">
       <img src={img} alt={name} className="w-full h-full object-cover" />
     </div>
