@@ -57,7 +57,7 @@ export default function DashboardOwner() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
           {/* Card Pendapatan */}
-          <div className="bg-[#e9b7b7fb] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="bg-[#FFECEC] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pendapatan</h2>
               <p className="text-xs text-red-400 mt-1">Maret 2026</p>
@@ -69,7 +69,7 @@ export default function DashboardOwner() {
           </div>
 
           {/* Card Pesanan */}
-          <div className="bg-[#e9b7b7fb] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="bg-[#FFECEC] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pesanan</h2>
               <p className="text-xs text-red-400 mt-1">Maret 2026</p>
