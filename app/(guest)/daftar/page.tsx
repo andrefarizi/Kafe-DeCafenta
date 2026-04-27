@@ -1,6 +1,11 @@
 import React from 'react';
+import Image from 'next/image';
+import Sidebar from '@/app/customer/components/sidebar';
+import Topbar from '@/app/customer/components/topbar';
 
-export default function RegisterPage() {
+export default function PesananPage() {
+  const orders = Array(5).fill(['Masuk', '#D8A700']);
+
   return (
     // Background utama merah gelap
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8">
@@ -19,6 +24,7 @@ export default function RegisterPage() {
       
       {/* Container Card Utama */}
       {/* Menggunakan gradient dari kuning redup di kiri ke pink/krem di kanan */}
+      <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
       <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
         
         {/* Kolom Kiri: Ilustrasi (Hanya tampil di layar md ke atas) */}
@@ -70,15 +76,15 @@ export default function RegisterPage() {
               <div className="absolute -right-1 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-white/20">
                 {/* Ikon Amplop */}
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              </div>
-            </div>
+                  </div>
+                </div>
 
             {/* Input Password (Icon Kiri + Mata Kanan) */}
             <div className="relative flex items-center">
               <div className="absolute -left-1 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-white/20">
                 {/* Ikon Gembok */}
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
-              </div>
+                  </div>
               <input 
                 type="password" 
                 placeholder="Password" 
@@ -87,8 +93,8 @@ export default function RegisterPage() {
               <div className="absolute right-4 cursor-pointer text-black">
                  {/* Ikon Eye */}
                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              </div>
-            </div>
+                  </div>
+                </div>
 
             {/* Tombol Daftar Outline */}
             <button 
@@ -96,7 +102,7 @@ export default function RegisterPage() {
               className="w-full py-3.5 bg-transparent border-2 border-[#6b1d1d] hover:bg-[#6b1d1d] hover:text-white transition-colors text-[#6b1d1d] font-bold rounded-full mt-6"
             >
               Daftar
-            </button>
+                </button>
           </form>
 
           {/* Divider ATAU */}
