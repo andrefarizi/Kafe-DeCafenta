@@ -160,15 +160,13 @@ export default function MenuPage() {
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[600px] p-12 text-center shadow-2xl">
               
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center ">
                 <div className="relative w-48 h-48">
-                  {/* Ilustrasi Paper Bag Makanan */}
                   <div className="absolute inset-0 flex justify-center items-center">
                     <img 
-                      src="punlic/makanan.png" 
+                      src="/makanan.png" 
                       alt="Berhasil" 
-                      className="w-36 h-36 object-contain opacity-90"
-                      style={{ filter: "hue-rotate(330deg) saturate(1.5)" }}
+                      className="w-36 h-36 object-contain "
                     />
                   </div>
                 </div>

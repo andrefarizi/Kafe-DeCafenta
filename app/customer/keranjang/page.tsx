@@ -241,19 +241,14 @@ export default function KeranjangPage() {
                   onClick={() => setSelectedOrderType("dine_in")}
                   className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${
                     selectedOrderType === "dine_in" 
-                      ? 'bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.1)]' 
+                      ? 'bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]' 
                       : 'bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60'
                   }`}
                 >
                   <div className="relative w-28 h-28 mb-8 flex items-center justify-center pointer-events-none">
                     <img 
-                      src="https://cdn-icons-png.flaticon.com/512/854/854878.png" 
-                      alt="Mapan" 
-                      className="w-full h-full object-contain opacity-40 mix-blend-multiply" 
+                      src="/makanditempat.png"  
                     />
-                    <div className="absolute top-4 bg-[#E04B4B] w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                      <MapPin size={24} className="text-white fill-white" />
-                    </div>
                   </div>
                   <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Makan Di tempat</h3>
                   <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">
@@ -266,16 +261,12 @@ export default function KeranjangPage() {
                   onClick={() => setSelectedOrderType("takeaway")}
                   className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${
                     selectedOrderType === "takeaway" 
-                      ? 'bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.1)]' 
+                      ? 'bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]' 
                       : 'bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60'
                   }`}
                 >
                   <div className="relative w-28 h-28 mb-8 flex items-center justify-center pointer-events-none">
-                    <div className="w-full h-full bg-[#E04B4B] rounded-t-full rounded-b-xl flex items-center justify-center shadow-md border-b-4 border-[#BA3A3A] relative">
-                       <ShoppingBag size={48} className="text-white" strokeWidth={1.5} />
-                       <div className="absolute -bottom-3 -left-2 w-6 h-6 bg-gray-800 rounded-full"></div>
-                       <div className="absolute -bottom-3 -right-2 w-6 h-6 bg-gray-800 rounded-full"></div>
-                    </div>
+                    <img src="/bawapulang.png" alt="" />
                   </div>
                   <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Bawa Pulang</h3>
                   <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">
@@ -310,15 +301,11 @@ export default function KeranjangPage() {
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-12 text-center shadow-2xl">
               
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-1">
                 <div className="relative w-40 h-40">
-                  {/* Ilustrasi Note */}
-                  <div className="absolute inset-0 flex justify-center items-center">
+                  <div className="relative w-40 h-40 mb-8 flex items-center justify-center pointer-events-none">
                     <img 
-                      src="https://cdn-icons-png.flaticon.com/512/1001/1001093.png" 
-                      alt="Berhasil" 
-                      className="w-32 h-32 object-contain opacity-90"
-                      style={{ filter: "hue-rotate(330deg) saturate(1)" }}
+                      src="/pesanansukses.png"  
                     />
                   </div>
                 </div>
@@ -359,13 +346,7 @@ export default function KeranjangPage() {
             <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-10 shadow-2xl">
               
               <div className="flex items-center gap-4 mb-8">
-                <div className="bg-black p-2.5 rounded-lg">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 4C4 2.89543 4.89543 2 6 2H14.1716C14.702 2 15.2107 2.21071 15.5858 2.58579L19.4142 6.41421C19.7893 6.78929 20 7.29799 20 7.82843V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4Z" fill="white"/>
-                    <path d="M8 8H16" stroke="black" strokeWidth="2.5" strokeLinecap="round"/>
-                    <path d="M8 12H13" stroke="black" strokeWidth="2.5" strokeLinecap="round"/>
-                  </svg>
-                </div>
+                <img src="/rincian.png" alt="" className="w-12 h-12" />
                 <h2 className="text-[38px] font-extrabold text-black tracking-tight mt-1">Edit Catatan</h2>
               </div>
               
