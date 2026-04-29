@@ -7,6 +7,7 @@ import { Search, Star } from "lucide-react";
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("Semua Menu");
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const categories = ["Semua Menu", "Nasi", "Mie", "Snack", "Minuman"];
 
@@ -55,7 +56,10 @@ export default function MenuPage() {
           <h3 className="font-bold text-black text-md mb-1">{item.name}</h3>
           <p className="text-sm text-black font-medium">{item.price}</p>
         </div>
-        <button className="w-full bg-[#8B0000] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-colors mt-4">
+        <button 
+          onClick={() => setIsSuccessModalOpen(true)}
+          className="w-full bg-[#8B0000] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-colors mt-4"
+        >
           Tambah
         </button>
       </div>
@@ -150,6 +154,54 @@ export default function MenuPage() {
             )}
           </div>
         </div>
+
+        {/* MODAL MENU SUKSES DITAMBAHKAN */}
+        {isSuccessModalOpen && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[600px] p-12 text-center shadow-2xl">
+              
+              <div className="flex justify-center mb-8">
+                <div className="relative w-48 h-48">
+                  {/* Ilustrasi Paper Bag Makanan */}
+                  <div className="absolute inset-0 flex justify-center items-center">
+                    <img 
+                      src="punlic/makanan.png" 
+                      alt="Berhasil" 
+                      className="w-36 h-36 object-contain opacity-90"
+                      style={{ filter: "hue-rotate(330deg) saturate(1.5)" }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <h2 className="text-[36px] font-extrabold text-black mb-4 tracking-tight">Menu Sukses ditambahkan!</h2>
+              
+              <p className="text-black font-medium text-[16px] leading-relaxed mb-12 px-6">
+                Selamat menu kamu telah berhasil ditambahkan<br />
+                silahkan periksa keranjang anda sekarang
+              </p>
+
+              <div className="flex flex-col gap-4 px-8">
+                <button 
+                  onClick={() => {
+                    setIsSuccessModalOpen(false);
+                    // Tambahkan aksi redirect ke halaman keranjang jika diperlukan
+                  }}
+                  className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
+                >
+                  Periksa Keranjang
+                </button>
+                <button 
+                  onClick={() => setIsSuccessModalOpen(false)}
+                  className="w-full bg-white border-[2.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
+                >
+                  Lanjut Memesan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
