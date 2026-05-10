@@ -111,13 +111,11 @@ export default function MenuPage() {
                 </div>
                 <input 
                   type="text" 
-                  placeholder="Pertanyaan" 
+                  placeholder="decafent@gmail.com" 
                   className="w-full pl-[70px] pr-6 py-[14px] rounded-full bg-white border-none focus:ring-4 focus:ring-[#f4d03f]/50 focus:outline-none text-black font-semibold shadow-inner text-base"
                 />
               </div>
-              <button className="w-full md:w-auto px-12 py-[14px] bg-[#f4d03f] text-white font-black rounded-full hover:bg-yellow-500 transition-colors whitespace-nowrap text-base shadow-lg">
-                Kirim
-              </button>
+
             </div>
             <p className="text-[11px] md:text-xs text-white/80 font-medium">
               Setiap pertanyaan anda akan menjadi peran agar kami melakukan improvisasi

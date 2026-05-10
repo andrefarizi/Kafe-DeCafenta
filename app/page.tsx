@@ -161,7 +161,9 @@ export default function LandingPage() {
 
       {/* ================= KONTAK & FOOTER ================= */}
       {/* Background Section Full Solid Pink, tidak digradasi */}
-      <div id="footer" className="relative bg-[#ff9c9c] pt-16 pb-8 px-4 md:px-8 overflow-visible">
+     {/* ================= KONTAK & FOOTER ================= */}
+      {/* Background Section Full Solid Pink, tidak digradasi */}
+      <div className="relative bg-[#ff9c9c] pt-8 pb-1 px-8 md:px-15 overflow-visible">
         
         {/* Kotak Kontak Merah di Tengah */}
         <div className="relative max-w-[1000px] mx-auto bg-[#c40202] rounded-[2.5rem] p-10 md:p-14 flex flex-col md:flex-row items-center justify-between shadow-2xl z-10 mb-20 md:min-h-[280px] -mt-55">
@@ -188,13 +190,11 @@ export default function LandingPage() {
                 </div>
                 <input 
                   type="text" 
-                  placeholder="Pertanyaan" 
+                  placeholder="decafent@gmail.com" 
                   className="w-full pl-[70px] pr-6 py-[14px] rounded-full bg-white border-none focus:ring-4 focus:ring-[#f4d03f]/50 focus:outline-none text-black font-semibold shadow-inner text-base"
                 />
               </div>
-              <button className="w-full md:w-auto px-12 py-[14px] bg-[#f4d03f] text-white font-black rounded-full hover:bg-yellow-500 transition-colors whitespace-nowrap text-base shadow-lg">
-                Kirim
-              </button>
+
             </div>
             <p className="text-[11px] md:text-xs text-white/80 font-medium">
               Setiap pertanyaan anda akan menjadi peran agar kami melakukan improvisasi

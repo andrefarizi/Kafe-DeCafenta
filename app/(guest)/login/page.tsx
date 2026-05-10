@@ -57,6 +57,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
 
+      {/* Tombol Kembali */}
+      <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white text-[#8b1c1c] font-bold rounded-full shadow-lg border-2 border-white hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group">
+        <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Kembali
+      </Link>
+
       {/* Ornamen Desain Figma */}
       <img
         src="/Rectangle%205%20(1).png"
@@ -186,19 +192,19 @@ export default function LoginPage() {
               id="btn-login-google"
               type="button"
               onClick={handleGoogleLogin}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors"
+              className="group flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
             >
-              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14%201%20(1).png" alt="Google" className="w-5 h-5 object-contain" />
-              <span className="text-sm font-bold text-black">Google</span>
+              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14%201%20(1).png" alt="Google" className="w-5 h-5 object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert" />
+              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Google</span>
             </button>
             <button
               id="btn-login-facebook"
               type="button"
               onClick={handleFacebookLogin}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors"
+              className="group flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
             >
-              <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain" />
-              <span className="text-sm font-bold text-black">Facebook</span>
+              <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain transition-all duration-300" />
+              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Facebook</span>
             </button>
           </div>
 

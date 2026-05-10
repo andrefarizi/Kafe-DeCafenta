@@ -1,14 +1,54 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
+import { registerController } from '@/src/controllers/auth-controller';
+import { signIn } from "next-auth/react";
 
 export default function PesananPage() {
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (formData: FormData) => {
+    setLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    const response = await registerController(formData);
+    
+    if (!response.success) {
+      setErrorMsg(response.message);
+    } else {
+      setSuccessMsg(response.message);
+      // alert('Berhasil daftar!');
+    }
+    
+    setLoading(false);
+  };
+
   const orders = Array(5).fill(['Masuk', '#D8A700']);
+
+  const handleGoogleLogin = () => {
+    signIn("google", { callbackUrl: "/customer/beranda" });
+  };
+
+  const handleFacebookLogin = () => {
+    signIn("facebook", { callbackUrl: "/customer/beranda" });
+  };
 
   return (
     // Background utama merah gelap
-    <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+
+      {/* Tombol Kembali */}
+      <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white text-[#8b1c1c] font-bold rounded-full shadow-lg border-2 border-white hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group">
+        <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+        Kembali
+      </Link>
 
        {/* Ornamen Desain Figma */}
       <img 
@@ -24,7 +64,6 @@ export default function PesananPage() {
       
       {/* Container Card Utama */}
       {/* Menggunakan gradient dari kuning redup di kiri ke pink/krem di kanan */}
-      <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
       <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
         
         {/* Kolom Kiri: Ilustrasi (Hanya tampil di layar md ke atas) */}
@@ -51,8 +90,12 @@ export default function PesananPage() {
           <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-8 drop-shadow-sm text-center">Daftar</h1>
 
           {/* Form Inputs */}
-          <form className="space-y-4 flex flex-col">
+          <form action={handleRegister} className="space-y-4 flex flex-col">
             
+            {/* Tampilkan Pesan Error / Success */}
+            {errorMsg && <div className="text-red-600 font-semibold text-sm text-center bg-red-100 p-2 rounded-lg">{errorMsg}</div>}
+            {successMsg && <div className="text-green-600 font-semibold text-sm text-center bg-green-100 p-2 rounded-lg">{successMsg}</div>}
+
             {/* Input Nama (Icon Kiri) */}
             <div className="relative flex items-center">
               <div className="absolute -left-1 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-white/20">
@@ -61,6 +104,8 @@ export default function PesananPage() {
               </div>
               <input 
                 type="text" 
+                name="name"
+                required
                 placeholder="Nama" 
                 className="w-full pl-14 pr-4 py-3 rounded-full bg-[#f4eae1]/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner"
               />
@@ -70,6 +115,8 @@ export default function PesananPage() {
             <div className="relative flex items-center">
               <input 
                 type="email" 
+                name="email"
+                required
                 placeholder="Email" 
                 className="w-full pr-14 pl-6 py-3 rounded-full bg-[#f4eae1]/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner"
               />
@@ -87,6 +134,8 @@ export default function PesananPage() {
                   </div>
               <input 
                 type="password" 
+                name="password"
+                required
                 placeholder="Password" 
                 className="w-full pl-14 pr-12 py-3 rounded-full bg-[#f4eae1]/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner"
               />
@@ -99,9 +148,10 @@ export default function PesananPage() {
             {/* Tombol Daftar Outline */}
             <button 
               type="submit" 
-              className="w-full py-3.5 bg-transparent border-2 border-[#6b1d1d] hover:bg-[#6b1d1d] hover:text-white transition-colors text-[#6b1d1d] font-bold rounded-full mt-6"
+              disabled={loading}
+              className={`w-full py-3.5 bg-transparent border-2 border-[#6b1d1d] hover:bg-[#6b1d1d] hover:text-white transition-colors text-[#6b1d1d] font-bold rounded-full mt-6 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Daftar
+              {loading ? 'Mendaftar...' : 'Daftar'}
                 </button>
           </form>
 
@@ -114,23 +164,26 @@ export default function PesananPage() {
 
           {/* Social Login Buttons */}
           <div className="flex flex-wrap md:flex-nowrap justify-between gap-2 md:gap-3 mb-6">
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14 1 (1).png" alt="Google" className="h-5 object-contain" />
-              <span className="text-sm font-bold text-black hidden sm:block">Google</span>
+            <button 
+              type="button"
+              onClick={handleGoogleLogin}
+              className="group flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
+              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14 1 (1).png" alt="Google" className="h-5 object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert" />
+              <span className="text-sm font-bold text-black hidden sm:block transition-colors duration-300 group-hover:text-white">Google</span>
             </button>
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <img src="/Apple-Logo-PNG-Free-Image 2.png" alt="Apple" className="h-5 object-contain" />
-              <span className="text-sm font-bold text-black hidden sm:block">Apple</span>
-            </button>
-            <button className="flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
-              <img src="/image-removebg-preview (1) 1.png" alt="Facebook" className="h-5 object-contain" />
-              <span className="text-sm font-bold text-black hidden sm:block">Facebook</span>
+
+            <button 
+              type="button"
+              onClick={handleFacebookLogin}
+              className="group flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
+             <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain transition-all duration-300" />
+              <span className="text-sm font-bold text-black hidden sm:block transition-colors duration-300 group-hover:text-white">Facebook</span>
             </button>
           </div>
 
           {/* Teks Footer Login */}
           <p className="text-center text-sm font-medium text-gray-800">
-            Sudah punya akun? <a href="#" className="text-[#8b1c1c] hover:underline font-bold">Login Sekarang</a>
+            Sudah punya akun? <a href="/login" className="text-[#8b1c1c] hover:underline font-bold">Login Sekarang</a>
           </p>
 
         </div>
