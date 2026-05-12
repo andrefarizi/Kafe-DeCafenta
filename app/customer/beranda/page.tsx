@@ -2,8 +2,33 @@ import React from 'react';
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
 import { ChevronLeft, ChevronRight, Star, ThumbsUp } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
 
-const Beranda = () => {
+// Helper function to assign dummy images based on menu name
+function getDummyImage(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes('kentang') || n.includes('snack')) return '/kentang.png';
+  if (n.includes('teh') || n.includes('jus') || n.includes('minuman') || n.includes('es')) return '/IconKopi.png';
+  return '/burger.png';
+}
+
+const Beranda = async () => {
+  // Fetch menus from the database (seeded previously)
+  const menus = await prisma.menu.findMany({
+    take: 10,
+    orderBy: { createdAt: 'asc' }, // just a deterministic sort
+  });
+
+  // Assign them to different sections just to make the UI look full
+  const promoMenus = menus.slice(0, 4);
+  const bestSellers = menus.slice(0, 3);
+  const rekomendedMenus = menus.slice(0, 4);
+  const keranjangMenus = menus.slice(0, 5);
+
+  const formatRupiah = (price: any) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(price));
+  };
+
   return (
     <div className="flex min-h-screen bg-white font-sans text-gray-800">
       <Sidebar activeMenu='beranda' />
@@ -13,10 +38,9 @@ const Beranda = () => {
 
         <div className="flex-1 overflow-y-auto p-5 space-y-8">
 
-          {/* Banner Selamat Datang - Sedikit lebih kecil dari sebelumnya */}
+          {/* Banner Selamat Datang */}
           <div className="relative w-full bg-[#DE2014] rounded-[1.5rem] p-10 flex justify-between items-center text-white overflow-hidden shadow-xl min-h-[240px]">
             <div className="z-10 space-y-3">
-              {/* Baris Logo & Nama Brand */}
               <div className="flex items-center gap-2.5">
                 <img src="/Group 2 1.png" alt="De Cafenta" className="h-10 w-auto object-contain" />
                 <span className="text-xs font-black tracking-[0.15em] text-white uppercase">DE CAFENTA</span>
@@ -40,7 +64,6 @@ const Beranda = () => {
               />
             </div>
 
-            {/* Dekorasi Background */}
             <div className="absolute right-0 bottom-0 opacity-10">
               <div className="w-80 h-80 bg-white rounded-full -mr-28 -mb-28"></div>
             </div>
@@ -56,14 +79,12 @@ const Beranda = () => {
 
           {/* Promo Spesial Section */}
           <div className="bg-[#FFCC00] rounded-2xl p-6 relative shadow-lg">
-            {/* Header Promo Spesial*/}
             <div className="bg-[#8A0000] rounded-t-xl py-3 text-center mb-0">
               <h3 className="text-white font-black text-2xl tracking-[0.4em] uppercase">
                 PROMO SPESIAL
               </h3>
             </div>
 
-            {/* Container Kartu (Kuning) */}
             <div className="bg-[#FFCC00] rounded-b-xl p-4 relative flex items-center justify-center gap-4 border-x-[6px] border-b-[6px] border-[#8A0000]">
               <button className="absolute left-0 -translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center">
                 <ChevronLeft size={28} strokeWidth={2} />
@@ -71,28 +92,25 @@ const Beranda = () => {
 
               {/* Grid Kartu Menu */}
               <div className="flex gap-6 overflow-x-auto scrollbar-hide py-2 px-8">
-                {[1, 2, 3, 4].map((item) => (
-                  <div key={item} className="min-w-[180px] bg-[#E32111] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md">
+                {promoMenus.map((item) => (
+                  <div key={item.id} className="min-w-[180px] bg-[#E32111] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md">
                     <div className="relative h-32">
                       <img
-                        src="/burger.png"
+                        src={getDummyImage(item.name)}
                         className="w-full h-full object-cover"
-                        alt="Promo Burger"
+                        alt={item.name}
                       />
-                      {/* Rating Bintang */}
                       <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1">
                         <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                        <span className="font-bold">5.0</span>
+                        <span className="font-bold">{Number(item.avgRating).toFixed(1)}</span>
                       </div>
                     </div>
 
-                    {/* Konten Kartu */}
                     <div className="p-3 text-white">
-                      <p className="text-sm font-bold truncate mb-1">Namaaaaaaaaa...</p>
-                      <p className="text-[10px] opacity-80 line-through leading-tight">Rp 60.000</p>
-                      <p className="text-sm font-black mb-3">Rp 60.000</p>
+                      <p className="text-sm font-bold truncate mb-1">{item.name}</p>
+                      <p className="text-[10px] opacity-80 line-through leading-tight">{formatRupiah(Number(item.price) + 15000)}</p>
+                      <p className="text-sm font-black mb-3">{formatRupiah(item.price)}</p>
 
-                      {/* Tombol Tambah */}
                       <button className="w-full bg-[#FFF5E1] text-[#8A0000] text-xs font-black py-2 rounded-xl shadow-inner hover:bg-white transition-colors uppercase">
                         Tambah
                       </button>
@@ -101,7 +119,6 @@ const Beranda = () => {
                 ))}
               </div>
 
-              {/* Panah Navigasi Kanan */}
               <button className="absolute right-0 translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center">
                 <ChevronRight size={28} strokeWidth={2} />
               </button>
@@ -129,8 +146,8 @@ const Beranda = () => {
             <p className="text-[20px] text-gray-600 mb-6">Menu yang paling populer untuk anda</p>
 
             <div className="flex justify-center gap-16 relative z-10 mb-16">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="relative">
+              {bestSellers.map((item) => (
+                <div key={item.id} className="relative">
 
                   <div className="bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10">
                     <div className="absolute -top-3 -right-3 z-20 w-20 h-20 flex items-center justify-center">
@@ -140,9 +157,9 @@ const Beranda = () => {
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <img src="/burger.png" className="w-full h-30 object-cover rounded-xl mb-2" alt="Best Seller" />
-                    <p className="text-[14px] font-bold text-black mb-1">Hamburger</p>
-                    <p className="text-xs font-bold text-[#8A0000]">Rp 10.000</p>
+                    <img src={getDummyImage(item.name)} className="w-full h-30 object-cover rounded-xl mb-2" alt={item.name} />
+                    <p className="text-[14px] font-bold text-black mb-1">{item.name}</p>
+                    <p className="text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
                   </div>
 
                   <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[120%] h-auto z-0 pointer-events-none">
@@ -162,17 +179,17 @@ const Beranda = () => {
           <section className="mt-8">
             <h3 className="text-[20px] font-bold text-black mb-4">Rekomendasi Menu</h3>
             <div className="grid grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              {rekomendedMenus.map((item) => (
+                <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                   <div className="relative h-44">
-                    <img src="/kentang.png" className="w-full h-full object-cover" alt="Rekomendasi" />
+                    <img src={getDummyImage(item.name)} className="w-full h-full object-cover" alt={item.name} />
                     <div className="absolute top-2 right-2 bg-black/50 text-[11px] text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                      <Star size={11} className="fill-yellow-400 text-yellow-400" /> 5.0
+                      <Star size={11} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
                     </div>
                   </div>
                   <div className="p-4">
-                    <p className="text-sm font-bold text-black">Kentang Goreng</p>
-                    <p className="text-xs text-[#8A0000] font-bold mb-3">Rp 12.000</p>
+                    <p className="text-sm font-bold text-black">{item.name}</p>
+                    <p className="text-xs text-[#8A0000] font-bold mb-3">{formatRupiah(item.price)}</p>
                     <button className="w-full bg-[#8A0000] text-white text-[10px] font-bold py-1.5 rounded-md hover:bg-red-900 transition-colors">Tambah</button>
                   </div>
                 </div>
@@ -187,17 +204,17 @@ const Beranda = () => {
               <button className="text-[#8A0000] text-[12px]">Lihat Semua</button>
             </div>
             <div className="grid grid-cols-5 gap-4">
-              {[1, 2, 3, 4, 5].map((item) => (
-                <div key={item} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              {keranjangMenus.map((item) => (
+                <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                   <div className="relative h-32">
-                    <img src="/burger.png" className="w-full h-full object-cover" alt="Cart" />
+                    <img src={getDummyImage(item.name)} className="w-full h-full object-cover" alt={item.name} />
                     <div className="absolute top-1.5 right-1.5 bg-black/50 text-[10px] text-white px-1 py-0.5 rounded-full flex items-center gap-0.5">
-                      <Star size={10} className="fill-yellow-400 text-yellow-400" /> 5.0
+                      <Star size={10} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
                     </div>
                   </div>
                   <div className="p-3">
-                    <p className="text-[12px] font-bold text-black truncate">Namaaaaaaaaa...</p>
-                    <p className="text-[11px] text-[#8A0000] font-bold mb-2">Rp 60.000</p>
+                    <p className="text-[12px] font-bold text-black truncate">{item.name}</p>
+                    <p className="text-[11px] text-[#8A0000] font-bold mb-2">{formatRupiah(item.price)}</p>
                     <button className="w-full bg-[#8A0000] text-white text-[9px] font-bold py-1 rounded-md">Tambah</button>
                   </div>
                 </div>

@@ -4,7 +4,10 @@ import { useState, useRef } from 'react';
 import { signOut } from 'next-auth/react';
 import { LogOut, User } from 'lucide-react';
 
+import { useRouter } from 'next/navigation';
+
 const Topbar = () => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -28,6 +31,7 @@ const Topbar = () => {
         {/* Avatar Button */}
         <button
           id="customer-avatar-btn"
+          onClick={() => router.push('/customer/Profil')}
           aria-label="Profile customer"
           aria-expanded={open}
           className="w-10 h-10 rounded-full bg-[#8A0000] flex items-center justify-center hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-md"
