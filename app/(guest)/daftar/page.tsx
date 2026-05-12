@@ -79,10 +79,10 @@ export default function DaftarPage() {
       />
 
       {/* Container Card Utama */}
-      <div className="relative z-10 w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px]">
+      <div className="relative z-10 w-full max-w-6xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px]">
 
         {/* Kolom Kiri: Ilustrasi */}
-        <div className="hidden md:flex md:w-1/2 relative items-center justify-center p-8">
+        <div className="hidden md:flex md:w-1/2 relative items-center justify-center p-6">
           <div className="w-full h-full min-h-[400px] flex items-center justify-center">
             <img src="/Group (4).png" alt="Ilustrasi Kopi" className="w-full h-full object-contain" />
           </div>
@@ -92,7 +92,8 @@ export default function DaftarPage() {
         <div className="hidden md:block w-px bg-gray-500/40 my-12"></div>
 
         {/* Kolom Kanan: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center relative">
+        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center items-center relative">
+          <div className="w-full max-w-sm">
 
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-6">
@@ -118,7 +119,7 @@ export default function DaftarPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 flex flex-col">
+          <form onSubmit={handleSubmit} className="space-y-4 flex flex-col" suppressHydrationWarning>
 
             {/* Input Nama */}
             <div className="relative flex items-center">
@@ -255,6 +256,7 @@ export default function DaftarPage() {
             </Link>
           </p>
 
+          </div>
         </div>
       </div>
     </div>
