@@ -76,12 +76,12 @@ export default function LoginPage() {
       />
 
       {/* Container Card Utama */}
-      <div className="relative z-10 w-full max-w-7xl bg-gradient-to-br from-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-xl overflow-hidden flex flex-col md:flex-row border-4 border-blue-400/20">
+      <div className="relative z-10 w-full max-w-6xl bg-gradient-to-br from-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-xl overflow-hidden flex flex-col md:flex-row border-4 border-blue-400/20">
 
         {/* Kolom Kiri: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
-
-          {/* Logo */}
+        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center items-center">
+          <div className="w-full max-w-sm">
+            {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-8">
             <img src="/Group%202%201.png" alt="Logo D" className="h-8 object-contain" />
             <span className="text-sm font-bold text-[#6b1d1d] tracking-widest mt-1">DE CAFENTA</span>
@@ -98,7 +98,7 @@ export default function LoginPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5 flex flex-col">
+          <form onSubmit={handleSubmit} className="space-y-4 flex flex-col" suppressHydrationWarning>
 
             {/* Input Email */}
             <div className="relative flex items-center">
@@ -215,6 +215,7 @@ export default function LoginPage() {
               Daftar Sekarang
             </Link>
           </p>
+          </div>
         </div>
 
         {/* Kolom Kanan: Ilustrasi */}
