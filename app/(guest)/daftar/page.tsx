@@ -45,11 +45,7 @@ export default function PesananPage() {
     // Background utama merah gelap
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
 
-      {/* Tombol Kembali */}
-      <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white text-[#8b1c1c] font-bold rounded-full shadow-lg border-2 border-white hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group">
-        <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Kembali
-      </Link>
+
 
       {/* Ornamen Desain Figma */}
       <img
@@ -64,8 +60,12 @@ export default function PesananPage() {
       />
 
       {/* Container Card Utama */}
+      
       <div className="relative z-10 w-full max-w-6xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px]">
-        
+                <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-4 py-2 bg-white text-[#8b1c1c] font-bold text-sm md:text-base rounded-full border-2 border-[#8b1c1c] hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group shadow-sm">
+          <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          Kembali
+        </Link>
         {/* Kolom Kiri: Ilustrasi */}
         <div className="hidden md:flex md:w-1/2 relative items-center justify-center p-6">
           <div className="w-full h-full min-h-[400px] flex items-center justify-center">
