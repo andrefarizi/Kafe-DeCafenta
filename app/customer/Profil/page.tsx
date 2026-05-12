@@ -8,8 +8,26 @@ import {
   SquarePen,
   User,
 } from 'lucide-react';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 
-export default function ProfilPage() {
+export default async function ProfilPage() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect('/login');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!user) {
+    redirect('/login');
+  }
+
   return (
     <div
       className="min-h-screen flex bg-gradient-to-br from-[#fff7ec] via-[#fff3d7] to-[#ffd93d]"
@@ -20,9 +38,9 @@ export default function ProfilPage() {
       <main className="flex-1 px-[48px] pt-[30px]">
         {/* HEADER */}
         <div className="flex items-center gap-5">
-          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md">
+          <Link href="/customer/beranda" className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md">
             <ChevronLeft size={26} strokeWidth={3} />
-          </button>
+          </Link>
 
           <h1 className="text-[40px] font-semibold text-black">Profil</h1>
         </div>
@@ -33,14 +51,18 @@ export default function ProfilPage() {
             
             {/* FOTO */}
             <div className="flex h-[180px] w-[180px] items-center justify-center rounded-full border-[3px] border-[#9b0000] bg-white">
-              <div className="h-[155px] w-[155px] overflow-hidden rounded-full">
-                <Image
-                  src="/LOGOPROFIL.png"
-                  alt="Foto Profil"
-                  width={155}
-                  height={155}
-                  className="h-full w-full object-cover"
-                />
+              <div className="h-[155px] w-[155px] overflow-hidden rounded-full flex items-center justify-center bg-gray-200">
+                {user.image ? (
+                  <Image
+                    src={user.image}
+                    alt="Foto Profil"
+                    width={155}
+                    height={155}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User size={80} className="text-gray-400" />
+                )}
               </div>
             </div>
 
@@ -55,17 +77,17 @@ export default function ProfilPage() {
               <InfoField
                 icon={<User size={22} color="white" fill="white" />}
                 title="Nama"
-                value="Andre Wira Pratama"
+                value={user.name || "-"}
               />
               <InfoField
                 icon={<Mail size={22} color="white" />}
                 title="Email"
-                value="pratama@gmail.com"
+                value={user.email}
               />
               <InfoField
                 icon={<Phone size={22} color="white" fill="white" />}
                 title="Nomor Handphone"
-                value="08123456789"
+                value="-"
               />
             </div>
 
@@ -88,7 +110,7 @@ function InfoField({
 }: {
   icon: React.ReactNode;
   title: string;
-  value: string;
+  value: string | null;
 }) {
   return (
     <div className="flex h-[52px] w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white">
