@@ -12,6 +12,7 @@ export default function PesananPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = async (formData: FormData) => {
     setLoading(true);
@@ -50,18 +51,18 @@ export default function PesananPage() {
         Kembali
       </Link>
 
-       {/* Ornamen Desain Figma */}
-      <img 
-        src="/Rectangle%205%20(1).png" 
-        alt="Ornament Bottom Left" 
-        className="absolute bottom-6 left-0 w-40 md:w-60 lg:w-40 object-contain pointer-events-none z-0" 
+      {/* Ornamen Desain Figma */}
+      <img
+        src="/Rectangle%205%20(1).png"
+        alt="Ornament Bottom Left"
+        className="absolute bottom-6 left-0 w-40 md:w-60 lg:w-40 object-contain pointer-events-none z-0"
       />
-      <img 
-        src="/Rectangle%205.png" 
-        alt="Ornament Top Right" 
-        className="absolute top-6 right-0 w-40 md:w-72 lg:w-45 object-contain pointer-events-none z-0" 
+      <img
+        src="/Rectangle%205.png"
+        alt="Ornament Top Right"
+        className="absolute top-6 right-0 w-40 md:w-72 lg:w-45 object-contain pointer-events-none z-0"
       />
-      
+
       {/* Container Card Utama */}
       {/* Menggunakan gradient dari kuning redup di kiri ke pink/krem di kanan */}
       <div className="relative w-full max-w-5xl bg-gradient-to-r from-[#e6d582] via-[#e2c8b8] to-[#e8d0c8] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border-[3px] ">
@@ -79,7 +80,7 @@ export default function PesananPage() {
 
         {/* Kolom Kanan: Form */}
         <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center relative">
-          
+
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-6">
             <img src="/Group 2 1.png" alt="Logo D" className="h-8 object-contain" />
@@ -95,7 +96,7 @@ export default function PesananPage() {
             {/* Tampilkan Pesan Error / Success */}
             {errorMsg && <div className="text-red-600 font-semibold text-sm text-center bg-red-100 p-2 rounded-lg">{errorMsg}</div>}
             {successMsg && <div className="text-green-600 font-semibold text-sm text-center bg-green-100 p-2 rounded-lg">{successMsg}</div>}
-
+            
             {/* Input Nama (Icon Kiri) */}
             <div className="relative flex items-center">
               <div className="absolute -left-1 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-white/20">
@@ -123,8 +124,8 @@ export default function PesananPage() {
               <div className="absolute -right-1 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-white/20">
                 {/* Ikon Amplop */}
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  </div>
-                </div>
+              </div>
+            </div>
 
             {/* Input Password (Icon Kiri + Mata Kanan) */}
             <div className="relative flex items-center">
@@ -133,7 +134,7 @@ export default function PesananPage() {
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
                   </div>
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 name="password"
                 required
                 placeholder="Password" 
@@ -156,7 +157,7 @@ export default function PesananPage() {
                   </svg>
                 )}
               </button>
-                </div>
+            </div>
 
             {/* Tombol Daftar Outline */}
             <button 
