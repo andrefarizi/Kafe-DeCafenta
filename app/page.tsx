@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden selection:bg-[#f4d03f] selection:text-black">
+    <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden selection:bg-[#f4d03f] selection:text-black scroll-smooth">
       
       {/* ================= NAVBAR ================= */}
       <nav className="flex items-center justify-between px-8 py-5 bg-white shadow-sm sticky top-0 z-50">
@@ -204,7 +204,7 @@ export default function LandingPage() {
         </div>
 
         {/* Footer Text */}
-        <footer className="text-center pt-8 pb-4 z-0 relative flex flex-col items-center justify-center">
+        <footer className="text-center pt-8 pb-4 z-0 relative flex flex-col items-center justify-center" id="footer">
           <div className="flex items-center justify-center mb-6">
             {/* Placeholder D Footer */}
             <div className="w-16 h-16 flex items-center justify-center">

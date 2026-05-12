@@ -34,7 +34,7 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-[#fafafa] font-sans overflow-x-hidden flex flex-col scroll-smooth">
       {/* ================= NAVBAR ================= */}
       <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
           </div>
         </div>
 
-        <footer className="text-center pt-8 pb-4 z-0 relative flex flex-col items-center justify-center">
+        <footer className="text-center pt-8 pb-4 z-0 relative flex flex-col items-center justify-center " id="footer">
           <div className="flex items-center justify-center mb-6">
             <div className="w-16 h-16 flex items-center justify-center">
               <img src="/Group 2 1.png" alt="Icon" className="w-15 h-15 object-contain1 object-contain" />
