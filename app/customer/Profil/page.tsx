@@ -22,6 +22,7 @@ export default async function ProfilPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
+    select: { id: true, name: true, email: true, image: true, phone: true },
   });
 
   if (!user) {
@@ -61,16 +62,15 @@ export default async function ProfilPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <User size={80} className="text-gray-400" />
+                  <span className="text-5xl font-bold text-gray-500">
+                    {user.name?.charAt(0).toUpperCase() ?? <User size={80} className="text-gray-400" />}
+                  </span>
                 )}
               </div>
             </div>
 
             {/* GANTI FOTO */}
-            <div className="mt-[10px] flex items-center gap-2 text-[16px] font-medium text-[#9b0000]">
-              <span>Ganti Foto Profil</span>
-              <SquarePen size={18} />
-            </div>
+            <EditProfilLink />
 
             {/* FORM */}
             <div className="mt-[22px] flex flex-col gap-[16px]">
@@ -87,14 +87,12 @@ export default async function ProfilPage() {
               <InfoField
                 icon={<Phone size={22} color="white" fill="white" />}
                 title="Nomor Handphone"
-                value="-"
+                value={user.phone || "-"}
               />
             </div>
 
             {/* BUTTON */}
-            <button className="mt-[30px] h-[50px] w-[320px] rounded-[25px] bg-[#9b0000] text-[17px] font-semibold text-white">
-              Edit Profile
-            </button>
+            <EditProfilButton />
           </div>
         </section>
       </main>
@@ -102,7 +100,8 @@ export default async function ProfilPage() {
   );
 }
 
-/* FIELD */
+/* ── Komponen terpisah agar bisa jadi Client di masa depan ── */
+
 function InfoField({
   icon,
   title,
@@ -123,12 +122,37 @@ function InfoField({
       {/* TEXT */}
       <div className="ml-[10px] leading-tight">
         <div className="text-[14px] font-semibold text-black">
-          {title}
+          {title} 
         </div>
         <div className="mt-[3px] text-[12px] font-normal text-[#555]">
           {value}
         </div>
       </div>
     </div>
+  );
+}
+
+/* Link "Ganti Foto Profil" — menuju halaman edit profil */
+function EditProfilLink() {
+  return (
+    <Link
+      href="/customer/Profil/edit"
+      className="mt-[10px] flex items-center gap-2 text-[16px] font-medium text-[#9b0000] hover:underline"
+    >
+      <span>Ganti Foto Profil</span>
+      <SquarePen size={18} />
+    </Link>
+  );
+}
+
+/* Tombol Edit Profile — menuju halaman edit profil */
+function EditProfilButton() {
+  return (
+    <Link
+      href="/customer/Profil/edit"
+      className="mt-[30px] h-[50px] w-[320px] rounded-[25px] bg-[#9b0000] text-[17px] font-semibold text-white flex items-center justify-center hover:bg-[#7a0000] transition-colors"
+    >
+      Edit Profile
+    </Link>
   );
 }

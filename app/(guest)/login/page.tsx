@@ -35,8 +35,17 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Email atau password salah. Silakan coba lagi.");
       } else {
-        // Login berhasil — redirect ke halaman owner
-        router.push("/owner/beranda");
+        // Login berhasil — ambil session untuk redirect berdasarkan role
+        const { getSession } = await import("next-auth/react");
+        const session = await getSession();
+        const role = (session?.user as { role?: string })?.role;
+        if (role === "OWNER") {
+          router.push("/owner/beranda");
+        } else if (role === "KASIR") {
+          router.push("/kasir/beranda");
+        } else {
+          router.push("/customer/beranda");
+        }
         router.refresh();
       }
     } catch {
@@ -56,12 +65,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
-
-      {/* Tombol Kembali */}
-      <Link href="/" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-5 py-2.5 bg-white text-[#8b1c1c] font-bold rounded-full shadow-lg border-2 border-white hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group">
-        <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-        Kembali
-      </Link>
 
       {/* Ornamen Desain Figma */}
       <img
