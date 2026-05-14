@@ -1,8 +1,17 @@
 import React from 'react';
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
-import { ChevronLeft, ChevronRight, Star, ThumbsUp } from 'lucide-react';
-import { prisma } from '@/lib/prisma';
+import { Star } from 'lucide-react';
+import Link from 'next/link';
+import AddToCartButton from './AddToCartButton';
+import PromoCarousel from './PromoCarousel';
+import { auth } from '@/lib/auth';
+import {
+  getBestSellerMenus,
+  getCustomerOrderHistoryMenus,
+  getPromoMenus,
+  getRecommendedMenus,
+} from '@/src/controllers/menu-controller';
 
 // Helper function to assign dummy images based on menu name
 function getDummyImage(name: string) {
@@ -12,22 +21,39 @@ function getDummyImage(name: string) {
   return '/burger.png';
 }
 
-const Beranda = async () => {
-  // Fetch menus from the database (seeded previously)
-  const menus = await prisma.menu.findMany({
-    take: 10,
-    orderBy: { createdAt: 'asc' }, // just a deterministic sort
-  });
+const categoryFallbacks: Record<string, string> = {
+  Nasi: '/nasi goreng.png',
+  Mie: '/bakso.png',
+  Snack: '/kentang goreng.png',
+  Minuman: '/jus semangka.png',
+};
 
-  // Assign them to different sections just to make the UI look full
-  const promoMenus = menus.slice(0, 4);
-  const bestSellers = menus.slice(0, 3);
-  const rekomendedMenus = menus.slice(0, 4);
-  const keranjangMenus = menus.slice(0, 5);
+const resolveMenuImage = (name: string, categoryName: string, imageUrl?: string | null) => {
+  return imageUrl || categoryFallbacks[categoryName] || getDummyImage(name);
+};
+
+const Beranda = async () => {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  const [promoMenus, bestSellers, rekomendedMenus, keranjangMenus] = await Promise.all([
+    getPromoMenus(4),
+    getBestSellerMenus(3),
+    getRecommendedMenus(4),
+    userId ? getCustomerOrderHistoryMenus(userId, 5) : Promise.resolve([]),
+  ]);
 
   const formatRupiah = (price: any) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(price));
   };
+
+  const promoItems = promoMenus.map((item) => ({
+    id: item.id,
+    name: item.name,
+    price: Number(item.price),
+    avgRating: Number(item.avgRating),
+    image: resolveMenuImage(item.name, item.categoryName, item.imageUrl),
+  }));
 
   return (
     <div className="flex min-h-screen bg-white font-sans text-gray-800">
@@ -85,44 +111,7 @@ const Beranda = async () => {
               </h3>
             </div>
 
-            <div className="bg-[#FFCC00] rounded-b-xl p-4 relative flex items-center justify-center gap-4 border-x-[6px] border-b-[6px] border-[#8A0000]">
-              <button className="absolute left-0 -translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center">
-                <ChevronLeft size={28} strokeWidth={2} />
-              </button>
-
-              {/* Grid Kartu Menu */}
-              <div className="flex gap-6 overflow-x-auto scrollbar-hide py-2 px-8">
-                {promoMenus.map((item) => (
-                  <div key={item.id} className="min-w-[180px] bg-[#E32111] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md">
-                    <div className="relative h-32">
-                      <img
-                        src={getDummyImage(item.name)}
-                        className="w-full h-full object-cover"
-                        alt={item.name}
-                      />
-                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                        <span className="font-bold">{Number(item.avgRating).toFixed(1)}</span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 text-white">
-                      <p className="text-sm font-bold truncate mb-1">{item.name}</p>
-                      <p className="text-[10px] opacity-80 line-through leading-tight">{formatRupiah(Number(item.price) + 15000)}</p>
-                      <p className="text-sm font-black mb-3">{formatRupiah(item.price)}</p>
-
-                      <button className="w-full bg-[#FFF5E1] text-[#8A0000] text-xs font-black py-2 rounded-xl shadow-inner hover:bg-white transition-colors uppercase">
-                        Tambah
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button className="absolute right-0 translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center">
-                <ChevronRight size={28} strokeWidth={2} />
-              </button>
-            </div>
+            <PromoCarousel items={promoItems} />
           </div>
 
           {/* Best Seller Section */}
@@ -146,32 +135,36 @@ const Beranda = async () => {
             <p className="text-[20px] text-gray-600 mb-6">Menu yang paling populer untuk anda</p>
 
             <div className="flex justify-center gap-16 relative z-10 mb-16">
-              {bestSellers.map((item) => (
-                <div key={item.id} className="relative">
+                {bestSellers.map((item) => (
+                  <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="relative">
 
-                  <div className="bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10">
-                    <div className="absolute -top-3 -right-3 z-20 w-20 h-20 flex items-center justify-center">
+                    <div className="bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10">
+                      <div className="absolute -top-3 -right-3 z-20 w-20 h-20 flex items-center justify-center">
+                        <img
+                          src="/approve.png"
+                          alt="Best Seller Icon"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                       <img
-                        src="/approve.png"
-                        alt="Best Seller Icon"
-                        className="w-full h-full object-contain"
+                        src={resolveMenuImage(item.name, item.categoryName, item.imageUrl)}
+                        className="w-full h-30 object-cover rounded-xl mb-2"
+                        alt={item.name}
+                      />
+                      <p className="text-[14px] font-bold text-black mb-1">{item.name}</p>
+                      <p className="text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
+                    </div>
+
+                    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[120%] h-auto z-0 pointer-events-none">
+                      <img
+                        src="/Group 42.png"
+                        alt="Plate Decoration"
+                        className="w-full h-auto object-contain"
                       />
                     </div>
-                    <img src={getDummyImage(item.name)} className="w-full h-30 object-cover rounded-xl mb-2" alt={item.name} />
-                    <p className="text-[14px] font-bold text-black mb-1">{item.name}</p>
-                    <p className="text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
-                  </div>
 
-                  <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[120%] h-auto z-0 pointer-events-none">
-                    <img
-                      src="/Group 42.png"
-                      alt="Plate Decoration"
-                      className="w-full h-auto object-contain"
-                    />
-                  </div>
-
-                </div>
-              ))}
+                  </Link>
+                ))}
             </div>
           </div>
 
@@ -179,21 +172,36 @@ const Beranda = async () => {
           <section className="mt-8">
             <h3 className="text-[20px] font-bold text-black mb-4">Rekomendasi Menu</h3>
             <div className="grid grid-cols-4 gap-6">
-              {rekomendedMenus.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="relative h-44">
-                    <img src={getDummyImage(item.name)} className="w-full h-full object-cover" alt={item.name} />
+              {rekomendedMenus.map((item) => {
+                const imageSrc = resolveMenuImage(item.name, item.categoryName, item.imageUrl);
+
+                return (
+                  <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="relative h-44">
+                      <img
+                        src={imageSrc}
+                        className="w-full h-full object-cover"
+                        alt={item.name}
+                      />
                     <div className="absolute top-2 right-2 bg-black/50 text-[11px] text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
                       <Star size={11} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-sm font-bold text-black">{item.name}</p>
-                    <p className="text-xs text-[#8A0000] font-bold mb-3">{formatRupiah(item.price)}</p>
-                    <button className="w-full bg-[#8A0000] text-white text-[10px] font-bold py-1.5 rounded-md hover:bg-red-900 transition-colors">Tambah</button>
-                  </div>
-                </div>
-              ))}
+                    </div>
+                    <div className="p-4">
+                      <p className="text-sm font-bold text-black">{item.name}</p>
+                      <p className="text-xs text-[#8A0000] font-bold mb-3">{formatRupiah(item.price)}</p>
+                      <AddToCartButton
+                        item={{
+                          name: item.name,
+                          price: Number(item.price),
+                          image: imageSrc,
+                        }}
+                        className="w-full bg-[#8A0000] text-white text-[10px] font-bold py-1.5 rounded-md hover:bg-red-900 transition-colors"
+                      />
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </section>
 
@@ -203,23 +211,42 @@ const Beranda = async () => {
               <h3 className="text-[20px] font-bold text-black">Dari Keranjang Anda</h3>
               <button className="text-[#8A0000] text-[12px]">Lihat Semua</button>
             </div>
-            <div className="grid grid-cols-5 gap-4">
-              {keranjangMenus.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="relative h-32">
-                    <img src={getDummyImage(item.name)} className="w-full h-full object-cover" alt={item.name} />
-                    <div className="absolute top-1.5 right-1.5 bg-black/50 text-[10px] text-white px-1 py-0.5 rounded-full flex items-center gap-0.5">
-                      <Star size={10} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-[12px] font-bold text-black truncate">{item.name}</p>
-                    <p className="text-[11px] text-[#8A0000] font-bold mb-2">{formatRupiah(item.price)}</p>
-                    <button className="w-full bg-[#8A0000] text-white text-[9px] font-bold py-1 rounded-md">Tambah</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {keranjangMenus.length === 0 ? (
+              <p className="text-sm font-bold text-gray-600">Anda belum memesan menu apapun.</p>
+            ) : (
+              <div className="grid grid-cols-5 gap-4">
+                {keranjangMenus.map((item) => {
+                  const imageSrc = resolveMenuImage(item.name, item.categoryName, item.imageUrl);
+
+                  return (
+                    <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                      <div className="relative h-32">
+                        <img
+                          src={imageSrc}
+                          className="w-full h-full object-cover"
+                          alt={item.name}
+                        />
+                      <div className="absolute top-1.5 right-1.5 bg-black/50 text-[10px] text-white px-1 py-0.5 rounded-full flex items-center gap-0.5">
+                        <Star size={10} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
+                      </div>
+                      </div>
+                      <div className="p-3">
+                        <p className="text-[12px] font-bold text-black truncate">{item.name}</p>
+                        <p className="text-[11px] text-[#8A0000] font-bold mb-2">{formatRupiah(item.price)}</p>
+                        <AddToCartButton
+                          item={{
+                            name: item.name,
+                            price: Number(item.price),
+                            image: imageSrc,
+                          }}
+                          className="w-full bg-[#8A0000] text-white text-[9px] font-bold py-1 rounded-md"
+                        />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
         </div>

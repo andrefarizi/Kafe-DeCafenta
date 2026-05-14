@@ -1,37 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useActionState, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Sidebar from '@/app/customer/components/sidebar';
-import Topbar from '@/app/customer/components/topbar';
-import { registerController } from '@/src/controllers/auth-controller';
+import { useRouter } from 'next/navigation';
 import { signIn } from "next-auth/react";
+import { registerAction } from './actions';
 
 export default function PesananPage() {
+  const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showIntroModal, setShowIntroModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const allowSubmitRef = useRef(false);
+  const [actionState, formAction, isPending] = useActionState(
+    registerAction,
+    { success: false, message: '' }
+  );
 
-  const handleRegister = async (formData: FormData) => {
-    setLoading(true);
-    setErrorMsg('');
-    setSuccessMsg('');
-
-    const response = await registerController(formData);
-    
-    if (!response.success) {
-      setErrorMsg(response.message);
-    } else {
-      setSuccessMsg(response.message);
-      // alert('Berhasil daftar!');
+  const handleOpenIntro = (event: React.FormEvent<HTMLFormElement>) => {
+    if (!allowSubmitRef.current) {
+      event.preventDefault();
+      setErrorMsg('');
+      setShowIntroModal(true);
+      return;
     }
-    
-    setLoading(false);
+
+    allowSubmitRef.current = false;
   };
 
-  const orders = Array(5).fill(['Masuk', '#D8A700']);
+  useEffect(() => {
+    if (!actionState?.message) {
+      return;
+    }
+
+    if (actionState.success) {
+      setErrorMsg('');
+      setShowSuccessModal(true);
+    } else {
+      setErrorMsg(actionState.message);
+    }
+  }, [actionState]);
 
   const handleGoogleLogin = () => {
     signIn("google", { callbackUrl: "/customer/beranda" });
@@ -44,6 +54,70 @@ export default function PesananPage() {
   return (
     // Background utama merah gelap
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+
+      {showIntroModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md bg-white rounded-[2rem] border-2 border-[#8b1c1c] p-8 text-center shadow-2xl">
+            <img src="/Group (4).png" alt="Buat akun baru" className="mx-auto h-36 w-36 object-contain" />
+            <h2 className="text-2xl font-extrabold text-black mt-4">Buat akun baru?</h2>
+            <p className="text-sm font-semibold text-gray-700 mt-2">
+              Daftar sekarang untuk mulai memesan menu favoritmu dan menikmati fitur De Cafenta
+            </p>
+            <div className="mt-8 space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  allowSubmitRef.current = true;
+                  setShowIntroModal(false);
+                  formRef.current?.requestSubmit();
+                }}
+                className="w-full py-3 bg-[#8b1c1c] text-white text-sm font-bold rounded-xl hover:bg-[#6b1d1d] transition-colors"
+              >
+                Buat Akun Sekarang
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowIntroModal(false);
+                }}
+                className="w-full py-3 border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-xl hover:bg-[#8b1c1c] hover:text-white transition-colors"
+              >
+                Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md bg-white rounded-[2rem] border-2 border-[#8b1c1c] p-8 text-center shadow-2xl">
+            <div className="mx-auto mb-5 h-28 w-28 rounded-full bg-[#e7f7e7] flex items-center justify-center">
+              <img src="/Berhasil Icon.png" alt="Akun berhasil dibuat" className="h-16 w-16 object-contain" />
+            </div>
+            <h2 className="text-2xl font-extrabold text-black">Akun berhasil dibuat!</h2>
+            <p className="text-sm font-semibold text-gray-700 mt-2">
+              Selamat Akun berhasil dibuat lanjutkan ke halaman login untuk masuk ke akun anda
+            </p>
+            <div className="mt-8 space-y-3">
+              <button
+                type="button"
+                onClick={() => router.push('/login')}
+                className="w-full py-3 bg-[#8b1c1c] text-white text-sm font-bold rounded-xl hover:bg-[#6b1d1d] transition-colors"
+              >
+                Lanjutkan
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full py-3 border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-xl hover:bg-[#8b1c1c] hover:text-white transition-colors"
+              >
+                Kembali
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
 
@@ -89,11 +163,15 @@ export default function PesananPage() {
           <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-8 drop-shadow-sm text-center">Daftar</h1>
 
           {/* Form Inputs */}
-          <form action={handleRegister} className="space-y-4 flex flex-col">
+          <form
+            ref={formRef}
+            action={formAction}
+            onSubmit={handleOpenIntro}
+            className="space-y-4 flex flex-col"
+          >
             
             {/* Tampilkan Pesan Error / Success */}
             {errorMsg && <div className="text-red-600 font-semibold text-sm text-center bg-red-100 p-2 rounded-lg">{errorMsg}</div>}
-            {successMsg && <div className="text-green-600 font-semibold text-sm text-center bg-green-100 p-2 rounded-lg">{successMsg}</div>}
             
             {/* Input Nama (Icon Kiri) */}
             <div className="relative flex items-center">
@@ -160,10 +238,10 @@ export default function PesananPage() {
             {/* Tombol Daftar Outline */}
             <button 
               type="submit" 
-              disabled={loading}
-              className={`w-full py-3.5 bg-transparent border-2 border-[#6b1d1d] hover:bg-[#6b1d1d] hover:text-white transition-colors text-[#6b1d1d] font-bold rounded-full mt-6 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isPending}
+              className={`w-full py-3.5 bg-transparent border-2 border-[#6b1d1d] hover:bg-[#6b1d1d] hover:text-white transition-colors text-[#6b1d1d] font-bold rounded-full mt-6 ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Mendaftar...' : 'Daftar'}
+              {isPending ? 'Mendaftar...' : 'Daftar'}
                 </button>
           </form>
 
