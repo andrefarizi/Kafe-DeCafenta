@@ -83,3 +83,74 @@ body {
     print-color-adjust: exact !important;
   }
 }
+
+/* ===== STATUS STEP PULSE BERDETAK ===== */
+@keyframes ring-pulse {
+  0%   { transform: scale(1);    opacity: 0.9; }
+  50%  { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* Kelas yang ditaruh pada elemen ::ring terpisah (absolute div di luar lingkaran) */
+.pulse-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  animation: ring-pulse 1.6s ease-out infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+.pulse-ring-yellow { background: rgba(255,199,0,0.55); }
+.pulse-ring-red    { background: rgba(139,0,0,0.45); }
+.pulse-ring-blue   { background: rgba(0,119,217,0.45); }
+.pulse-ring-green  { background: rgba(34,197,94,0.45); }
+
+/* Legacy classes (masih dipakai di tempat lain) */
+.status-pulse-masuk   { animation: ring-pulse 1.6s ease-out infinite; }
+.status-pulse-dimasak { animation: ring-pulse 1.6s ease-out infinite; }
+.status-pulse-siap    { animation: ring-pulse 1.6s ease-out infinite; }
+.status-pulse-selesai { animation: ring-pulse 1.6s ease-out infinite; }
+
+/* ===== NOTIFIKASI PEMBAYARAN BERHASIL ===== */
+@keyframes slide-down {
+  from { opacity:0; transform: translateY(-28px) scale(0.95); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+@keyframes fade-out-up {
+  from { opacity:1; transform: translateY(0); }
+  to   { opacity:0; transform: translateY(-16px); }
+}
+.notif-enter { animation: slide-down   0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.notif-exit  { animation: fade-out-up  0.3s ease-in forwards; }
+
+/* ===== GARIS SEGMENT ANTAR STEP (fill kiri ke kanan) ===== */
+@keyframes seg-fill {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+/* Animasi masuk step baru: garis segmen melebar dari kiri */
+.seg-fill-anim {
+  animation: seg-fill 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+/* Segmen yang sudah penuh — tanpa animasi */
+.seg-filled {
+  clip-path: inset(0 0% 0 0);
+}
+
+/* ===== STEP CIRCLE APPEAR ===== */
+@keyframes step-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.15); opacity: 1; }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.step-pop-anim { animation: step-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+/* ===== GARIS PROGRESS LAMA (fallback) ===== */
+@keyframes progress-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.progress-anim { transform-origin: left; animation: progress-fill 0.7s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+
