@@ -8,9 +8,10 @@ import PromoCarousel from './PromoCarousel';
 import { auth } from '@/lib/auth';
 import {
   getBestSellerMenus,
-  getCustomerOrderHistoryMenus,
+  // getCustomerOrderHistoryMenus,
   getPromoMenus,
   getRecommendedMenus,
+  getCustomerCartMenus,
 } from '@/src/controllers/menu-controller';
 
 // Helper function to assign dummy images based on menu name
@@ -40,7 +41,8 @@ const Beranda = async () => {
     getPromoMenus(4),
     getBestSellerMenus(3),
     getRecommendedMenus(4),
-    userId ? getCustomerOrderHistoryMenus(userId, 5) : Promise.resolve([]),
+    // userId ? getCustomerOrderHistoryMenus(userId, 5) : Promise.resolve([]),
+    userId ? getCustomerCartMenus(userId, 5) : Promise.resolve([]),
   ]);
 
   const formatRupiah = (price: any) => {
@@ -192,6 +194,7 @@ const Beranda = async () => {
                       <p className="text-xs text-[#8A0000] font-bold mb-3">{formatRupiah(item.price)}</p>
                       <AddToCartButton
                         item={{
+                          id: item.id,
                           name: item.name,
                           price: Number(item.price),
                           image: imageSrc,
@@ -235,6 +238,7 @@ const Beranda = async () => {
                         <p className="text-[11px] text-[#8A0000] font-bold mb-2">{formatRupiah(item.price)}</p>
                         <AddToCartButton
                           item={{
+                            id: item.id,
                             name: item.name,
                             price: Number(item.price),
                             image: imageSrc,

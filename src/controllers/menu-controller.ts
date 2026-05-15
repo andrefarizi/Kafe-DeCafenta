@@ -214,6 +214,34 @@ export async function getCustomerOrderHistoryMenus(
   return rows.map(mapMenuRow);
 }
 
+export async function getCustomerCartMenus(
+  userId: string,
+  limit = 5
+): Promise<MenuListItem[]> {
+  const cartItems = await prisma.cart.findMany({
+    where: { userId: userId },
+    include: {
+      menu: {
+        include: {
+          category: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { addedAt: 'desc' }, 
+    take: limit,
+  });
+
+  return cartItems.map((item) => ({
+    id: item.menu.id,
+    name: item.menu.name,
+    price: toNumber(item.menu.price),
+    avgRating: toNumber(item.menu.avgRating),
+    imageUrl: item.menu.imageUrl,
+    categoryName: item.menu.category.name,
+    totalOrdered: item.quantity, 
+  }));
+}
+
 export async function getMenuDetail(menuId: string): Promise<MenuDetail | null> {
   if (!menuId) {
     return null;

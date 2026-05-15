@@ -95,6 +95,7 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
 
               <AddToCartButton
                 item={{
+                  id: item.id,
                   name: item.name,
                   price: item.price,
                   image: item.image,

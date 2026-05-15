@@ -1,52 +1,107 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Sidebar from "../components/sidebar";
 import Topbar from "../components/topbar";
-import { Trash2, Edit, ChevronDown, ChevronUp, MapPin, ShoppingBag, CheckCircle2 } from "lucide-react";
+import { Trash2, Edit, ChevronDown, ChevronUp, ShoppingBag, Loader2 } from "lucide-react";
+import { 
+  getCustomerCart, 
+  updateCartNote, 
+  updateCartQuantity 
+} from "@/src/controllers/cart-controller"; 
+
+// --- HELPER UNTUK GAMBAR ---
+function getDummyImage(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes('kentang') || n.includes('snack')) return '/kentang.png';
+  if (n.includes('teh') || n.includes('jus') || n.includes('minuman') || n.includes('es')) return '/IconKopi.png';
+  return '/burger.png';
+}
+
+const categoryFallbacks: Record<string, string> = {
+  Nasi: '/nasi goreng.png',
+  Mie: '/bakso.png',
+  Snack: '/kentang goreng.png',
+  Minuman: '/jus semangka.png',
+};
+
+const resolveMenuImage = (name: string, categoryName: string, imageUrl?: string | null) => {
+  return imageUrl || categoryFallbacks[categoryName] || getDummyImage(name);
+};
+// ----------------------------
+
+// Tipe data item keranjang yang ditarik dari database
+type CartItem = {
+  id: string;
+  menuId: string;
+  name: string;
+  price: number;
+  avgRating: number;
+  imageUrl: string | null;
+  categoryName: string;
+  qty: number;
+  note: string;
+};
 
 export default function KeranjangPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOrderTypeOpen, setIsOrderTypeOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isEditNoteOpen, setIsEditNoteOpen] = useState(false);
-  const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  
+  // Perhatikan tipe datanya diubah jadi string karena ID Prisma (CUID) adalah string
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editNoteText, setEditNoteText] = useState("");
   
   const [selectedOrderType, setSelectedOrderType] = useState<"dine_in" | "takeaway" | "">("");
   const [isPaymentOpen, setIsPaymentOpen] = useState(true);
   const [selectedPayment, setSelectedPayment] = useState("");
 
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: "Nasgor wira",
-      note: "Jangan pedas",
-      price: 30000,
-      qty: 2,
-      image: "https://www.dapurkobe.co.id/wp-content/uploads/nasi-goreng-kencur-kemangi.jpg"
-    },
-    {
-      id: 2,
-      name: "Nasgor wira",
-      note: "Jangan pedas",
-      price: 30000,
-      qty: 2,
-      image: "https://www.dapurkobe.co.id/wp-content/uploads/nasi-goreng-kencur-kemangi.jpg"
-    },
-    {
-      id: 3,
-      name: "Nasgor wira",
-      note: "Jangan pedas",
-      price: 30000,
-      qty: 2,
-      image: "https://www.dapurkobe.co.id/wp-content/uploads/nasi-goreng-kencur-kemangi.jpg"
-    }
-  ]);
+  // State untuk data database & loading
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [isUpdating, startTransition] = useTransition();
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      setIsLoading(true);
+      const data = await getCustomerCart();
+      setItems(data);
+      setIsLoading(false);
+    };
+
+    fetchCart();
+  }, []);
 
   const formatPrice = (price: number) => {
     return "Rp " + price.toLocaleString("id-ID");
   };
+
+  const handleUpdateQuantity = async (cartId: string, currentQty: number, change: number) => {
+    const newQty = currentQty + change;
+    
+    // Jangan lakukan apa-apa jika kuantitas mau dikurangi di bawah 1
+    if (newQty < 1) return;
+
+    // 1. OPTIMISTIC UPDATE: Ubah UI secara instan agar terasa super cepat!
+    setItems(items.map(item => 
+      item.id === cartId ? { ...item, qty: newQty } : item
+    ));
+
+    // 2. Simpan ke database secara diam-diam di background
+    const result = await updateCartQuantity(cartId, newQty);
+
+    // 3. Jika ternyata database gagal/error, kembalikan angka di UI ke posisi semula (Revert)
+    if (!result.success) {
+      setItems(items.map(item => 
+        item.id === cartId ? { ...item, qty: currentQty } : item
+      ));
+      alert(result.message);
+    }
+  };
+
+  const totalPrice = items.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
@@ -70,65 +125,95 @@ export default function KeranjangPage() {
             </div>
 
             <div className="space-y-6">
-              {items.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-12 gap-4 items-center py-2 h-[100px]">
-                  <div className="col-span-1 text-center text-black font-bold text-[15px]">{index + 1}</div>
-                  
-                  <div className="col-span-5 flex items-center gap-6">
-                    <div className="w-[85px] h-[85px] rounded-[18px] overflow-hidden shrink-0 shadow-sm">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+              {isLoading ? (
+                <div className="flex justify-center items-center py-20 text-[#8B0000]">
+                  <Loader2 className="animate-spin w-10 h-10" />
+                  <span className="ml-3 font-bold text-lg">Memuat keranjang...</span>
+                </div>
+              ) : items.length === 0 ? (
+                <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                  <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-gray-700">Keranjang masih kosong</h3>
+                  <p className="text-gray-500 mt-2">Silakan pilih menu favorit Anda di halaman Beranda.</p>
+                </div>
+              ) : (
+                items.map((item, index) => (
+                  <div key={item.id} className="grid grid-cols-12 gap-4 items-center py-2 h-[100px]">
+                    <div className="col-span-1 text-center text-black font-bold text-[15px]">{index + 1}</div>
+                    
+                    <div className="col-span-5 flex items-center gap-6">
+                      <div className="w-[85px] h-[85px] rounded-[18px] overflow-hidden shrink-0 shadow-sm">
+                        {/* Menggunakan fungsi resolveMenuImage seperti di Beranda */}
+                        <img 
+                          src={resolveMenuImage(item.name, item.categoryName, item.imageUrl)} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <h3 className="font-extrabold text-black text-[18px]">{item.name}</h3>
+                        <p className="text-[12px] text-gray-800 font-medium mb-1.5 mt-0.5">Catatan : {item.note || "-"}</p>
+                        <button 
+                          onClick={() => {
+                            setEditingItemId(item.id);
+                            setEditNoteText(item.note);
+                            setIsEditNoteOpen(true);
+                          }}
+                          className="flex items-center justify-center gap-1.5 bg-[#FFC107] hover:bg-[#ffcd38] text-black text-[11px] font-extrabold py-1.5 px-4 rounded-full w-max transition-colors mt-0.5 shadow-sm"
+                        >
+                          <Edit size={12} strokeWidth={2.5} /> Ubah Catatan
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex flex-col justify-center">
-                      <h3 className="font-extrabold text-black text-[18px]">{item.name}</h3>
-                      <p className="text-[12px] text-gray-800 font-medium mb-1.5 mt-0.5">Catatan : {item.note || "-"}</p>
+                    
+                    <div className="col-span-2 text-center text-black font-medium text-[14px]">
+                      {formatPrice(item.price)}
+                    </div>
+                    
+                    <div className="col-span-2 flex items-center justify-center gap-4">
                       <button 
-                        onClick={() => {
-                          setEditingItemId(item.id);
-                          setEditNoteText(item.note);
-                          setIsEditNoteOpen(true);
-                        }}
-                        className="flex items-center justify-center gap-1.5 bg-[#FFC107] hover:bg-[#ffcd38] text-black text-[11px] font-extrabold py-1.5 px-4 rounded-full w-max transition-colors mt-0.5 shadow-sm"
+                        onClick={() => handleUpdateQuantity(item.id, item.qty, 1)}
+                        className="flex items-center justify-center w-[24px] h-[24px] bg-[#8B0000] rounded-[4px] hover:opacity-90 transition-opacity active:scale-90"
                       >
-                        <Edit size={12} strokeWidth={2.5} /> Ubah Catatan
+                        <span className="text-white font-bold select-none leading-none relative -top-[1.5px]">+</span>
+                      </button>
+
+                      <span className="font-extrabold text-black w-4 text-center text-[15px]">{item.qty}</span>
+
+                      <button 
+                        onClick={() => handleUpdateQuantity(item.id, item.qty, -1)}
+                        className={`flex items-center justify-center w-[24px] h-[24px] border-[1.5px] border-[#8B0000] bg-transparent rounded-[4px] transition-colors active:scale-90 ${item.qty <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                        disabled={item.qty <= 1} // Matikan tombol jika kuantitas 1
+                      >
+                        <span className="text-[#8B0000] font-bold select-none leading-none relative -top-[1.5px]">-</span>
+                      </button>
+                    </div>
+                    
+                    <div className="col-span-2 flex justify-center">
+                      <button className="flex items-center justify-center gap-2.5 bg-[#FEE2E2] hover:bg-[#fcd4d4] text-[#8B0000] font-bold py-1.5 px-3.5 rounded-[8px] text-[11px] transition-colors">
+                        <Trash2 size={17} strokeWidth={2.5} /> Hapus
                       </button>
                     </div>
                   </div>
-                  
-                  <div className="col-span-2 text-center text-black font-medium text-[14px]">
-                    {formatPrice(item.price)}
-                  </div>
-                  
-                  <div className="col-span-2 flex items-center justify-center gap-4">
-                    <button className="flex items-center justify-center w-[24px] h-[24px] bg-[#8B0000] rounded-[4px] hover:opacity-90 transition-opacity">
-                      <span className="text-white font-bold select-none leading-none relative -top-[1.5px]">+</span>
-                    </button>
-                    <span className="font-extrabold text-black w-4 text-center text-[15px]">{item.qty}</span>
-                    <button className="flex items-center justify-center w-[24px] h-[24px] border-[1.5px] border-[#8B0000]  bg-transparent rounded-[4px] hover:bg-gray-50 transition-colors">
-                      <span className="text-[#8B0000] font-bold select-none leading-none relative -top-[1.5px]">-</span>
-                    </button>
-                  </div>
-                  
-                  <div className="col-span-2 flex justify-center">
-                    <button className="flex items-center justify-center gap-2.5 bg-[#FEE2E2] hover:bg-[#fcd4d4] text-[#8B0000] font-bold py-1.5 px-3.5 rounded-[8px] text-[11px] transition-colors">
-                      <Trash2 size={17} strokeWidth={2.5} /> Hapus
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col items-end pt-8 mr-6">
-            <div className="flex items-center gap-[40px] mb-8">
-              <span className="text-[18px] font-extrabold text-[#8B0000]">Total yang harus dibayarkan :</span>
-              <span className="text-[18px] font-extrabold text-[#8B0000]">Rp 90.000</span>
+          {/* Menampilkan total hanya jika data sudah di-load dan tidak kosong */}
+          {!isLoading && items.length > 0 && (
+            <div className="mt-12 flex flex-col items-end pt-8 mr-6">
+              <div className="flex items-center gap-[40px] mb-8">
+                <span className="text-[18px] font-extrabold text-[#8B0000]">Total yang harus dibayarkan :</span>
+                <span className="text-[18px] font-extrabold text-[#8B0000]">{formatPrice(totalPrice)}</span>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="w-[380px] bg-[#8B0000] hover:bg-[#6A0000] text-white font-bold py-4 rounded-xl transition-colors shadow-md text-[14px]">
+                Buat Pesanan
+              </button>
             </div>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="w-[380px] bg-[#8B0000] hover:bg-[#6A0000] text-white font-bold py-4 rounded-xl transition-colors shadow-md text-[14px]">
-              Buat Pesanan
-            </button>
-          </div>
+          )}
         </div>
 
         {/* MODAL RINCIAN PESANAN */}
@@ -147,7 +232,7 @@ export default function KeranjangPage() {
 
                 <div className="space-y-4 px-6">
                   {items.map((item, idx) => (
-                    <React.Fragment key={idx}>
+                    <React.Fragment key={item.id || idx}>
                       <div className="grid grid-cols-12 items-center">
                         <div className="col-span-6 text-black font-semibold text-[15px]">{item.name}</div>
                         <div className="col-span-3 text-black text-center font-semibold text-[15px]">{item.qty}</div>
@@ -202,7 +287,7 @@ export default function KeranjangPage() {
                 <div className="flex flex-col gap-0.5 text-right">
                   <div className="text-black font-bold text-[16px]">Total Harga</div>
                   <div className="text-[#8B0000] font-extrabold text-[22px]">
-                    Rp {items.reduce((acc, item) => acc + (item.price * item.qty), 0).toLocaleString('id-ID')}
+                    {formatPrice(totalPrice)}
                   </div>
                 </div>
               </div>
@@ -236,7 +321,6 @@ export default function KeranjangPage() {
               <h2 className="text-[38px] font-extrabold text-black mb-12 tracking-tight text-center leading-snug">Pilih Tipe Pesanan Anda</h2>
 
               <div className="flex flex-col md:flex-row gap-8 mb-14 justify-center px-4">
-                {/* Makan Ditempat Card */}
                 <div 
                   onClick={() => setSelectedOrderType("dine_in")}
                   className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${
@@ -246,9 +330,7 @@ export default function KeranjangPage() {
                   }`}
                 >
                   <div className="relative w-28 h-28 mb-8 flex items-center justify-center pointer-events-none">
-                    <img 
-                      src="/makanditempat.png"  
-                    />
+                    <img src="/makanditempat.png" alt="Makan Ditempat" />
                   </div>
                   <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Makan Di tempat</h3>
                   <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">
@@ -256,7 +338,6 @@ export default function KeranjangPage() {
                   </p>
                 </div>
 
-                {/* Bawa Pulang Card */}
                 <div 
                   onClick={() => setSelectedOrderType("takeaway")}
                   className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${
@@ -266,7 +347,7 @@ export default function KeranjangPage() {
                   }`}
                 >
                   <div className="relative w-28 h-28 mb-8 flex items-center justify-center pointer-events-none">
-                    <img src="/bawapulang.png" alt="" />
+                    <img src="/bawapulang.png" alt="Bawa Pulang" />
                   </div>
                   <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Bawa Pulang</h3>
                   <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">
@@ -300,13 +381,10 @@ export default function KeranjangPage() {
         {isSuccessOpen && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-12 text-center shadow-2xl">
-              
               <div className="flex justify-center mb-1">
                 <div className="relative w-40 h-40">
                   <div className="relative w-40 h-40 mb-8 flex items-center justify-center pointer-events-none">
-                    <img 
-                      src="/pesanansukses.png"  
-                    />
+                    <img src="/pesanansukses.png" alt="Pesanan Sukses" />
                   </div>
                 </div>
               </div>
@@ -323,7 +401,6 @@ export default function KeranjangPage() {
                 <button 
                   onClick={() => {
                     setIsSuccessOpen(false);
-                    // Aksi periksa pesanan di sini (redirect dsb)
                   }}
                   className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
                 >
@@ -344,7 +421,6 @@ export default function KeranjangPage() {
         {isEditNoteOpen && (
           <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-10 shadow-2xl">
-              
               <div className="flex items-center gap-4 mb-8">
                 <img src="/rincian.png" alt="" className="w-12 h-12" />
                 <h2 className="text-[38px] font-extrabold text-black tracking-tight mt-1">Edit Catatan</h2>
@@ -360,13 +436,32 @@ export default function KeranjangPage() {
               </div>
 
               <button 
+                disabled={isUpdating}
                 onClick={() => {
-                  setItems(items.map(item => item.id === editingItemId ? { ...item, note: editNoteText } : item));
-                  setIsEditNoteOpen(false);
+                  if (!editingItemId) return;
+
+                  startTransition(async () => {
+                    const result = await updateCartNote(editingItemId, editNoteText);
+
+                    if (result.success) {
+                      setItems(items.map(item => 
+                        item.id === editingItemId ? { ...item, note: editNoteText } : item
+                      ));
+                      setIsEditNoteOpen(false);
+                    } else {
+                      alert(result.message);
+                    }
+                  });
                 }}
-                className="w-full bg-[#8B0000] hover:bg-[#6A0000] text-white py-5 rounded-[40px] font-extrabold text-[22px] transition-colors shadow-md"
+                className="w-full flex items-center justify-center gap-2 bg-[#8B0000] hover:bg-[#6A0000] text-white py-5 rounded-[40px] font-extrabold text-[22px] transition-colors shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Simpan Perubahan
+                {isUpdating ? (
+                  <>
+                    <Loader2 size={24} className="animate-spin" /> Menyimpan...
+                  </>
+                ) : (
+                  "Simpan Perubahan"
+                )}
               </button>
             </div>
           </div>
