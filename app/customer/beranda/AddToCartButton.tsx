@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Plus, Minus, X, FileText } from 'lucide-react';
+import React, { useState, useTransition } from 'react';
+import { Plus, Minus, X, FileText, Loader2 } from 'lucide-react';
+import { addToCart } from '@/src/controllers/cart-controller';
+import { useRouter } from 'next/navigation';
 
 type AddToCartItem = {
+  id: string; 
   name: string;
   price: number;
   image: string;
@@ -23,10 +26,13 @@ const formatRupiah = (value: number) =>
   }).format(value);
 
 export default function AddToCartButton({ item, className = '', label = 'Tambah' }: AddToCartButtonProps) {
+  const router = useRouter();
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+  const [isPending, startTransition] = useTransition();
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -37,8 +43,16 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
   };
 
   const handleConfirm = () => {
-    setIsAddModalOpen(false);
-    setIsSuccessOpen(true);
+    startTransition(async () => {
+      const result = await addToCart(item.id, quantity, notes);
+
+      if (result.success) {
+        setIsAddModalOpen(false);
+        setIsSuccessOpen(true); // Popup berhasil muncul dengan aman!
+      } else {
+        alert(result.message);
+      }
+    });
   };
 
   return (
@@ -122,14 +136,21 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
 
             <button
               type="button"
+              disabled={isPending} 
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 handleConfirm();
               }}
-              className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97]"
+              className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Tambah Pembelian - Rp {(item.price * quantity).toLocaleString('id-ID')}
+              {isPending ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Memproses...
+                </>
+              ) : (
+                `Tambah Pembelian - Rp ${(item.price * quantity).toLocaleString('id-ID')}`
+              )}
             </button>
           </div>
         </div>
@@ -177,6 +198,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
                   event.preventDefault();
                   event.stopPropagation();
                   setIsSuccessOpen(false);
+                  router.push('/customer/keranjang');
                 }}
                 className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
               >
@@ -188,6 +210,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
                   event.preventDefault();
                   event.stopPropagation();
                   setIsSuccessOpen(false);
+                  router.refresh();
                 }}
                 className="w-full bg-white border-[2.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
               >

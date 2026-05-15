@@ -2,7 +2,7 @@
 
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import {
   ChevronLeft,
   Star,
@@ -11,8 +11,10 @@ import {
   X,
   FileText,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { addToCart } from '@/src/controllers/cart-controller';
 
 type MenuDetailProps = {
   id: string;
@@ -75,11 +77,23 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [showReviewToast, setShowReviewToast] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  const [notes, setNotes] = useState(''); 
+  const [isPending, startTransition] = useTransition(); 
+  
   const pricePerItem = menu.price;
 
   const handleAddToCart = () => {
-    setIsModalOpen(false);
-    setIsSuccessOpen(true);
+    startTransition(async () => {
+      const result = await addToCart(menu.id, quantity, notes);
+
+      if (result.success) {
+        setIsModalOpen(false);
+        setIsSuccessOpen(true);
+      } else {
+        alert(result.message); 
+      }
+    });
   };
 
   const handleSendReview = () => {
@@ -253,6 +267,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
           }
         `}</style>
 
+        {/* MODAL TAMBAH PESANAN */}
         {isModalOpen && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setIsModalOpen(false)}></div>
@@ -279,6 +294,8 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                     <span className="font-bold text-black text-xs">Catatan (opsional)</span>
                   </div>
                   <textarea
+                    value={notes} // <-- Binding state kesini
+                    onChange={(e) => setNotes(e.target.value)}
                     placeholder="Contoh: jangan pedas, ya"
                     className="w-full flex-1 bg-gray-300 rounded-xl p-3 text-black placeholder:text-gray-600 text-[11px] focus:outline-none border border-transparent min-h-[75px] resize-none shadow-inner"
                   />
@@ -300,11 +317,19 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                 </div>
               </div>
 
+              {/* TOMBOL KONFIRMASI DENGAN LOADING */}
               <button
+                disabled={isPending}
                 onClick={handleAddToCart}
-                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97]"
+                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Tambah Pembelian - Rp {(pricePerItem * quantity).toLocaleString('id-ID')}
+                {isPending ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Memproses...
+                  </>
+                ) : (
+                  `Tambah Pembelian - Rp ${(pricePerItem * quantity).toLocaleString('id-ID')}`
+                )}
               </button>
             </div>
           </div>
@@ -331,8 +356,21 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                 Selamat menu kamu telah berhasil ditambahkan silahkan periksa keranjang anda sekarang
               </p>
               <div className="w-full space-y-2.5">
-                <button onClick={() => setIsSuccessOpen(false)} className="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#6A0000] transition-all shadow-md active:scale-[0.98]">Periksa Keranjang</button>
-                <button onClick={() => setIsSuccessOpen(false)} className="w-full bg-white text-[#8B0000] border-2 border-[#8B0000] py-3 rounded-xl font-bold text-sm hover:bg-red-50 transition-all active:scale-[0.98]">Lanjut Memesan</button>
+                <button 
+                  onClick={() => router.push('/customer/keranjang')} 
+                  className="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#6A0000] transition-all shadow-md active:scale-[0.98]"
+                >
+                  Periksa Keranjang
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsSuccessOpen(false);
+                    router.refresh(); 
+                  }} 
+                  className="w-full bg-white text-[#8B0000] border-2 border-[#8B0000] py-3 rounded-xl font-bold text-sm hover:bg-red-50 transition-all active:scale-[0.98]"
+                >
+                  Lanjut Memesan
+                </button>
               </div>
             </div>
           </div>

@@ -61,7 +61,7 @@ const Sidebar = ({ activeMenu }: { activeMenu?: string }) => {
         <NavItem
           icon={<ClipboardList size={20} />}
           label="Pesanan"
-          href="/customer/pesanan"
+          href="/customer/Pesanan"
           active={activeMenu === 'pesanan'}
         />
       </nav>

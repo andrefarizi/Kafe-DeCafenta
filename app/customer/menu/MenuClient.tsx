@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useTransition } from 'react';
 import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
-import { Search, Star, Plus, Minus, X, FileText } from 'lucide-react';
+import { Search, Star, Plus, Minus, X, FileText, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+// IMPORT FUNGSI BACKEND
+import { addToCart } from '@/src/controllers/cart-controller';
 
 type CustomerMenuItem = {
   id: string;
   name: string;
-  price: string;
+  price: string; 
   rating: string;
   image: string;
   category: string;
@@ -25,11 +28,18 @@ export default function MenuClient({ items }: MenuClientProps) {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('Semua Menu');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // State Modal
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<CustomerMenuItem | null>(null);
+  
+  // State Input Keranjang
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
+  
+  // State Loading untuk transaksi database
+  const [isPending, startTransition] = useTransition();
 
   const categories = useMemo(() => {
     const available = Array.from(new Set(items.map((item) => item.category)));
@@ -75,9 +85,20 @@ export default function MenuClient({ items }: MenuClientProps) {
     setIsAddModalOpen(true);
   };
 
+  // FUNGSI SAMBUNG KE DATABASE
   const handleConfirmAdd = () => {
-    setIsAddModalOpen(false);
-    setIsSuccessModalOpen(true);
+    if (!selectedItem) return;
+
+    startTransition(async () => {
+      const result = await addToCart(selectedItem.id, quantity, notes);
+
+      if (result.success) {
+        setIsAddModalOpen(false);
+        setIsSuccessModalOpen(true);
+      } else {
+        alert(result.message); // Tampilkan alert jika gagal
+      }
+    });
   };
 
   const MenuItemCard = ({ item }: { item: CustomerMenuItem }) => (
@@ -184,6 +205,7 @@ export default function MenuClient({ items }: MenuClientProps) {
           </div>
         </div>
 
+        {/* MODAL SUCCESS */}
         {isSuccessModalOpen && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[600px] p-12 text-center shadow-2xl">
@@ -210,13 +232,17 @@ export default function MenuClient({ items }: MenuClientProps) {
                 <button
                   onClick={() => {
                     setIsSuccessModalOpen(false);
+                    router.push('/customer/keranjang'); // <-- Arahkan ke halaman keranjang
                   }}
                   className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
                 >
                   Periksa Keranjang
                 </button>
                 <button
-                  onClick={() => setIsSuccessModalOpen(false)}
+                  onClick={() => {
+                    setIsSuccessModalOpen(false);
+                    router.refresh(); // <-- Soft refresh jika ada yang bergantung pada cache
+                  }}
                   className="w-full bg-white border-[2.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
                 >
                   Lanjut Memesan
@@ -226,6 +252,7 @@ export default function MenuClient({ items }: MenuClientProps) {
           </div>
         )}
 
+        {/* MODAL TAMBAH PESANAN */}
         {isAddModalOpen && selectedItem && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
             <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
@@ -280,11 +307,19 @@ export default function MenuClient({ items }: MenuClientProps) {
                 </div>
               </div>
 
+              {/* TOMBOL KONFIRMASI DENGAN LOADING */}
               <button
+                disabled={isPending}
                 onClick={handleConfirmAdd}
-                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97]"
+                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Tambah Pembelian - Rp {(parsePrice(selectedItem.price) * quantity).toLocaleString('id-ID')}
+                {isPending ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" /> Memproses...
+                  </>
+                ) : (
+                  `Tambah Pembelian - Rp ${(parsePrice(selectedItem.price) * quantity).toLocaleString('id-ID')}`
+                )}
               </button>
             </div>
           </div>
