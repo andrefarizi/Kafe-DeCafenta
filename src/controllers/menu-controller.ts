@@ -1,3 +1,5 @@
+'use server';
+
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
@@ -289,4 +291,4 @@ export async function getMenuReviews(menuId: string, limit = 2): Promise<MenuRev
   }));
 }
 
-export type { MenuListItem, MenuDetail, MenuReview };
+// export type { MenuListItem, MenuDetail, MenuReview };
