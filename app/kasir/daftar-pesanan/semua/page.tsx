@@ -68,7 +68,7 @@ export default function PesananMasuk() {
     <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
       
       {/* Page Title */}
-      <h1 className="text-3xl font-extrabold mb-6 text-black">Pesanan Masuk</h1>
+      <h1 className="text-3xl font-extrabold mb-6 text-black">Semua Pesanan</h1>
 
       {/* Search Bar */}
       <div className="flex items-center w-full border-2 border-[#FFC700] rounded-full overflow-hidden mb-8">

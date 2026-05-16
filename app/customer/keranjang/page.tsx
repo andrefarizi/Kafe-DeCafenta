@@ -325,9 +325,7 @@ export default function KeranjangPage() {
               <div className="flex justify-end gap-5">
                 <button onClick={() => setStep("orderType")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-red-50 transition-colors">Batal</button>
                 <button
-                  // KODE YANG DIUBAH: Langsung jalankan handleCreateOrder
                   onClick={handleCreateOrder} 
-                  // Opsional: disable tombol saat loading agar tidak terklik 2 kali
                   disabled={isCreatingOrder} 
                   className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
