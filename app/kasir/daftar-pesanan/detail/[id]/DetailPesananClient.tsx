@@ -300,6 +300,14 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
         </p>
       </div>
 
+      <div className="flex flex-col items-end mb-8">
+        <p className="text-sm font-extrabold text-black mb-2">Cek Invoice</p>
+        <Link href="/owner/invoice" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
+          <FileText size={16} />
+          <span className="text-xs font-bold">Invoice</span>
+        </Link>
+      </div>
+
       {/* Cancel Button */}
       {order.status !== 'Selesai' && !order.isPaid && (
         <button 
