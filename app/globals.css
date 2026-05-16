@@ -84,32 +84,148 @@ body {
   }
 }
 
-/* ===== STATUS STEP PULSE BERDETAK ===== */
+/* ===== STATUS STEP PULSE BERDETAK (Gojek-style) ===== */
+
+/* --- Lingkaran Icon Pulse --- */
 @keyframes ring-pulse {
-  0%   { transform: scale(1);    opacity: 0.9; }
-  50%  { transform: scale(1.35); opacity: 0; }
-  100% { transform: scale(1.35); opacity: 0; }
+  0%   { transform: scale(1);    opacity: 0.75; }
+  60%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
 }
 
-/* Kelas yang ditaruh pada elemen ::ring terpisah (absolute div di luar lingkaran) */
 .pulse-ring {
   position: absolute;
-  inset: -6px;
+  inset: -8px;
   border-radius: 9999px;
-  animation: ring-pulse 1.6s ease-out infinite;
+  animation: ring-pulse 1.8s ease-out infinite;
   pointer-events: none;
   z-index: 20;
 }
-.pulse-ring-yellow { background: rgba(255,199,0,0.55); }
-.pulse-ring-red    { background: rgba(139,0,0,0.45); }
-.pulse-ring-blue   { background: rgba(0,119,217,0.45); }
-.pulse-ring-green  { background: rgba(34,197,94,0.45); }
+.pulse-ring-yellow { background: rgba(255,199,0,0.6); }
+.pulse-ring-red    { background: rgba(139,0,0,0.5); }
+.pulse-ring-blue   { background: rgba(0,119,217,0.5); }
+.pulse-ring-green  { background: rgba(34,197,94,0.5); }
+
+/* Cincin kedua (lebih lambat, lebih besar) untuk efek Gojek double-ring */
+@keyframes ring-pulse-outer {
+  0%   { transform: scale(1.1);  opacity: 0.5; }
+  70%  { transform: scale(1.9);  opacity: 0; }
+  100% { transform: scale(1.9);  opacity: 0; }
+}
+.pulse-ring-outer {
+  position: absolute;
+  inset: -8px;
+  border-radius: 9999px;
+  animation: ring-pulse-outer 1.8s ease-out 0.5s infinite;
+  pointer-events: none;
+  z-index: 19;
+}
+.pulse-ring-outer.pulse-ring-yellow { background: rgba(255,199,0,0.35); }
+.pulse-ring-outer.pulse-ring-red    { background: rgba(139,0,0,0.3); }
+.pulse-ring-outer.pulse-ring-blue   { background: rgba(0,119,217,0.3); }
+.pulse-ring-outer.pulse-ring-green  { background: rgba(34,197,94,0.3); }
+
+/* --- Traveling Shimmer pada Garis Menuju Step Berikutnya (Gojek-style, kiri→kanan) --- */
+
+/* Satu keyframe shared — translateX dari luar kiri sampai luar kanan */
+@keyframes line-shimmer-ltr {
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(210%); }
+}
+
+/* Shimmer child: div absolut berupa streak terang yang bergerak kiri→kanan */
+/* Parent wajib: position:relative + overflow:hidden + warna base */
+
+.line-pulse-yellow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent          0%,
+    rgba(255,240,100,0.6) 30%,
+    rgba(255,255,210,1)   50%,
+    rgba(255,240,100,0.6) 70%,
+    transparent          100%
+  );
+  border-radius: 9999px;
+  animation: line-shimmer-ltr 1.6s cubic-bezier(0.4,0,0.6,1) infinite;
+  pointer-events: none;
+}
+.line-pulse-red {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent          0%,
+    rgba(210,60,60,0.65) 30%,
+    rgba(255,130,130,1)  50%,
+    rgba(210,60,60,0.65) 70%,
+    transparent          100%
+  );
+  border-radius: 9999px;
+  animation: line-shimmer-ltr 1.6s cubic-bezier(0.4,0,0.6,1) infinite;
+  pointer-events: none;
+}
+.line-pulse-blue {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent           0%,
+    rgba(60,150,240,0.65) 30%,
+    rgba(160,215,255,1)   50%,
+    rgba(60,150,240,0.65) 70%,
+    transparent           100%
+  );
+  border-radius: 9999px;
+  animation: line-shimmer-ltr 1.6s cubic-bezier(0.4,0,0.6,1) infinite;
+  pointer-events: none;
+}
+.line-pulse-green {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent           0%,
+    rgba(34,197,94,0.65)  30%,
+    rgba(160,240,190,1)   50%,
+    rgba(34,197,94,0.65)  70%,
+    transparent           100%
+  );
+  border-radius: 9999px;
+  animation: line-shimmer-ltr 1.6s cubic-bezier(0.4,0,0.6,1) infinite;
+  pointer-events: none;
+}
 
 /* Legacy classes (masih dipakai di tempat lain) */
-.status-pulse-masuk   { animation: ring-pulse 1.6s ease-out infinite; }
-.status-pulse-dimasak { animation: ring-pulse 1.6s ease-out infinite; }
-.status-pulse-siap    { animation: ring-pulse 1.6s ease-out infinite; }
-.status-pulse-selesai { animation: ring-pulse 1.6s ease-out infinite; }
+.status-pulse-masuk   { animation: ring-pulse 1.8s ease-out infinite; }
+.status-pulse-dimasak { animation: ring-pulse 1.8s ease-out infinite; }
+.status-pulse-siap    { animation: ring-pulse 1.8s ease-out infinite; }
+.status-pulse-selesai { animation: ring-pulse 1.8s ease-out infinite; }
+
+/* ===== STATUS UPDATE TOAST (muncul saat status berubah) ===== */
+@keyframes status-toast-in {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.92); }
+  60%  { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes status-toast-out {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-12px) scale(0.95); }
+}
+.status-toast-enter { animation: status-toast-in  0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.status-toast-exit  { animation: status-toast-out 0.35s ease-in forwards; }
+
+/* ===== STEP CIRCLE FLASH (kilatan saat status baru aktif) ===== */
+@keyframes step-flash {
+  0%   { box-shadow: 0 0 0 0 currentColor; }
+  30%  { box-shadow: 0 0 0 10px transparent; }
+  60%  { box-shadow: 0 0 0 18px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.step-flash-anim {
+  animation: step-flash 0.6s ease-out forwards, step-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
 
 /* ===== NOTIFIKASI PEMBAYARAN BERHASIL ===== */
 @keyframes slide-down {

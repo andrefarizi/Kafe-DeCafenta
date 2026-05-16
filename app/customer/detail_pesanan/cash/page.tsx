@@ -34,17 +34,20 @@ const STEPS = [
   { key: "selesai",      label: "Selesai",        color: "#22C55E" },
 ] as const;
 
-// Warna gradient per segmen (dari-ke)
-const SEGMENT_GRADIENTS = [
-  { from: "#FFC700", to: "#8B0000" },
-  { from: "#8B0000", to: "#0077D9" },
-  { from: "#0077D9", to: "#22C55E" },
-];
+// Warna ring pulse per step
+const PULSE_RING_CLASS: Record<string, string> = {
+  masuk:        "pulse-ring-yellow",
+  dimasak:      "pulse-ring-red",
+  siap_diambil: "pulse-ring-blue",
+  selesai:      "pulse-ring-green",
+};
 
-// CSS pulse class per step
-const PULSE_CLASS: Record<string, string> = {
-  masuk: "status-pulse-masuk", dimasak: "status-pulse-dimasak",
-  siap_diambil: "status-pulse-siap", selesai: "status-pulse-selesai",
+// CSS kelas shimmer untuk garis antar-step (Gojek-style)
+const LINE_PULSE_CLASS: Record<string, string> = {
+  masuk:        "line-pulse-yellow",
+  dimasak:      "line-pulse-red",
+  siap_diambil: "line-pulse-blue",
+  selesai:      "line-pulse-green",
 };
 
 const fmt = (p: number) => "Rp " + p.toLocaleString("id-ID");
@@ -52,12 +55,11 @@ const fmt = (p: number) => "Rp " + p.toLocaleString("id-ID");
 /* ═══════════════════════════════════
    STATUS TRACKER COMPONENT
 ═══════════════════════════════════ */
-// Warna ring pulse per step
-const PULSE_RING_CLASS: Record<string, string> = {
-  masuk:        "pulse-ring-yellow",
-  dimasak:      "pulse-ring-red",
-  siap_diambil: "pulse-ring-blue",
-  selesai:      "pulse-ring-green",
+const STATUS_LABEL: Record<string, { label: string; color: string; emoji: string }> = {
+  masuk:        { label: "Pesanan Masuk",       color: "#FFC700", emoji: "📋" },
+  dimasak:      { label: "Sedang Dimasak",      color: "#8B0000", emoji: "👨‍🍳" },
+  siap_diambil: { label: "Siap Diambil!",       color: "#0077D9", emoji: "📦" },
+  selesai:      { label: "Pesanan Selesai! 🎉", color: "#22C55E", emoji: "✅" },
 };
 
 function StatusTracker({
@@ -67,64 +69,66 @@ function StatusTracker({
   currentStatus: string;
   prevStatus: string | null;
 }) {
-  const currentIdx = STEPS.findIndex(s => s.key === currentStatus);
-  const prevIdx    = STEPS.findIndex(s => s.key === prevStatus);
+  const currentIdx   = STEPS.findIndex(s => s.key === currentStatus);
+  const prevIdx      = STEPS.findIndex(s => s.key === prevStatus);
   const justAdvanced = prevStatus !== null && currentIdx > prevIdx;
 
   const icons = [
-    <ClipboardList key="0" size={26} className="text-white" strokeWidth={2.5} />,
-    <CookingPot    key="1" size={26} className="text-white" strokeWidth={2.5} />,
-    <Package       key="2" size={26} className="text-white" strokeWidth={2.5} />,
-    <Check         key="3" size={36} className="text-white" strokeWidth={2.5} />,
+    <ClipboardList key="0" size={26} className={currentIdx >= 0 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
+    <CookingPot    key="1" size={26} className={currentIdx >= 1 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
+    <Package       key="2" size={26} className={currentIdx >= 2 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
+    <Check         key="3" size={36} className={currentIdx >= 3 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
   ];
+
+  // Segmen garis: ada 3 segmen (antara 4 step)
+  // "done"    → sudah dilewati, solid warna step kanan
+  // "active"  → sedang berjalan (currentIdx → currentIdx+1), shimmer berwarna step kiri
+  // "pending" → belum dilewati, abu-abu
+  const segments = STEPS.slice(0, -1).map((_, i) => {
+    if (i < currentIdx)   return "done";
+    if (i === currentIdx) return "active";
+    return "pending";
+  });
 
   return (
     <div className="relative flex items-start justify-between w-full" style={{ paddingTop: 6, paddingBottom: 6 }}>
 
-      {/* ── GARIS ABU BACKGROUND ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 34,
-          right: 34,
-          height: 10,
-          borderRadius: 9999,
-          background: "#E5E7EB",
-          zIndex: 0,
-        }}
-      />
+      {/* ── SEGMEN GARIS ANTAR-STEP ── */}
+      {segments.map((segStatus, i) => {
+        const leftStep  = STEPS[i];
+        const rightStep = STEPS[i + 1];
+        const isDone    = segStatus === "done";
+        const isActive  = segStatus === "active";
+        const segWidth  = `calc((100% - 68px) / ${STEPS.length - 1})`;
+        const segLeft   = `calc(34px + (100% - 68px) * ${i / (STEPS.length - 1)})`;
 
-      {/* ── SEGMEN WARNA + ANIMASI ── */}
-      {SEGMENT_GRADIENTS.map((seg, segIdx) => {
-        const isComplete = segIdx < currentIdx;
-        const inProgress = segIdx === currentIdx;
-        const isNew      = justAdvanced && segIdx === currentIdx - 1;
-        
-        if (!isComplete && !inProgress) return null;
-
-        // Setiap segmen = 1/3 dari area antara step pertama dan terakhir
-        const totalWidth = `calc((100% - 68px) * ${segIdx + 1} / 3)`;
+        // Base color segmen aktif: warna status saat ini tapi transparan (shimmer di atasnya)
+        const activeBaseBg = leftStep.color + "40"; // hex opacity ~25%
 
         return (
           <div
-            key={`seg-${segIdx}-${inProgress ? "progress" : isNew ? "new" : "old"}`}
-            className={inProgress ? "animate-pulse opacity-60" : ""}
+            key={i}
             style={{
               position: "absolute",
               top: 40,
-              left: 34,
-              width: totalWidth,
-              height: 10,
+              left: segLeft,
+              width: segWidth,
+              height: 8,
               borderRadius: 9999,
-              background: `linear-gradient(to right, ${STEPS[0].color}, ${STEPS[segIdx + 1].color})`,
-              zIndex: inProgress ? 1 : 2,
-              transformOrigin: "left center",
-              animation: isNew ? "progress-fill 0.85s cubic-bezier(0.4,0,0.2,1) forwards" : "none",
+              zIndex: isDone ? 2 : isActive ? 3 : 0,
+              overflow: "hidden",
+              background: isDone ? rightStep.color : isActive ? activeBaseBg : "#E5E7EB",
+              transition: "background 0.5s ease",
             }}
-          />
+          >
+            {/* Shimmer traveling pulse untuk segmen aktif (Gojek-style, kiri→kanan) */}
+            {isActive && (
+              <div className={LINE_PULSE_CLASS[leftStep.key]} />
+            )}
+          </div>
         );
       })}
+
 
       {/* ── STEP CIRCLES ── */}
       {STEPS.map((step, idx) => {
@@ -135,16 +139,19 @@ function StatusTracker({
 
         return (
           <div key={step.key} className="flex flex-col items-center" style={{ zIndex: 10, position: "relative" }}>
-
-            {/* Wrapper relatif untuk ring pulse */}
             <div style={{ position: "relative", width: 68, height: 68 }}>
 
-              {/* ── RING PULSE (elemen terpisah, tidak mengganggu transisi lingkaran) ── */}
+              {/* Outer ring pulse (lebih besar, delay 0.5s) — Gojek double-ring */}
+              {isCurrent && (
+                <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />
+              )}
+
+              {/* Inner ring pulse */}
               {isCurrent && (
                 <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />
               )}
 
-              {/* ── LINGKARAN STEP ── */}
+              {/* Lingkaran step */}
               <div
                 style={{
                   width: 68, height: 68,
@@ -196,6 +203,31 @@ function StatusTracker({
 }
 
 /* ═══════════════════════════════════
+   STATUS UPDATE TOAST
+═══════════════════════════════════ */
+function StatusUpdateToast({ status, onClose }: { status: string; onClose: () => void }) {
+  const [exiting, setExiting] = useState(false);
+  const info = STATUS_LABEL[status] ?? { label: status, color: "#333", emoji: "🔔" };
+  const close = () => { setExiting(true); setTimeout(onClose, 350); };
+  useEffect(() => { const t = setTimeout(close, 5000); return () => clearTimeout(t); }, []); // eslint-disable-line
+  return (
+    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] px-4 ${exiting ? "status-toast-exit" : "status-toast-enter"}`}>
+      <div
+        className="flex items-center gap-3 rounded-2xl shadow-2xl px-5 py-3 text-white"
+        style={{ background: info.color, minWidth: 220 }}
+      >
+        <span className="text-2xl">{info.emoji}</span>
+        <div>
+          <p className="font-extrabold text-[14px] leading-tight">Status Diperbarui!</p>
+          <p className="text-[12px] opacity-90">{info.label}</p>
+        </div>
+        <button onClick={close} className="ml-2 text-white/70 hover:text-white text-lg">✕</button>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════
    FLOATING SUCCESS BANNER
 ═══════════════════════════════════ */
 function PaymentSuccessBanner({ onClose }: { onClose: () => void }) {
@@ -239,6 +271,8 @@ function CashPageInner() {
   const [paymentError, setPaymentError]     = useState("");
   const [copied, setCopied]                 = useState(false);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [showStatusToast, setShowStatusToast]     = useState(false);
+  const isFirstLoad = useRef(true);
   const [isPolling, setIsPolling]           = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -249,10 +283,14 @@ function CashPageInner() {
     if (data) {
       setOrder(prev => {
         if (prev && prev.status !== data.status) {
-          setPrevStatus(prev.status);          // Simpan status lama → trigger animasi
+          setPrevStatus(prev.status); // trigger animasi garis
+          if (!isFirstLoad.current) {
+            setShowStatusToast(true); // toast hanya saat update, bukan load pertama
+          }
         }
         return data;
       });
+      isFirstLoad.current = false;
     }
   }, [orderId]);
 
@@ -350,6 +388,7 @@ function CashPageInner() {
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
       {showSuccessBanner && <PaymentSuccessBanner onClose={() => setShowSuccessBanner(false)} />}
+      {showStatusToast && order && <StatusUpdateToast status={order.status} onClose={() => setShowStatusToast(false)} />}
 
       <Sidebar activeMenu="pesanan" />
       <main className="flex-1 flex flex-col h-screen overflow-hidden text-left">
