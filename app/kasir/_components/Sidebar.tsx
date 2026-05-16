@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 const navItems = [
   { label: 'Beranda',        href: '/kasir/beranda',          match: '/kasir/beranda',          icon: '/mi_home.png' },
   { label: 'Pesan Ditempat', href: '/kasir/pesan-ditempat',   match: '/kasir/pesan-ditempat',   icon: '/simple-icons_justeat.png' },
-  { label: 'Daftar Pesanan', href: '/kasir/daftar-pesanan/semua', match: '/kasir/daftar-pesanan', icon: '/lsicon_work-order-outline.png' },
+  { label: 'Daftar Pesanan', href: '/kasir/daftar-pesanan', match: '/kasir/daftar-pesanan', icon: '/lsicon_work-order-outline.png' },
   { label: 'Kelola Meja',    href: '/kasir/kelola-meja',      match: '/kasir/kelola-meja',      icon: '/Vector (4).png' },
 ];
 

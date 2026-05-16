@@ -147,8 +147,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   // Kalkulasi Harga (Subtotal, Pajak 10%, Total)
   const formatPrice = (price: number) => "Rp " + price.toLocaleString("id-ID");
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const tax = subtotal * 0.1; // Pajak 10%
-  const grandTotal = subtotal + tax;
 
   // --- HANDLER MODAL TAMBAH MENU ---
   const handleOpenAddModal = (menu: MenuListItem) => {
@@ -343,17 +341,9 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
 
             {/* Subtotal & Total Container */}
             <div className="mt-4 pt-4 border-t-[1.5px] border-gray-200">
-              <div className="flex justify-between text-sm font-bold mb-2">
-                <span className="font-normal text-gray-700">Subtotal</span>
-                <span>{formatPrice(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold pb-4 border-b-[1.5px] border-black">
-                <span className="font-normal text-gray-700">Pajak (10%)</span>
-                <span>{formatPrice(tax)}</span>
-              </div>
               <div className="flex justify-between items-center text-sm pt-3">
                 <span className="font-normal text-[13px] text-gray-700 leading-tight">Total<br/>dibayar</span>
-                <span className="text-[22px] font-black text-[#8b0000]">{formatPrice(grandTotal)}</span>
+                <span className="text-[22px] font-black text-[#8b0000]">{formatPrice(subtotal)}</span>
               </div>
             </div>
           </div>
@@ -662,7 +652,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
               <div className="flex flex-col gap-0.5 text-right">
                 <div className="text-black font-bold text-[16px]">Total Harga</div>
-                <div className="text-[#8B0000] font-extrabold text-[22px]">{formatPrice(grandTotal)}</div>
+                <div className="text-[#8B0000] font-extrabold text-[22px]">{formatPrice(subtotal)}</div>
               </div>
             </div>
 
