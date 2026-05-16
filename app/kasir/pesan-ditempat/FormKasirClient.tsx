@@ -127,6 +127,8 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   // State Modal Sukses
   const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
 
+  const [createdOrderId, setCreatedOrderId] = useState<string>("");
+
   // LOGIKA FILTERING (Data dari Props)
   const categories = useMemo(() => {
     const available = Array.from(new Set(initialMenus.map((item) => item.categoryName)));
@@ -689,10 +691,13 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
 
                     if (result.success) {
                       setIsConfirmModalOpen(false);
+                      // Simpan ID pesanan yang didapat dari backend ke dalam state
+                      setCreatedOrderId(result.orderId || ""); 
                       setIsOrderSuccessOpen(true);
                     } else {
                       alert(result.message);
                     }
+
                   });
                 }}
                 className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -729,7 +734,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 onClick={() => { 
                   setIsOrderSuccessOpen(false);
                   resetForm();
-                  router.push("/kasir/daftar-pesanan/semua"); 
+                  router.push(`/kasir/daftar-pesanan/detail/${createdOrderId}`); 
                 }}
                 className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
               >
