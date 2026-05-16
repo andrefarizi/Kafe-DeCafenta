@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { Plus, Minus, X, FileText, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useTransition } from 'react';
+import { createKasirOrder } from '@/src/controllers/kasir-order-controller';
+import { Plus, Minus, X, FileText, Trash2, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // --- TYPES ---
 type MenuListItem = {
@@ -25,6 +27,13 @@ type KasirCartItem = {
 type FormKasirClientProps = {
   initialMenus: MenuListItem[];
 };
+
+// --- FUNGSI GENERATE KODE RANDOM ---
+function generateOrderCode(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `DCF${timestamp}${random}`;
+}
 
 // --- ICONS (SVG) ---
 const TrashIcon = () => (
@@ -73,11 +82,20 @@ const defaultCategoryOrder = ['Nasi', 'Mie', 'Snack', 'Minuman'];
 
 // --- MAIN COMPONENT ---
 export default function FormKasirClient({ initialMenus }: FormKasirClientProps) {
+  const router = useRouter();
+
   // State Form & Keranjang Lokal Kasir
   const [cartItems, setCartItems] = useState<KasirCartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [orderType, setOrderType] = useState("dine_in_kasir");
-  const [orderCode] = useState(`ORD-${Date.now().toString().slice(-6).toUpperCase()}`);
+  
+  // State Kode Pesanan Langsung di UI
+  const [orderCode, setOrderCode] = useState("");
+
+  // Buat kode pesanan saat halaman pertama kali dimuat
+  useEffect(() => {
+    setOrderCode(generateOrderCode());
+  }, []);
 
   // State Searching & Filtering
   const [activeCategory, setActiveCategory] = useState('Semua Menu');
@@ -93,6 +111,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   const [isEditNoteOpen, setIsEditNoteOpen] = useState(false);
   const [editingMenuId, setEditingMenuId] = useState<string | null>(null);
   const [editNoteText, setEditNoteText] = useState("");
+  const [isNoteSuccessOpen, setIsNoteSuccessOpen] = useState(false);
 
   // State Modal Konfirmasi Hapus
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -103,6 +122,10 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  // State Modal Sukses
+  const [isOrderSuccessOpen, setIsOrderSuccessOpen] = useState(false);
 
   // LOGIKA FILTERING (Data dari Props)
   const categories = useMemo(() => {
@@ -121,7 +144,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
     });
   }, [initialMenus, activeCategory, searchTerm]);
 
-  // Kalkulasi Harga
+  // Kalkulasi Harga (Subtotal, Pajak 10%, Total)
   const formatPrice = (price: number) => "Rp " + price.toLocaleString("id-ID");
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const tax = subtotal * 0.1; // Pajak 10%
@@ -184,18 +207,27 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
 
   // --- HANDLER UBAH CATATAN ---
   const saveNote = () => {
-    setCartItems(prev => prev.map(item => 
-      item.menuId === editingMenuId ? { ...item, note: editNoteText } : item
-    ));
-    setIsEditNoteOpen(false);
+    startTransition(() => {
+      setCartItems(prev => prev.map(item => 
+        item.menuId === editingMenuId ? { ...item, note: editNoteText } : item
+      ));
+      setIsEditNoteOpen(false);
+      setIsNoteSuccessOpen(true);
+    });
+  };
+
+  // --- HANDLER RESET / PESANAN BARU ---
+  const resetForm = () => {
+    setCartItems([]);
+    setCustomerName("");
+    setSearchTerm("");
+    setSelectedPayment("");
+    setOrderCode(generateOrderCode()); // Buat kode baru
   };
 
   const handleReset = () => {
     if(confirm("Yakin ingin membatalkan seluruh pesanan ini?")) {
-      setCartItems([]);
-      setCustomerName("");
-      setSearchTerm("");
-      setSelectedPayment("");
+      resetForm();
     }
   };
 
@@ -220,7 +252,9 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               <p className="text-xs font-bold mb-1">
                 Kode Pesanan
               </p>
-              <h2 className="text-[28px] font-black text-[#8b0000]">{orderCode}</h2>
+              <h2 className="text-[28px] font-black text-[#8b0000]">
+                #{orderCode || <span className="text-gray-400 text-lg">Memuat...</span>}
+              </h2>
             </div>
 
             <div>
@@ -299,7 +333,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                     <button onClick={() => handleUpdateQty(item.menuId, -1)} className="w-5 h-5 bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-gray-50 active:scale-90">-</button>
                   </div>
                   <div className="col-span-2 flex justify-center">
-                    {/* Menggunakan openDeleteModal alih-alih langsung menghapus */}
                     <button onClick={() => openDeleteModal(item.menuId, item.name)} className="bg-[#fce8e8] text-[#dc2626] px-3 py-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
                       <TrashIcon /> Hapus
                     </button>
@@ -411,7 +444,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
         </div>
       </div>
 
-      {/* ===== MODAL: TAMBAH PESANAN ===== */}
+      {/* ===== MODAL: TAMBAH PESANAN (MENU) ===== */}
       {isAddModalOpen && selectedItem && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
@@ -466,7 +499,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
             </div>
 
-            {/* TOMBOL KONFIRMASI (Tanpa Loading Karena Menyimpan ke State Lokal) */}
             <button
               onClick={handleConfirmAdd}
               className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97]"
@@ -497,7 +529,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               >
                 Batal
               </button>
-              {/* Tanpa isDeleting karena menghapus dari state lokal sangat cepat */}
               <button 
                 onClick={handleConfirmDelete} 
                 className="flex-1 bg-[#8B0000] text-white py-3 rounded-[10px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
@@ -523,17 +554,46 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             <div className="flex gap-4">
               <button 
                 onClick={() => setIsEditNoteOpen(false)}
-                className="flex-1 bg-white border-2 border-[#8B0000] text-[#8B0000] py-3 rounded-xl font-bold text-[16px] hover:bg-red-50 transition-colors"
+                className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-red-50 transition-colors"
               >
-                Batal
+                Batalkan
               </button>
-              <button 
+              <button
+                disabled={isPending}
                 onClick={saveNote}
-                className="flex-1 bg-[#8B0000] text-white py-3 rounded-xl font-bold text-[16px] hover:bg-[#6A0000] transition-colors"
+                className="flex-1 bg-[#8B0000] hover:bg-[#6A0000] text-white py-4 rounded-[14px] font-extrabold text-[18px] transition-colors shadow-md disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                Simpan
+                {isPending ? (
+                  <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
+                ) : (
+                  "Simpan Perubahan"
+                )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL: CATATAN BERHASIL DIUBAH ===== */}
+      {isNoteSuccessOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[500px] p-12 text-center shadow-2xl">
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 bg-[#DCFCE7] rounded-full flex items-center justify-center">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+                  <circle cx="26" cy="26" r="26" fill="#22C55E" fillOpacity="0.2"/>
+                  <path d="M14 26L22 34L38 18" stroke="#16A34A" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
+            <p className="text-gray-600 font-medium text-[15px] mb-8">Catatan untuk menu pesanan anda sudah berhasil diubah</p>
+            <button
+              onClick={() => setIsNoteSuccessOpen(false)} 
+              className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[18px] hover:bg-[#6A0000] transition-colors shadow-md flex items-center justify-center gap-2"
+            >
+              Lanjutkan
+            </button>
           </div>
         </div>
       )}
@@ -544,14 +604,12 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
           <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
             <h2 className="text-[32px] font-extrabold text-black mb-8 tracking-tight">Rincian Pesanan</h2>
 
-            {/* Table */}
             <div className="mb-8">
               <div className="grid grid-cols-12 bg-[#FFD1D1] py-3.5 px-6 rounded-xl mb-4">
                 <div className="col-span-6 font-extrabold text-black text-[16px]">Produk</div>
                 <div className="col-span-3 font-extrabold text-black text-center text-[16px]">Jumlah</div>
                 <div className="col-span-3 font-extrabold text-black text-right text-[16px]">Harga</div>
               </div>
-
               <div className="space-y-4 px-6">
                 {cartItems.map((item, idx) => (
                   <React.Fragment key={item.menuId || idx}>
@@ -566,11 +624,9 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
             </div>
 
-            {/* Payment Method */}
             <div className="mb-8 px-2">
               <h3 className="font-extrabold text-black text-[18px]">Pilih Metode Pembayaran</h3>
               <p className="text-[14px] text-black font-medium mb-4">Pilihlah Metode Pembayaran Andalan anda</p>
-
               <div className="border-[1.5px] border-[#8B0000] rounded-xl overflow-hidden bg-white w-full max-w-[400px]">
                 <div 
                   onClick={() => setIsPaymentOpen(!isPaymentOpen)}
@@ -579,10 +635,9 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                   <span>{selectedPayment || "Pilih Metode Pembayaran"}</span>
                   <ChevronDown />
                 </div>
-                
                 {isPaymentOpen && (
                   <div className="bg-white">
-                    {["Cash", "Gopay", "Dana", "Bank ( Virtual Account )"].map((method, idx, arr) => (
+                    {["Cash", "Gopay", "Dana"].map((method, idx, arr) => (
                       <div 
                         key={method}
                         onClick={() => {
@@ -600,7 +655,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
             </div>
 
-            {/* Summary */}
             <div className="border-t-[1.5px] border-black mb-10 pt-4 flex justify-between items-end px-2">
               <div className="flex flex-col gap-0.5">
                 <div className="text-black font-bold text-[16px]">Total Menu</div>
@@ -608,13 +662,10 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
               <div className="flex flex-col gap-0.5 text-right">
                 <div className="text-black font-bold text-[16px]">Total Harga</div>
-                <div className="text-[#8B0000] font-extrabold text-[22px]">
-                  {formatPrice(grandTotal)}
-                </div>
+                <div className="text-[#8B0000] font-extrabold text-[22px]">{formatPrice(grandTotal)}</div>
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex justify-end gap-5">
               <button 
                 onClick={() => setIsConfirmModalOpen(false)}
@@ -623,21 +674,89 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 Batal
               </button>
               <button 
+                disabled={isPending}
                 onClick={() => {
                   if (!selectedPayment) {
                     alert("Silakan pilih metode pembayaran terlebih dahulu!");
                     return;
                   }
                   
-                  // Hanya alert dummy karena kita tidak memakai controller backend
-                  alert("Ini adalah tampilan dummy. Pesanan tidak disimpan ke database.");
-                  setIsConfirmModalOpen(false);
+                  startTransition(async () => {
+                    const payload = {
+                      orderCode: orderCode,
+                      customerName: customerName,
+                      orderType: orderType,
+                      paymentMethod: selectedPayment,
+                      items: cartItems.map(item => ({
+                        menuId: item.menuId,
+                        qty: item.qty,
+                        price: item.price,
+                        note: item.note,
+                      }))
+                    };
+
+                    const result = await createKasirOrder(payload);
+
+                    if (result.success) {
+                      setIsConfirmModalOpen(false);
+                      setIsOrderSuccessOpen(true);
+                    } else {
+                      alert(result.message);
+                    }
+                  });
                 }}
-                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
+                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Lanjutkan
+                {isPending ? <><Loader2 className="animate-spin" size={18} /> Memproses...</> : "Lanjutkan"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL: PESANAN BERHASIL DIBUAT ===== */}
+      {isOrderSuccessOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-12 text-center shadow-2xl">
+            <div className="flex justify-center mb-1">
+              <div className="relative w-40 h-40 mb-8 flex items-center justify-center">
+                <img src="/pesanansukses.png" alt="Pesanan Sukses" />
+              </div>
+            </div>
+            <h2 className="text-[36px] font-extrabold text-black mb-4 tracking-tight">Pesanan Berhasil dibuat!</h2>
+            <p className="text-black font-medium text-[18px] leading-relaxed mb-4 px-6">
+              Kode Pesanan: <span className="font-extrabold text-[#8b0000]">{orderCode}</span>
+            </p>
+            <p className="text-black font-medium text-[18px] leading-relaxed mb-12 px-6">
+              Selamat pesanan anda berhasil di buat<br />
+              silahkan lanjutkan pembayaran untuk menyelesaikan<br />
+              pesanan anda
+            </p>
+            
+            {/* CONTAINER 2 TOMBOL */}
+            <div className="flex flex-col gap-4 px-10">
+              <button
+                onClick={() => { 
+                  setIsOrderSuccessOpen(false);
+                  resetForm();
+                  router.push("/kasir/daftar-pesanan/semua"); 
+                }}
+                className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
+              >
+                Periksa Pesanan
+              </button>
+              
+              <button
+                onClick={() => { 
+                  setIsOrderSuccessOpen(false);
+                  resetForm();
+                }}
+                className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
+              >
+                Kembali & Buat Pesanan Baru
+              </button>
+            </div>
+            
           </div>
         </div>
       )}
