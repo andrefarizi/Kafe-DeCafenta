@@ -325,17 +325,17 @@ export default function KeranjangPage() {
               <div className="flex justify-end gap-5">
                 <button onClick={() => setStep("orderType")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-red-50 transition-colors">Batal</button>
                 <button
-                  onClick={() => {
-                    // Buka edit catatan untuk item pertama, atau langsung ke create order
-                    if (items.length > 0) {
-                      setEditingItemId(items[0].id);
-                      setEditNoteText(items[0].note);
-                      setStep("editNote");
-                    }
-                  }}
-                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors"
+                  // KODE YANG DIUBAH: Langsung jalankan handleCreateOrder
+                  onClick={handleCreateOrder} 
+                  // Opsional: disable tombol saat loading agar tidak terklik 2 kali
+                  disabled={isCreatingOrder} 
+                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
-                  Lanjutkan
+                  {isCreatingOrder ? (
+                    <><Loader2 size={16} className="animate-spin" /> Memproses...</>
+                  ) : (
+                    "Lanjutkan"
+                  )}
                 </button>
               </div>
             </div>
@@ -386,12 +386,12 @@ export default function KeranjangPage() {
               </div>
               <h2 className="text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
               <p className="text-gray-600 font-medium text-[15px] mb-8">Catatan untuk menu pesanan anda sudah berhasil diubah</p>
+              
               <button
-                onClick={handleCreateOrder}
-                disabled={isCreatingOrder}
-                className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[18px] hover:bg-[#6A0000] transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-70"
+                onClick={() => setStep("")} 
+                className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[18px] hover:bg-[#6A0000] transition-colors shadow-md flex items-center justify-center gap-2"
               >
-                {isCreatingOrder ? <><Loader2 size={20} className="animate-spin" /> Membuat Pesanan...</> : "Lanjutkan"}
+                Lanjutkan
               </button>
             </div>
           </div>

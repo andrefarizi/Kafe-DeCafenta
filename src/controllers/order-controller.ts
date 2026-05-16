@@ -62,7 +62,7 @@ export async function createOrderFromCart(
           userId,
           orderType: orderTypeEnum,
           status: 'masuk',
-          paymentMethod: 'ewallet', // default, bisa diubah nanti
+          paymentMethod: 'ewallet',
           totalPrice,
           isPaid: false,
           notes: orderType === 'dine_in' ? 'Makan Ditempat' : 'Bawa Pulang',

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useTransition } from 'react';
-import { createKasirOrder } from '@/src/controllers/kasir-order-controller'; // Pastikan path ini benar
-import { Plus, Minus, X, FileText, Loader2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Plus, Minus, X, FileText, Trash2 } from 'lucide-react';
 
 // --- TYPES ---
 type MenuListItem = {
@@ -95,11 +94,15 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   const [editingMenuId, setEditingMenuId] = useState<string | null>(null);
   const [editNoteText, setEditNoteText] = useState("");
 
+  // State Modal Konfirmasi Hapus
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteItemName, setDeleteItemName] = useState("");
+
   // State Modal Konfirmasi Pesanan & Pembayaran
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState("");
-  const [isPending, startTransition] = useTransition();
 
   // LOGIKA FILTERING (Data dari Props)
   const categories = useMemo(() => {
@@ -118,13 +121,13 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
     });
   }, [initialMenus, activeCategory, searchTerm]);
 
-  // Kalkulasi Harga (Subtotal, Pajak 10%, Total)
+  // Kalkulasi Harga
   const formatPrice = (price: number) => "Rp " + price.toLocaleString("id-ID");
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const tax = subtotal * 0.1; // Pajak 10%
   const grandTotal = subtotal + tax;
 
-  // Handler Buka Modal Tambah Menu
+  // --- HANDLER MODAL TAMBAH MENU ---
   const handleOpenAddModal = (menu: MenuListItem) => {
     setSelectedItem(menu);
     setQuantity(1);
@@ -132,17 +135,14 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
     setIsAddModalOpen(true);
   };
 
-  // Handler Konfirmasi Tambah ke Keranjang
   const handleConfirmAdd = () => {
     if (!selectedItem) return;
 
     setCartItems(prev => {
       const existing = prev.find(item => item.menuId === selectedItem.id);
-      // Jika menu sudah ada, tambahkan qty-nya
       if (existing) {
         return prev.map(item => item.menuId === selectedItem.id ? { ...item, qty: item.qty + quantity } : item);
       }
-      // Jika menu baru, masukkan sebagai baris baru
       return [...prev, {
         menuId: selectedItem.id,
         name: selectedItem.name,
@@ -153,10 +153,10 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       }];
     });
 
-    setIsAddModalOpen(false); // Tutup modal setelah sukses
+    setIsAddModalOpen(false);
   };
 
-  // Fungsi Update Plus/Minus di Keranjang
+  // --- HANDLER KERANJANG LAINNYA ---
   const handleUpdateQty = (menuId: string, delta: number) => {
     setCartItems(prev => prev.map(item => {
       if (item.menuId === menuId) {
@@ -167,12 +167,22 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
     }));
   };
 
-  // Fungsi Hapus dari Keranjang
-  const handleRemoveItem = (menuId: string) => {
-    setCartItems(prev => prev.filter(item => item.menuId !== menuId));
+  // --- HANDLER MODAL HAPUS ---
+  const openDeleteModal = (menuId: string, name: string) => {
+    setDeleteItemId(menuId);
+    setDeleteItemName(name);
+    setIsDeleteModalOpen(true);
   };
 
-  // Fungsi Simpan Ubah Catatan
+  const handleConfirmDelete = () => {
+    if (deleteItemId) {
+      setCartItems(prev => prev.filter(item => item.menuId !== deleteItemId));
+    }
+    setIsDeleteModalOpen(false);
+    setDeleteItemId(null);
+  };
+
+  // --- HANDLER UBAH CATATAN ---
   const saveNote = () => {
     setCartItems(prev => prev.map(item => 
       item.menuId === editingMenuId ? { ...item, note: editNoteText } : item
@@ -180,12 +190,12 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
     setIsEditNoteOpen(false);
   };
 
-  // Fungsi Reset/Batal Seluruh Pesanan
   const handleReset = () => {
     if(confirm("Yakin ingin membatalkan seluruh pesanan ini?")) {
       setCartItems([]);
       setCustomerName("");
       setSearchTerm("");
+      setSelectedPayment("");
     }
   };
 
@@ -208,7 +218,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
           <div className="space-y-4 mb-8">
             <div>
               <p className="text-xs font-bold mb-1">
-                Kode Pesanan <span className="font-normal text-[10px] text-gray-500">(Terbuat Otomatis)</span>
+                Kode Pesanan
               </p>
               <h2 className="text-[28px] font-black text-[#8b0000]">{orderCode}</h2>
             </div>
@@ -242,7 +252,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             </div>
           </div>
 
-          {/* Section 2: Daftar Pesanan (Tersambung ke State cartItems) */}
+          {/* Section 2: Daftar Pesanan */}
           <div className="mb-10">
             <h2 className="text-xl font-black mb-2">Daftar Pesanan</h2>
             <div className="border-t-[1.5px] border-black w-full mb-4"></div>
@@ -285,13 +295,12 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                   <div className="col-span-3 text-center text-xs font-bold">{formatPrice(item.price)}</div>
                   <div className="col-span-2 flex justify-center items-center gap-3">
                     <button onClick={() => handleUpdateQty(item.menuId, 1)} className="w-5 h-5 bg-[#8b0000] text-white rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-[#6b0000] active:scale-90">+</button>
-
                     <span className="font-bold text-[13px]">{item.qty}</span>
-
                     <button onClick={() => handleUpdateQty(item.menuId, -1)} className="w-5 h-5 bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-gray-50 active:scale-90">-</button>
                   </div>
                   <div className="col-span-2 flex justify-center">
-                    <button onClick={() => handleRemoveItem(item.menuId)} className="bg-[#fce8e8] text-[#dc2626] px-3 py-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
+                    {/* Menggunakan openDeleteModal alih-alih langsung menghapus */}
+                    <button onClick={() => openDeleteModal(item.menuId, item.name)} className="bg-[#fce8e8] text-[#dc2626] px-3 py-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
                       <TrashIcon /> Hapus
                     </button>
                   </div>
@@ -365,7 +374,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                         <p className="text-[11px] text-gray-700 mb-3">{formatPrice(item.price)}</p>
                       </div>
                       <button 
-                        onClick={() => handleOpenAddModal(item)} // <-- Ini yang memanggil modal baru
+                        onClick={() => handleOpenAddModal(item)}
                         className="w-full bg-[#8b0000] text-white py-2 rounded-md font-bold text-[11px] hover:bg-[#6b0000] transition active:scale-95"
                       >
                         Tambah
@@ -402,36 +411,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
         </div>
       </div>
 
-      {/* MODAL UBAH CATATAN */}
-      {isEditNoteOpen && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[24px] w-full max-w-[500px] p-8 shadow-2xl">
-            <h2 className="text-[24px] font-extrabold text-black tracking-tight mb-6">Ubah Catatan</h2>
-            <textarea 
-              value={editNoteText}
-              onChange={(e) => setEditNoteText(e.target.value)}
-              className="w-full bg-white border border-gray-300 rounded-[12px] p-4 text-[15px] text-black min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#8B0000]/50 resize-none font-medium placeholder:text-gray-400 mb-6"
-              placeholder="Contoh: Tanpa bawang, pedas sedang..."
-            />
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setIsEditNoteOpen(false)}
-                className="flex-1 bg-white border-2 border-[#8B0000] text-[#8B0000] py-3 rounded-xl font-bold text-[16px] hover:bg-red-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button 
-                onClick={saveNote}
-                className="flex-1 bg-[#8B0000] text-white py-3 rounded-xl font-bold text-[16px] hover:bg-[#6A0000] transition-colors"
-              >
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL TAMBAH PESANAN (MENU) */}
+      {/* ===== MODAL: TAMBAH PESANAN ===== */}
       {isAddModalOpen && selectedItem && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
@@ -486,7 +466,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
             </div>
 
-            {/* TOMBOL KONFIRMASI (Tanpa Loading Karena Local State) */}
+            {/* TOMBOL KONFIRMASI (Tanpa Loading Karena Menyimpan ke State Lokal) */}
             <button
               onClick={handleConfirmAdd}
               className="w-full bg-[#8B0000] text-white py-3 rounded-2xl text-sm font-bold hover:bg-[#6A0000] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97]"
@@ -497,7 +477,68 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
         </div>
       )}
 
-      {/* MODAL RINCIAN PESANAN KASIR */}
+      {/* ===== MODAL: KONFIRMASI HAPUS ===== */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[420px] p-8 shadow-2xl text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-[#FEE2E2] rounded-full flex items-center justify-center">
+                <Trash2 size={32} className="text-[#8B0000]" />
+              </div>
+            </div>
+            <h2 className="text-[22px] font-extrabold text-black mb-2">Hapus Item?</h2>
+            <p className="text-gray-600 font-medium text-[14px] mb-8">
+              Apakah kamu yakin ingin menghapus <span className="font-extrabold text-black">{deleteItemName}</span> dari keranjang?
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => { setIsDeleteModalOpen(false); setDeleteItemId(null); }} 
+                className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 rounded-[10px] font-bold text-[15px] hover:bg-red-50 transition-colors"
+              >
+                Batal
+              </button>
+              {/* Tanpa isDeleting karena menghapus dari state lokal sangat cepat */}
+              <button 
+                onClick={handleConfirmDelete} 
+                className="flex-1 bg-[#8B0000] text-white py-3 rounded-[10px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL: UBAH CATATAN ===== */}
+      {isEditNoteOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[24px] w-full max-w-[500px] p-8 shadow-2xl">
+            <h2 className="text-[24px] font-extrabold text-black tracking-tight mb-6">Ubah Catatan</h2>
+            <textarea 
+              value={editNoteText}
+              onChange={(e) => setEditNoteText(e.target.value)}
+              className="w-full bg-white border border-gray-300 rounded-[12px] p-4 text-[15px] text-black min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#8B0000]/50 resize-none font-medium placeholder:text-gray-400 mb-6"
+              placeholder="Contoh: Tanpa bawang, pedas sedang..."
+            />
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setIsEditNoteOpen(false)}
+                className="flex-1 bg-white border-2 border-[#8B0000] text-[#8B0000] py-3 rounded-xl font-bold text-[16px] hover:bg-red-50 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={saveNote}
+                className="flex-1 bg-[#8B0000] text-white py-3 rounded-xl font-bold text-[16px] hover:bg-[#6A0000] transition-colors"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== MODAL: RINCIAN PESANAN KASIR ===== */}
       {isConfirmModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
@@ -582,44 +623,19 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 Batal
               </button>
               <button 
-                disabled={isPending}
                 onClick={() => {
                   if (!selectedPayment) {
                     alert("Silakan pilih metode pembayaran terlebih dahulu!");
                     return;
                   }
                   
-                  startTransition(async () => {
-                    const payload = {
-                      orderCode: orderCode,
-                      customerName: customerName,
-                      orderType: orderType,
-                      paymentMethod: selectedPayment,
-                      items: cartItems.map(item => ({
-                        menuId: item.menuId,
-                        qty: item.qty,
-                        price: item.price,
-                        note: item.note,
-                      }))
-                    };
-
-                    const result = await createKasirOrder(payload);
-
-                    if (result.success) {
-                      alert(result.message);
-                      setIsConfirmModalOpen(false);
-                      setCartItems([]);
-                      setCustomerName("");
-                      setSelectedPayment("");
-                      window.location.reload(); 
-                    } else {
-                      alert(result.message);
-                    }
-                  });
+                  // Hanya alert dummy karena kita tidak memakai controller backend
+                  alert("Ini adalah tampilan dummy. Pesanan tidak disimpan ke database.");
+                  setIsConfirmModalOpen(false);
                 }}
-                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
               >
-                {isPending ? <><Loader2 className="animate-spin" size={18} /> Memproses...</> : "Lanjutkan"}
+                Lanjutkan
               </button>
             </div>
           </div>
