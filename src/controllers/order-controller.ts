@@ -53,6 +53,12 @@ export async function createOrderFromCart(
     // Map orderType ke enum Prisma
     const orderTypeEnum = orderType === 'dine_in' ? 'dine_in_app' : 'dine_in_app';
 
+    // Ambil nama user untuk customerName
+    const userRecord = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+
     // Buat order dalam satu transaksi
     const order = await prisma.$transaction(async (tx) => {
       // Buat order
@@ -60,6 +66,7 @@ export async function createOrderFromCart(
         data: {
           orderCode,
           userId,
+          customerName: userRecord?.name ?? null,
           orderType: orderTypeEnum,
           status: 'masuk',
           paymentMethod: 'ewallet', // default, bisa diubah nanti
