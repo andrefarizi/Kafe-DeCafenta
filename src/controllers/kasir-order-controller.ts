@@ -368,6 +368,9 @@ export async function hapusPesananKasir(orderId: string) {
       await tx.order.delete({ where: { id: orderId } });
     });
 
+    // Revalidate daftar pesanan setelah hapus
+    revalidatePath('/kasir/daftar-pesanan');
+
     return { success: true, message: 'Pesanan berhasil dihapus' };
   } catch (error) {
     console.error('Error hapusPesananKasir:', error);
@@ -408,6 +411,11 @@ export async function updateOrderStatusKasir(orderId: string, currentStatusUI: s
         isPaid: newPaidStatus
       }
     });
+
+    // Revalidate halaman agar UI segar tanpa reload manual
+    revalidatePath('/kasir/daftar-pesanan');
+    revalidatePath(`/kasir/daftar-pesanan/detail/${orderId}`);
+    revalidatePath(`/kasir/invoice/${orderId}`);
 
     return { success: true, message: 'Status berhasil diperbarui!' };
   } catch (error) {

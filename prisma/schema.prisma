@@ -151,12 +151,13 @@ model Review {
 }
 
 model Table {
-  id        String      @id @default(cuid())
-  name      String      @db.VarChar(50)
-  tableCode String      @unique @db.VarChar(20)
-  status    TableStatus @default(tersedia)
-  createdAt DateTime    @default(now()) @db.Timestamptz()
-  orders    Order[]
+  id          String      @id @default(cuid())
+  name        String      @db.VarChar(50)
+  tableCode   String      @unique @db.VarChar(20)
+  status      TableStatus @default(tersedia)
+  isInLayout  Boolean     @default(true)
+  createdAt   DateTime    @default(now()) @db.Timestamptz()
+  orders      Order[]
 
   @@map("tables")
 }

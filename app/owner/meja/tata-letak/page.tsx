@@ -1,44 +1,87 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { MinusCircle, Plus, CheckCircle2 } from 'lucide-react';
+import { getTableList, saveTataLetakMeja, MejaData } from '@/src/controllers/table-controller';
 
-// --- Types ---
-interface MejaItem {
-  id: number;
-  kode: string;
-}
-
-// --- Dummy Data ---
-const diletakkan: MejaItem[] = [
-  { id: 1, kode: '#MJ01' }, { id: 2, kode: '#MJ02' },
-  { id: 3, kode: '#MJ03' }, { id: 4, kode: '#MJ04' },
-  { id: 5, kode: '#MJ05' }, { id: 6, kode: '#MJ06' },
-  { id: 11, kode: '#MJ011' }, { id: 12, kode: '#MJ012' },
-  { id: 7, kode: '#MJ07' }, { id: 8, kode: '#MJ08' },
-  { id: 9, kode: '#MJ09' }, { id: 10, kode: '#MJ010' },
-];
-
-const belumDigunakan: MejaItem[] = [
-  { id: 13, kode: '#MJ013' },
-  { id: 14, kode: '#MJ014' },
-  { id: 15, kode: '#MJ015' },
-];
-
-export default function TataLetakMeja() {
+export default function TataLetakMejaPage() {
+  const [isPending, startTransition] = useTransition();
   const [showModal, setShowModal] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  // Komponen Helper untuk Kartu Meja di dalam Denah
-  const MejaCanvasCard = ({ meja }: { meja: MejaItem }) => (
-    <div className="border border-[#8B1A1A] rounded-xl p-3 flex flex-col justify-between h-28 bg-white shadow-sm hover:shadow-md transition-shadow cursor-move">
+  // Meja yang ada di denah (max 12 sesuai Figma)
+  const [diDenah, setDiDenah] = useState<MejaData[]>([]);
+  // Meja yang belum digunakan / belum masuk denah
+  const [belumDigunakan, setBelumDigunakan] = useState<MejaData[]>([]);
+
+  // ── Load data dari DB ─────────────────────────────────────────────
+  useEffect(() => {
+    getTableList().then((tables) => {
+      const sorted = [...tables].sort((a, b) =>
+        a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
+      );
+      // Gunakan isInLayout dari DB sebagai sumber kebenaran
+      setDiDenah(sorted.filter((m) => m.isInLayout));
+      setBelumDigunakan(sorted.filter((m) => !m.isInLayout));
+      setLoading(false);
+    });
+  }, []);
+
+  // ── Keluarkan meja dari denah → belum digunakan ──────────────────
+  const handleKeluarkan = (meja: MejaData) => {
+    setDiDenah((prev) => prev.filter((m) => m.id !== meja.id));
+    setBelumDigunakan((prev) =>
+      [...prev, meja].sort((a, b) =>
+        a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
+      )
+    );
+  };
+
+  // ── Tambahkan meja dari belum digunakan → denah ──────────────────
+  const handleTambahkan = (meja: MejaData) => {
+    setBelumDigunakan((prev) => prev.filter((m) => m.id !== meja.id));
+    setDiDenah((prev) =>
+      [...prev, meja].sort((a, b) =>
+        a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
+      )
+    );
+  };
+
+  // ── Simpan Tata Letak ────────────────────────────────────────────
+  const handleSimpan = () => {
+    setErrorMsg('');
+    startTransition(async () => {
+      const result = await saveTataLetakMeja(diDenah.map((m) => m.id));
+      if (result.success) {
+        setShowModal(true);
+      } else {
+        setErrorMsg(result.message);
+      }
+    });
+  };
+
+  // ── Bagi denah menjadi 3 group (sesuai Figma) ───────────────────
+  // Kiri         : slot 0–5  (3 baris × 2 kolom) → Meja 1–6
+  // Kanan Atas   : slot 10–11 (1 baris × 2 kolom) → Meja 11–12
+  // Kanan Bawah  : slot 6–9  (2 baris × 2 kolom) → Meja 7–10
+  const mejaLeft        = diDenah.slice(0, 6);
+  const mejaTopRight    = diDenah.slice(10, 12);
+  const mejaBottomRight = diDenah.slice(6, 10);
+
+  // ── Kartu meja di dalam denah ────────────────────────────────────
+  const DenahCard = ({ meja }: { meja: MejaData }) => (
+    <div className="border border-[#8B1A1A] rounded-xl p-3 flex flex-col justify-between h-28 bg-white shadow-sm">
       <div>
-        <p className="font-extrabold text-sm text-black">Meja {meja.id}</p>
-        <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">{meja.kode}</p>
+        <p className="font-extrabold text-sm text-black">{meja.name}</p>
+        <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">#{meja.tableCode}</p>
       </div>
-      
       <div className="flex justify-end mt-auto">
-        <button className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[9px] font-bold py-1.5 px-3 rounded-md transition-colors">
+        <button
+          onClick={() => handleKeluarkan(meja)}
+          className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[9px] font-bold py-1.5 px-3 rounded-md transition-colors"
+        >
           <MinusCircle size={10} strokeWidth={2.5} />
           <span>Keluarkan Meja</span>
         </button>
@@ -46,98 +89,153 @@ export default function TataLetakMeja() {
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+        <p className="text-[#8B1A1A] font-bold animate-pulse">Memuat data meja...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto">
-      
-      {/* Header Section */}
+
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-extrabold text-[#8B1A1A] mb-1">Tata Letak Meja</h1>
         <p className="text-xs font-bold text-black">Geser meja yang diinginkan untuk mengatur posisi meja</p>
       </div>
 
-      {/* --- SECTION 1: CANVAS DENAH MEJA --- */}
+      {/* ── SECTION 1: CANVAS DENAH MEJA ── */}
       <div className="w-full overflow-x-auto pb-6">
         <div className="min-w-[800px] h-[650px] relative border-[3px] border-[#8B1A1A] rounded-2xl bg-white mt-2 shadow-sm">
-          
+
           {/* Label Pintu Masuk */}
           <div className="absolute -bottom-[15px] left-[20%] transform -translate-x-1/2 bg-white px-8 py-1.5 border-[3px] border-[#8B1A1A] rounded-lg text-[#8B1A1A] font-extrabold text-xs z-10">
             Pintu Masuk
           </div>
 
-          {/* --- WALLS / SEKAT RUANGAN --- */}
-          <div className="absolute top-0 bottom-[30%] left-[48%] w-[4px] bg-[#8B1A1A] z-0"></div>
-          <div className="absolute top-[32%] left-[58%] right-0 h-[4px] bg-[#8B1A1A] z-0"></div>
+          {/* Sekat Vertikal (dari atas sampai 30% bawah, di tengah kiri) */}
+          <div className="absolute top-0 bottom-[30%] left-[48%] w-[4px] bg-[#8B1A1A] z-0" />
+          {/* Sekat Horizontal (dari tengah ke kanan) */}
+          <div className="absolute top-[32%] left-[58%] right-0 h-[4px] bg-[#8B1A1A] z-0" />
 
-          {/* --- TABLE PLACEMENT GROUPS --- */}
-          
-          {/* Group Kiri (Meja 1-6) */}
-          <div className="absolute top-12 left-[5%] w-[40%] grid grid-cols-2 gap-x-6 gap-y-12">
-            {diletakkan.filter(m => m.id >= 1 && m.id <= 6).map(meja => (
-              <MejaCanvasCard key={meja.id} meja={meja} />
+          {/* ── Group Kiri: Meja 1–6 (3 baris × 2 kolom) ── */}
+          <div className="absolute top-12 left-[5%] w-[40%] grid grid-cols-2 gap-x-6 gap-y-12 z-10">
+            {mejaLeft.map((meja) => (
+              <DenahCard key={meja.id} meja={meja} />
+            ))}
+            {/* Placeholder slots jika < 6 */}
+            {Array.from({ length: Math.max(0, 6 - mejaLeft.length) }).map((_, i) => (
+              <div
+                key={`placeholder-left-${i}`}
+                className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"
+              >
+                <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+              </div>
             ))}
           </div>
 
-          {/* Group Kanan Atas (Meja 11-12) */}
-          <div className="absolute top-12 right-[5%] w-[38%] grid grid-cols-2 gap-x-6">
-            {diletakkan.filter(m => m.id >= 11 && m.id <= 12).map(meja => (
-              <MejaCanvasCard key={meja.id} meja={meja} />
+          {/* ── Group Kanan Atas: Meja 11–12 (1 baris × 2 kolom) ── */}
+          <div className="absolute top-12 right-[5%] w-[38%] grid grid-cols-2 gap-x-6 z-10">
+            {mejaTopRight.map((meja) => (
+              <DenahCard key={meja.id} meja={meja} />
+            ))}
+            {Array.from({ length: Math.max(0, 2 - mejaTopRight.length) }).map((_, i) => (
+              <div
+                key={`placeholder-tr-${i}`}
+                className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"
+              >
+                <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+              </div>
             ))}
           </div>
 
-          {/* Group Kanan Bawah (Meja 7-10) */}
-          <div className="absolute top-[42%] right-[5%] w-[38%] grid grid-cols-2 gap-x-6 gap-y-12">
-            {diletakkan.filter(m => m.id >= 7 && m.id <= 10).map(meja => (
-              <MejaCanvasCard key={meja.id} meja={meja} />
+          {/* ── Group Kanan Bawah: Meja 7–10 (2 baris × 2 kolom) ── */}
+          <div className="absolute top-[42%] right-[5%] w-[38%] grid grid-cols-2 gap-x-6 gap-y-12 z-10">
+            {mejaBottomRight.map((meja) => (
+              <DenahCard key={meja.id} meja={meja} />
+            ))}
+            {Array.from({ length: Math.max(0, 4 - mejaBottomRight.length) }).map((_, i) => (
+              <div
+                key={`placeholder-br-${i}`}
+                className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"
+              >
+                <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+              </div>
             ))}
           </div>
 
         </div>
       </div>
 
-      {/* --- SECTION 2: DAFTAR MEJA BELUM DIGUNAKAN --- */}
+      {/* ── SECTION 2: DAFTAR MEJA BELUM DIGUNAKAN ── */}
       <div className="border-[3px] border-[#8B1A1A] rounded-2xl p-6 bg-[#FAFAFA] mb-8 shadow-sm">
         <h2 className="text-lg font-extrabold text-black mb-6">Daftar Meja Belum Digunakan</h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {belumDigunakan.map((meja) => (
-            <div key={`unused-${meja.id}`} className="border border-[#8B1A1A] rounded-xl p-4 flex flex-col justify-between h-28 bg-white shadow-sm">
-              <div className="flex justify-between items-start">
-                <p className="font-extrabold text-base text-black">Meja {meja.id}</p>
-                <p className="text-[10px] text-[#8B1A1A] font-bold">{meja.kode}</p>
+
+        {belumDigunakan.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-4">
+            Semua meja sudah ditempatkan di denah.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {belumDigunakan.map((meja) => (
+              <div
+                key={`unused-${meja.id}`}
+                className="border border-[#8B1A1A] rounded-xl p-4 flex flex-col justify-between h-28 bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-start">
+                  <p className="font-extrabold text-base text-black">{meja.name}</p>
+                  <p className="text-[10px] text-[#8B1A1A] font-bold">#{meja.tableCode}</p>
+                </div>
+                <div className="flex justify-end mt-auto">
+                  <button
+                    onClick={() => handleTambahkan(meja)}
+                    disabled={diDenah.length >= 12}
+                    className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-1.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Plus size={12} strokeWidth={3} />
+                    <span>Tambahkan</span>
+                  </button>
+                </div>
               </div>
-              
-              <div className="flex justify-end mt-auto">
-                <button className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-1.5 px-4 rounded-md transition-colors">
-                  <Plus size={12} strokeWidth={3} />
-                  <span>Tambahkan</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* --- SECTION 3: ACTION BUTTONS --- */}
+      {/* Error banner */}
+      {errorMsg && (
+        <p className="text-sm font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-4">
+          {errorMsg}
+        </p>
+      )}
+
+      {/* ── SECTION 3: ACTION BUTTONS ── */}
       <div className="flex flex-col sm:flex-row justify-end items-center gap-4 border-t border-gray-300 pt-6">
-        <Link href="/owner/meja" className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center">
+        <Link
+          href="/owner/meja"
+          className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center"
+        >
           Batalkan
         </Link>
         <button
-          onClick={() => setShowModal(true)}
-          className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white hover:bg-red-900 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center"
+          onClick={handleSimpan}
+          disabled={isPending}
+          className="w-full sm:w-48 bg-[#8B1A1A] border border-[#8B1A1A] text-white hover:bg-red-900 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm disabled:opacity-60"
         >
-          Simpan
+          {isPending ? 'Menyimpan...' : 'Simpan'}
         </button>
       </div>
 
-      {/* ====== MODAL TATA KELOLA BERHASIL ====== */}
+      {/* ══ MODAL TATA KELOLA BERHASIL ══ */}
       {showModal && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
         >
           <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[360px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
-            
+
             {/* Ikon Sukses */}
             <div className="mb-4">
               <CheckCircle2 size={72} className="text-[#22C55E] mx-auto" strokeWidth={1.5} />
@@ -145,14 +243,13 @@ export default function TataLetakMeja() {
 
             {/* Ilustrasi */}
             <div className="w-24 h-24 mb-4 flex items-center justify-center">
-              <img 
-                src="/Group (6).png" 
-                alt="Ilustrasi Toko" 
+              <img
+                src="/Group (6).png"
+                alt="Ilustrasi Toko"
                 className="w-full h-full object-contain"
               />
             </div>
 
-            {/* Pesan Sukses */}
             <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-3">
               Tata Letak Berhasil <br /> Disimpan!
             </h2>
@@ -160,7 +257,6 @@ export default function TataLetakMeja() {
               Perubahan tata letak meja telah berhasil disimpan.
             </p>
 
-            {/* Tombol Kembali ke Meja */}
             <Link
               href="/owner/meja"
               className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm text-center block"
