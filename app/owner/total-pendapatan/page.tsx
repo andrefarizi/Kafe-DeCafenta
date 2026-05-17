@@ -1,54 +1,61 @@
-"use client";
-
-import React, { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import { ChevronLeft, ChevronDown, Banknote, Wallet } from 'lucide-react';
+import { getOwnerMonthlyReport } from '@/src/controllers/owner-controller';
+import DateCarouselClient from '../components/DateCarouselClient';
+import YearDropdownClient from '../components/YearDropdownClient';
+import ExportExcelButtonClient from '../components/ExportExcelButtonClient';
 
-export default function DetailPendapatan() {
-  const [selectedMonth, setSelectedMonth] = useState('Januari');
-  const [selectedDate, setSelectedDate] = useState(1);
+interface Props { searchParams?: Promise<{ month?: string; day?: string; year?: string }> }
+
+export default async function DetailPendapatan(props: Props) {
+  const searchParams = await props.searchParams;
+  const monthParam = searchParams?.month ? Number(searchParams.month) : undefined;
+  const yearParam = searchParams?.year ? Number(searchParams.year) : undefined;
+  const dayParam = searchParams?.day ? Number(searchParams.day) : undefined;
+  const report = await getOwnerMonthlyReport({ month: monthParam, year: yearParam, day: dayParam });
 
   const months = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
-  const chartData = [
-    { label: 'Tanggal 1 - 7', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 8 - 14', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 15 - 21', value: 'Rp 37.500.000', height: '100%' },
-    { label: 'Tanggal 22 - Akhir Bulan', value: 'Rp 37.500.000', height: '100%' },
-  ];
+  const maxRevenue = Math.max(...(report.weeklyRevenue.map((w) => w.total)), 1);
+  const chartData = report.weeklyRevenue.map((w) => ({ label: w.label, value: `Rp ${w.total.toLocaleString('id-ID')}`, height: `${Math.max(12, Math.round((w.total / maxRevenue) * 100))}%` }));
+  const daysInMonth = report.daysInMonth ?? 31;
+  const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  const dates = [1, 2, 3, 4, 5, 6, 7]; // Dummy dates for the slider
+  const selectedMonth = months[(report.month ?? 1) - 1];
+  const selectedDay = searchParams?.day ? Number(searchParams.day) : 1;
+  const activeYear = yearParam ?? report.year;
+  const selectedDate = 1;
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900">
       
       {/* Header Section */}
       <div className="flex items-start mb-8">
-        <button className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mt-1">
+        <Link href="/owner/beranda" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mt-1 inline-flex items-center">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
-        </button>
+        </Link>
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-black">Total Pendapatan</h1>
           <p className="text-sm text-[#8B1A1A] font-bold mt-1">Lihat Laporan Pendapatan Secara Detail</p>
         </div>
       </div>
 
-      {/* Filter Tahun */}
-      <div className="mb-6">
-        <button className="flex items-center justify-between w-48 px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-600">
-          <span>Filter Tahun : <span className="font-bold text-black">2026</span></span>
-          <ChevronDown size={14} />
-        </button>
+      {/* Action Bar */}
+      <div className="mb-6 flex items-center justify-end w-full gap-4">
+        <ExportExcelButtonClient report={report} type="pendapatan" />
+        <YearDropdownClient currentYear={report.year} month={report.month ?? 1} />
       </div>
 
       {/* Bulan Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-12">
-        {months.map((month) => (
-          <button
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
+        {months.map((month, idx) => (
+          <Link
             key={month}
-            onClick={() => setSelectedMonth(month)}
+            href={`/owner/total-pendapatan?month=${idx + 1}&year=${activeYear}`}
             className={`py-3 px-4 rounded-md border text-sm font-bold transition-all ${
               selectedMonth === month
                 ? 'bg-[#8B1A1A] text-white border-[#8B1A1A]'
@@ -56,15 +63,17 @@ export default function DetailPendapatan() {
             }`}
           >
             {month}
-          </button>
+          </Link>
         ))}
       </div>
 
+
+
       {/* Ringkasan Bulan */}
-      <div className="mb-10 text-center">
+        <div className="mb-10 text-center">
         <h2 className="text-2xl font-bold text-black mb-6 text-left">Bulan {selectedMonth}</h2>
         <p className="text-sm font-bold text-black mb-2">Total Pendapatan</p>
-        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">Rp 150.000.000</p>
+        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">Rp {report.totalRevenue.toLocaleString('id-ID')}</p>
         <hr className="border-t border-gray-400" />
       </div>
 
@@ -72,7 +81,7 @@ export default function DetailPendapatan() {
       <div className="mb-16">
         <h3 className="text-sm font-extrabold text-black mb-8">Grafik Pendapatan</h3>
         
-        <div className="relative pt-8">
+          <div className="relative pt-8">
           {/* Chart Container */}
           <div className="flex justify-between items-end h-64 border-b-2 border-black pb-0 gap-2 md:gap-4 px-2 md:px-8">
             {chartData.map((data, index) => (
@@ -106,25 +115,10 @@ export default function DetailPendapatan() {
       {/* Rincian Pendapatan */}
       <div>
         <h3 className="text-sm font-extrabold text-black mb-4">Rincian Pendapatan</h3>
-        
-        {/* Date Selector Slider */}
-        <div className="flex overflow-x-auto space-x-3 pb-4 mb-6 scrollbar-hide">
-          {dates.map((date) => (
-            <button
-              key={date}
-              onClick={() => setSelectedDate(date)}
-              className={`flex-shrink-0 flex flex-col items-center justify-center w-20 h-20 rounded-md border-2 transition-all ${
-                selectedDate === date
-                  ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white'
-                  : 'bg-white border-[#8B1A1A] text-black hover:bg-red-50'
-              }`}
-            >
-              <span className={`text-[10px] mb-1 ${selectedDate === date ? 'text-gray-200' : 'text-gray-600'}`}>
-                Tanggal
-              </span>
-              <span className="text-2xl font-extrabold">{date}</span>
-            </button>
-          ))}
+        {/* Date Selector Slider (client) */}
+        <div className="mb-6">
+          {/* DateCarouselClient handles swipe and selection */}
+          <DateCarouselClient basePath="/owner/total-pendapatan" month={report.month ?? 1} year={report.year} daysInMonth={daysInMonth} initialDay={selectedDay} />
         </div>
 
         {/* Breakdown List */}
@@ -135,7 +129,7 @@ export default function DetailPendapatan() {
               <Banknote size={20} className="text-black" />
               <span className="text-xs font-bold text-black">Pendapatan Pesanan Cash</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp 2.832.023</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp {((report.dailyBreakdown?.paymentBreakdown?.cash ?? report.paymentBreakdown.cash) || 0).toLocaleString('id-ID')}</span>
           </div>
 
           {/* E-Wallet / Transfer */}
@@ -144,7 +138,7 @@ export default function DetailPendapatan() {
               <Wallet size={20} className="text-black" />
               <span className="text-xs font-bold text-black">Pendapatan Pesanan E-Wallet/Transfer</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp 4.836.029</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">Rp {((report.dailyBreakdown?.paymentBreakdown?.ewallet ?? report.paymentBreakdown.ewallet) || 0).toLocaleString('id-ID')}</span>
           </div>
         </div>
       </div>

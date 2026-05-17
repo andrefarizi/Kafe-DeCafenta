@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Home, ShoppingCart, ClipboardList } from 'lucide-react';
 
-const NavItem = ({ icon, label, href, active = false }: { icon: any, label: string, href: string, active?: boolean }) => (
+const NavItem = ({ icon, label, href, active = false }: { icon: React.ReactNode, label: string, href: string, active?: boolean }) => (
   <Link href={href} className="block">
     <div className={`flex items-center gap-4 px-6 py-4 cursor-pointer transition-colors ${active ? 'bg-black/20' : 'hover:bg-black/10'}`}>
       {icon}

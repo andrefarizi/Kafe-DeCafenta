@@ -4,7 +4,16 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY?.trim() || 'SB-Mid-server-vtes-EfWHAIMBGLjEXF06HtG';
+    const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
+
+    if (!MIDTRANS_SERVER_KEY) {
+      console.error("❌ ERROR: MIDTRANS_SERVER_KEY tidak terkonfigurasi di .env");
+      return NextResponse.json(
+        { success: false, message: 'Server not configured' },
+        { status: 500 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });

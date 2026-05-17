@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function KasirLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <TopBar />
-        <main className="flex-1 bg-gray-50 p-8 overflow-auto">
+        <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">
           {children}
         </main>
       </div>

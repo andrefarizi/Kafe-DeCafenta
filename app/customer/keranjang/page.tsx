@@ -4,7 +4,7 @@ import React, { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/sidebar";
 import Topbar from "../components/topbar";
-import { Trash2, Edit, ChevronDown, ChevronUp, ShoppingBag, Loader2, X } from "lucide-react";
+import { Trash2, Edit, ChevronDown, ChevronUp, ShoppingBag, Loader2 } from "lucide-react";
 import { getCustomerCart, updateCartNote, updateCartQuantity } from "@/src/controllers/cart-controller";
 import { deleteCartItem, createOrderFromCart } from "@/src/controllers/order-controller";
 
@@ -37,6 +37,15 @@ type CartItem = {
   note: string;
 };
 
+type PaymentOption = "cash" | "gopay" | "dana" | "bank_va";
+
+const PAYMENT_OPTIONS: { value: PaymentOption; label: string }[] = [
+  { value: "cash", label: "Cash" },
+  { value: "gopay", label: "GoPay" },
+  { value: "dana", label: "DANA / QRIS" },
+  { value: "bank_va", label: "Bank (Virtual Account)" },
+];
+
 // Step: "orderType" | "detail" | "editNote" | "noteSuccess" | "orderSuccess" | "deleteConfirm"
 type ModalStep = "" | "orderType" | "detail" | "editNote" | "noteSuccess" | "orderSuccess" | "deleteConfirm";
 
@@ -65,7 +74,7 @@ export default function KeranjangPage() {
 
   // Payment dropdown di rincian
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState<PaymentOption | "">("");
 
   // Loading states
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
@@ -119,8 +128,12 @@ export default function KeranjangPage() {
 
   const handleCreateOrder = async () => {
     if (!selectedOrderType) return;
+    if (!selectedPayment) {
+      alert("Silakan pilih metode pembayaran terlebih dahulu!");
+      return;
+    }
     setIsCreatingOrder(true);
-    const result = await createOrderFromCart(selectedOrderType);
+    const result = await createOrderFromCart(selectedOrderType, selectedPayment);
     setIsCreatingOrder(false);
     if (result.success) {
       setCreatedOrderId(result.orderId || null);
@@ -309,6 +322,42 @@ export default function KeranjangPage() {
               <div className="mb-8 px-2">
                 <h3 className="font-extrabold text-black text-[18px]">Tipe Pesanan</h3>
                 <p className="text-[14px] text-black font-medium mb-4">{selectedOrderType === "dine_in" ? "Makan Di Tempat" : "Bawa Pulang"}</p>
+              </div>
+
+              <div className="mb-8 px-2">
+                <h3 className="font-extrabold text-black text-[18px]">Pilih Metode Pembayaran</h3>
+                <p className="text-[14px] text-black font-medium mb-4">Pilihlah metode pembayaran andalan Anda</p>
+                <div className="border-[1.5px] border-[#8B0000] rounded-xl overflow-hidden bg-white">
+                  <button
+                    type="button"
+                    onClick={() => setIsPaymentOpen(!isPaymentOpen)}
+                    className="w-full p-3 flex justify-between items-center text-[#8B0000] font-medium text-[14px]"
+                  >
+                    <span>
+                      {selectedPayment
+                        ? PAYMENT_OPTIONS.find((opt) => opt.value === selectedPayment)?.label
+                        : "Pilih Metode Pembayaran"}
+                    </span>
+                    {isPaymentOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  </button>
+                  {isPaymentOpen && (
+                    <div className="bg-white border-t border-[#8B0000]">
+                      {PAYMENT_OPTIONS.map((opt, idx) => (
+                        <button
+                          type="button"
+                          key={opt.value}
+                          onClick={() => {
+                            setSelectedPayment(opt.value);
+                            setIsPaymentOpen(false);
+                          }}
+                          className={`w-full p-3 text-left text-[#8B0000] font-medium text-[14px] hover:bg-red-50 transition-colors ${idx !== PAYMENT_OPTIONS.length - 1 ? "border-b border-[#8B0000]" : ""}`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="border-t-[1.5px] border-black mb-10 pt-4 flex justify-between items-end px-2">

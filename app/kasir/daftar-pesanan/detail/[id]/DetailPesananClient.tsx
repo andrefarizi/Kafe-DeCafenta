@@ -207,9 +207,9 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
       {/* Header */}
       <div className="flex items-center mb-8">
         <button 
-          onClick={() => router.back()}
-          aria-label="Kembali" 
-          title="Kembali" 
+          onClick={() => router.push('/kasir/daftar-pesanan')}
+          aria-label="Kembali ke Pesanan" 
+          title="Kembali ke Pesanan" 
           className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
         >
           <ChevronLeft size={20} className="text-[#8B1A1A]" />

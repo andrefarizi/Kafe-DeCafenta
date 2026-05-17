@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Plus, LayoutGrid, Trash2, CheckCircle2 } from 'lucide-react';
+import { Plus, LayoutGrid, Trash2, CheckCircle2, X } from 'lucide-react';
 
 // --- Types ---
 type StatusMeja = 'Tersedia' | 'Dipakai';

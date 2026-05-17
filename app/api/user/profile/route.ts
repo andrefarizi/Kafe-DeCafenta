@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+const toProfileResponse = (user: { id: string; name: string | null; email: string; image: string | null } & { phone?: string | null }) => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  image: user.image,
+  phone: user.phone ?? null,
+});
+
 // GET /api/user/profile — ambil data profil terbaru
 export async function GET() {
   try {
@@ -12,14 +20,13 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, name: true, email: true, image: true, phone: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    return NextResponse.json(toProfileResponse(user));
   } catch (err) {
     console.error("[GET /api/user/profile]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -57,10 +64,9 @@ export async function PATCH(req: NextRequest) {
         ...(phone !== undefined && { phone: phone.trim() }),
         ...(image !== undefined && { image }),
       },
-      select: { id: true, name: true, email: true, image: true, phone: true },
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json(toProfileResponse(updated));
   } catch (err) {
     console.error("[PATCH /api/user/profile]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

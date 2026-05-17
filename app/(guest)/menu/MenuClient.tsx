@@ -36,7 +36,7 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans overflow-x-hidden flex flex-col scroll-smooth">
       {/* ================= NAVBAR ================= */}
-      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm sticky top-0 z-50">
+      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm fixed top-0 w-full z-50">
         <div className="flex items-center gap-2">
           <img src="/Group 2 1.png" alt="Logo D" className="h-8 object-contain" />
           <span className="text-xs font-bold text-[#8b1c1c] tracking-widest mt-1">
@@ -45,9 +45,9 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-800">
-          <a href="/" className="hover:text-[#8b1c1c] transition-colors">
+          <Link href="/" className="hover:text-[#8b1c1c] transition-colors">
             Home
-          </a>
+          </Link>
           <a href="#" className="text-[#8b1c1c]">
             Menu
           </a>
@@ -73,7 +73,7 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
       </nav>
 
       {/* ================= HEADER MENU ================= */}
-      <section className="px-8 md:px-16 pt-10 pb-6 max-w-7xl mx-auto">
+      <section className="px-8 md:px-16 pt-10 pb-6 max-w-7xl mx-auto mt-20">
         <h1 className="text-3xl font-extrabold text-black mb-6">Menu De Cafenta</h1>
 
         {/* Search Bar */}

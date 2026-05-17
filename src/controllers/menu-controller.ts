@@ -132,21 +132,24 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
 
   const menuMap = new Map(menus.map((menu) => [menu.id, menu]));
 
-  return ordered
-    .map((item) => {
-      const menu = menuMap.get(item.menuId);
-      if (!menu) return null;
-      return {
-        id: menu.id,
-        name: menu.name,
-        price: toNumber(menu.price),
-        avgRating: toNumber(menu.avgRating),
-        imageUrl: menu.imageUrl,
-        categoryName: menu.category.name,
-        totalOrdered: toNumber(item._sum.quantity),
-      };
-    })
-    .filter((menu): menu is MenuListItem => Boolean(menu));
+  const bestSellers: MenuListItem[] = [];
+
+  for (const item of ordered) {
+    const menu = menuMap.get(item.menuId);
+    if (!menu) continue;
+
+    bestSellers.push({
+      id: menu.id,
+      name: menu.name,
+      price: toNumber(menu.price),
+      avgRating: toNumber(menu.avgRating),
+      imageUrl: menu.imageUrl,
+      categoryName: menu.category.name,
+      totalOrdered: toNumber(item._sum.quantity),
+    });
+  }
+
+  return bestSellers;
 }
 
 export async function getRecommendedMenus(limit = 4): Promise<MenuListItem[]> {
@@ -294,7 +297,72 @@ export async function getMenuReviews(menuId: string, limit = 2): Promise<MenuRev
 
 // export type { MenuListItem, MenuDetail, MenuReview };
 
+/* ─── OWNER: Ambil semua kategori dari DB ─── */
+export async function getCategories() {
+  const cats = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+  return cats.map((c) => ({ id: c.id, name: c.name }));
+}
 
+/* ─── OWNER: Tipe hasil createMenu ─── */
+export type CreateMenuResult = {
+  success: boolean;
+  message: string;
+};
+
+/* ─── OWNER: Tambah menu baru ke database ─── */
+export async function createMenu(formData: FormData): Promise<CreateMenuResult> {
+  try {
+    const name        = (formData.get('name') as string | null)?.trim() ?? '';
+    const categoryId  = (formData.get('categoryId') as string | null)?.trim() ?? '';
+    const priceStr    = (formData.get('price') as string | null)?.trim() ?? '';
+    const description = (formData.get('description') as string | null)?.trim() ?? '';
+    const imageFile   = formData.get('image') as File | null;
+
+    // Validasi server-side
+    if (!name)       return { success: false, message: 'Nama menu tidak boleh kosong.' };
+    if (!categoryId) return { success: false, message: 'Kategori harus dipilih.' };
+    const price = Number(priceStr);
+    if (!priceStr || isNaN(price) || price <= 0)
+      return { success: false, message: 'Harga harus berupa angka lebih dari 0.' };
+    if (name.length > 100)
+      return { success: false, message: 'Nama menu maksimal 100 karakter.' };
+    if (description.length > 300)
+      return { success: false, message: 'Deskripsi maksimal 300 karakter.' };
+
+    // Simpan gambar jika ada
+    let imageUrl: string | null = null;
+    if (imageFile && imageFile.size > 0) {
+      const { writeFile, mkdir } = await import('fs/promises');
+      const { join }             = await import('path');
+      const bytes  = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'menus');
+      await mkdir(uploadDir, { recursive: true });
+      const ext      = (imageFile.name.split('.').pop() ?? 'jpg').toLowerCase();
+      const fileName = `menu-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      await writeFile(join(uploadDir, fileName), buffer);
+      imageUrl = `/uploads/menus/${fileName}`;
+    }
+
+    await prisma.menu.create({
+      data: {
+        name,
+        categoryId,
+        price,
+        description: description || null,
+        imageUrl,
+        isAvailable: true,
+      },
+    });
+
+    return { success: true, message: 'Menu berhasil ditambahkan!' };
+  } catch (err) {
+    console.error('createMenu error:', err);
+    return { success: false, message: 'Terjadi kesalahan. Silakan coba lagi.' };
+  }
+}
+
+/* ─── CUSTOMER: Tambah ulasan menu ─── */
 export async function addMenuReview(menuId: string, rating: number, comment: string, orderItemId: string) {
   try {
     const session = await auth();
@@ -304,8 +372,6 @@ export async function addMenuReview(menuId: string, rating: number, comment: str
 
     const cleanComment = comment.trim() === "" ? null : comment.trim();
 
-    // 1. Buat Ulasannya (Ini yang udah berhasil masuk)
-    console.log("1. Menyimpan ulasan untuk menu:", menuId);
     await prisma.review.create({
       data: {
         menuId: menuId,
@@ -315,14 +381,11 @@ export async function addMenuReview(menuId: string, rating: number, comment: str
       }
     });
 
-    // 2. UBAH STATUS ITEM PESANAN (Nah, biasanya crash di sini nih!)
-    console.log("2. Mengubah status isReviewed untuk OrderItem ID:", orderItemId);
     await prisma.orderItem.update({
       where: { id: orderItemId },
       data: { isReviewed: true }
     });
 
-    // 3. Update Rata-rata Bintang Menu
     try {
       const aggregate = await prisma.review.aggregate({
         where: { menuId }, _avg: { rating: true }, _count: { id: true }
@@ -338,11 +401,7 @@ export async function addMenuReview(menuId: string, rating: number, comment: str
     return { success: true, message: 'Ulasan berhasil ditambahkan!' };
     
   } catch (error: any) {
-    console.error('================ ERROR ADD MENU REVIEW ================');
-    console.error(error);
-    console.error('=======================================================');
-    
-    // KITA TAMPILKAN EROR ASLINYA KE LAYAR BIAR KETAHUAN!
+    console.error('ERROR ADD MENU REVIEW:', error);
     return { 
       success: false, 
       message: `Eror Database: ${error.message || 'Gagal menyimpan status'}` 
@@ -350,23 +409,16 @@ export async function addMenuReview(menuId: string, rating: number, comment: str
   }
 }
 
-/// Fungsi untuk mengambil semua ulasan dari satu menu (VERSI AMAN DARI DECIMAL ERROR)
+/* ─── CUSTOMER: Ambil ulasan menu ─── */
 export async function getMenuWithReviews(menuId: string) {
   try {
-    // 1. Ambil data menunya saja dulu
-    const menu = await prisma.menu.findUnique({
-      where: { id: menuId }
-    });
-
+    const menu = await prisma.menu.findUnique({ where: { id: menuId } });
     if (!menu) return null;
 
-    // 2. Ambil ulasannya secara terpisah
     const reviews = await prisma.review.findMany({
       where: { menuId: menuId },
       orderBy: { createdAt: 'desc' },
-      include: {
-        user: true // Ambil user-nya
-      }
+      include: { user: true }
     });
 
     return {
@@ -383,8 +435,7 @@ export async function getMenuWithReviews(menuId: string) {
       }))
     };
   } catch (error: any) {
-    console.error("================ EROR GET REVIEWS ================");
-    console.error(error.message);
+    console.error("EROR GET REVIEWS:", error.message);
     return { error: error.message }; 
   }
 }

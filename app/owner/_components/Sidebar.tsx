@@ -48,7 +48,7 @@ const IconReview = () => (
 
 const navItems = [
   { label: 'Beranda',        href: '/owner/beranda',          match: '/owner/beranda',          icon: '/mi_home.png' },
-  { label: 'Pesanan',        href: '/owner/pesanan/masuk',    match: '/owner/pesanan',          icon: '/lsicon_work-order-outline.png' },
+  { label: 'Pesanan',        href: '/owner/pesanan',          match: '/owner/pesanan',          icon: '/lsicon_work-order-outline.png' },
   { label: 'Manajemen Menu', href: '/owner/menu',             match: '/owner/menu',             icon: '/simple-icons_justeat.png' },
   { label: 'Data Staff',     href: '/owner/data-staff',       match: '/owner/data-staff',       icon: '/majesticons_user-box-line.png' },
   { label: 'Kelola Meja',    href: '/owner/meja',             match: '/owner/meja',             icon: '/Vector (4).png' },
@@ -58,7 +58,7 @@ export default function OwnerSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-52 min-h-screen bg-[#9b0d0d] text-white flex flex-col shrink-0">
+    <aside className="w-52 h-full bg-[#9b0d0d] text-white flex flex-col shrink-0 sticky top-0">
 
       {/* ── Logo ── */}
       <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">

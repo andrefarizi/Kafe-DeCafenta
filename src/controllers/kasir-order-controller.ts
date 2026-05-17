@@ -89,7 +89,13 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
 
     // 4. Kalkulasi Total Harga dari Database Asli
     let subtotal = 0;
-    const orderItemsInput = [];
+    const orderItemsInput: {
+      menuId: string;
+      quantity: number;
+      unitPrice: number;
+      subtotal: number;
+      customNotes: string | null;
+    }[] = [];
 
     for (const item of data.items) {
       const menu = await prisma.menu.findUnique({ where: { id: item.menuId } });
@@ -101,7 +107,7 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
       orderItemsInput.push({
         menuId: item.menuId,
         quantity: item.qty,
-        unitPrice: menu.price,
+        unitPrice: Number(menu.price),
         subtotal: itemSubtotal,
         customNotes: item.note || null,
       });
@@ -135,7 +141,7 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
     // (Atau jika di skemamu hanya ada 'dine_in_app', ganti jadi 'dine_in_app')
     const orderTypeEnum = 'dine_in_kasir';
     
-    let mappedPaymentMethod = 'cash';
+    let mappedPaymentMethod: 'cash' | 'ewallet' = 'cash';
     if (data.paymentMethod === 'Gopay' || data.paymentMethod === 'Dana') {
       mappedPaymentMethod = 'ewallet';
     }
@@ -152,9 +158,9 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
           orderCode: finalOrderCode,
           kasirId: kasirId,
           customerName: data.customerName.trim(),
-          orderType: orderTypeEnum as any,
+          orderType: orderTypeEnum,
           status: 'masuk',
-          paymentMethod: mappedPaymentMethod as any,
+          paymentMethod: mappedPaymentMethod,
           totalPrice: grandTotal,
           isPaid: false,
           notes: finalNotes, 

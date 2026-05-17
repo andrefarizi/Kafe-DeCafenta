@@ -163,7 +163,7 @@ const DetailPesanan = () => {
     );
 };
 
-const TableRow = ({ name, category, qty, price, note, img }: any) => (
+const TableRow = ({ name, category, qty, price, note, img }: { name: string, category: string, qty: number, price: string, note: string, img: string }) => (
     <tr className="border-b border-gray-50">
         <td className="py-3">
             <div className="flex items-center gap-3 text-left">

@@ -10,8 +10,9 @@ import {
 import { OrderSummaryData } from '@/src/controllers/kasir-order-controller';
 
 type StatusPesanan = 'Masuk' | 'Dimasak' | 'Siap Diambil' | 'Selesai';
+type TabId = 'Semua' | StatusPesanan;
 
-const tabs = [
+const tabs: { id: TabId; label: string; icon: string }[] = [
   { id: 'Semua', label: 'Semua', icon: '/Group 135.png' },
   { id: 'Masuk', label: 'Masuk', icon: '/Food Icon Illustrations Kit (1).png' },
   { id: 'Dimasak', label: 'Dimasak', icon: '/Food Icon Illustrations Kit (2).png' },
@@ -19,8 +20,14 @@ const tabs = [
   { id: 'Selesai', label: 'Selesai', icon: '/Food Icon Illustrations Kit (4).png' },
 ];
 
-export default function PesananMasukClient({ initialOrders }: { initialOrders: OrderSummaryData[] }) {
-  const [activeTab, setActiveTab] = useState('Semua');
+export default function PesananMasukClient({
+  initialOrders,
+  activeTab: initialActiveTab = 'Semua',
+}: {
+  initialOrders: OrderSummaryData[];
+  activeTab?: TabId;
+}) {
+  const [activeTab, setActiveTab] = useState<TabId>(initialActiveTab);
   const [searchTerm, setSearchTerm] = useState('');
   
   // --- STATE UNTUK PAGINATION ---
@@ -29,6 +36,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
 
   // Kembalikan ke halaman 1 setiap kali kasir mengganti Tab atau mencari nama
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [activeTab, searchTerm]);
 
@@ -63,7 +71,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
   const getPageNumbers = () => {
     const maxPagesToShow = 3;
     let startPage = Math.max(1, currentPage - 1);
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
@@ -92,7 +100,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
+    <div className="flex flex-col min-h-full bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
       
       <h1 className="text-3xl font-extrabold mb-6 text-black">
         {activeTab === 'Semua' ? 'Semua Pesanan' : `Pesanan ${activeTab}`}
@@ -138,7 +146,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
       </div>
 
       {/* Table Section */}
-      <div className="w-full mb-8">
+      <div className="flex-1 w-full mb-4">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px] border-collapse">
             <thead>
@@ -192,7 +200,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
                           href={getDetailHref(order.status, order.dbId)}
                           className="bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-2 px-3 rounded-md transition-colors whitespace-nowrap leading-tight text-center"
                         >
-                          Perbarui<br/>Status
+                          Detail<br/>Pesanan
                         </Link>
                       </div>
                     </td>
@@ -211,9 +219,8 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
         )}
       </div>
 
-      {/* Pagination Section Berfungsi */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center space-x-2 pb-8">
+      {/* Pagination Section - selalu di bawah */}
+      <div className="mt-auto flex justify-center items-center space-x-2 pt-4 pb-8">
           <button 
             onClick={handlePrevPage}
             disabled={currentPage === 1}
@@ -230,7 +237,6 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
             Awal
           </button>
 
-          {/* Render Angka Halaman Dinamis */}
           {getPageNumbers().map(pageNum => (
             <button
               key={pageNum}
@@ -245,7 +251,6 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
             </button>
           ))}
 
-          {/* Tampilkan elipsis "..." jika halaman total masih jauh dari halaman yg tampil */}
           {currentPage < totalPages - 2 && totalPages > 3 && (
             <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm cursor-default">
               ...
@@ -268,7 +273,6 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
             <ChevronRight size={16} />
           </button>
         </div>
-      )}
 
     </div>
   );
