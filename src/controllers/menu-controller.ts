@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { auth } from '@/lib/auth';
 
 type MenuListItem = {
   id: string;
@@ -358,5 +359,83 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
   } catch (err) {
     console.error('createMenu error:', err);
     return { success: false, message: 'Terjadi kesalahan. Silakan coba lagi.' };
+  }
+}
+
+/* ─── CUSTOMER: Tambah ulasan menu ─── */
+export async function addMenuReview(menuId: string, rating: number, comment: string, orderItemId: string) {
+  try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    
+    if (!userId) return { success: false, message: 'Harus login untuk mengulas.' };
+
+    const cleanComment = comment.trim() === "" ? null : comment.trim();
+
+    await prisma.review.create({
+      data: {
+        menuId: menuId,
+        userId: userId, 
+        rating: rating,
+        comment: cleanComment,
+      }
+    });
+
+    await prisma.orderItem.update({
+      where: { id: orderItemId },
+      data: { isReviewed: true }
+    });
+
+    try {
+      const aggregate = await prisma.review.aggregate({
+        where: { menuId }, _avg: { rating: true }, _count: { id: true }
+      });
+      await prisma.menu.update({
+        where: { id: menuId },
+        data: { avgRating: aggregate._avg.rating || 0, reviewCount: aggregate._count.id }
+      });
+    } catch (e) { 
+      console.log("Gagal update rata-rata bintang (Aman diabaikan)"); 
+    }
+
+    return { success: true, message: 'Ulasan berhasil ditambahkan!' };
+    
+  } catch (error: any) {
+    console.error('ERROR ADD MENU REVIEW:', error);
+    return { 
+      success: false, 
+      message: `Eror Database: ${error.message || 'Gagal menyimpan status'}` 
+    };
+  }
+}
+
+/* ─── CUSTOMER: Ambil ulasan menu ─── */
+export async function getMenuWithReviews(menuId: string) {
+  try {
+    const menu = await prisma.menu.findUnique({ where: { id: menuId } });
+    if (!menu) return null;
+
+    const reviews = await prisma.review.findMany({
+      where: { menuId: menuId },
+      orderBy: { createdAt: 'desc' },
+      include: { user: true }
+    });
+
+    return {
+      menuName: menu.name,
+      avgRating: Number(menu.avgRating) || 0, 
+      reviewCount: menu.reviewCount || 0,
+      reviews: reviews.map((r: any) => ({
+        id: r.id,
+        name: r.user?.name || 'Pengguna',
+        date: r.createdAt.toISOString(),
+        text: r.comment || 'Tanpa komentar',
+        rating: r.rating,
+        img: r.user?.image || '/LOGOPROFIL.png'
+      }))
+    };
+  } catch (error: any) {
+    console.error("EROR GET REVIEWS:", error.message);
+    return { error: error.message }; 
   }
 }

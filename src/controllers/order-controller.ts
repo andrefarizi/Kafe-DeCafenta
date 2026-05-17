@@ -214,12 +214,14 @@ export async function getOrderDetail(orderId: string) {
       orderedAt: order.orderedAt.toISOString(),
       items: order.orderItems.map((item) => ({
         id: item.id,
+        menuId: item.menu.id,
         name: item.menu.name,
         category: item.menu.category.name,
         quantity: item.quantity,
         unitPrice: Number(item.unitPrice),
         subtotal: Number(item.subtotal),
         notes: item.customNotes || '',
+        isReviewed: item.isReviewed || false, 
       })),
     };
   } catch (error) {

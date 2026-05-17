@@ -27,6 +27,21 @@ const SEGMENT_GRADIENTS = [
   { from: "#3B82F6", to: "#22C55E" },
 ];
 
+/* ─────────── KONFIGURASI ANIMASI PULSE ─────────── */
+const PULSE_RING_CLASS: Record<string, string> = {
+  'Masuk':        "pulse-ring-yellow",
+  'Dimasak':      "pulse-ring-red",
+  'Siap Diambil': "pulse-ring-blue",
+  'Selesai':      "pulse-ring-green",
+};
+
+const LINE_PULSE_CLASS: Record<string, string> = {
+  'Masuk':        "line-pulse-yellow",
+  'Dimasak':      "line-pulse-red",
+  'Siap Diambil': "line-pulse-blue",
+  'Selesai':      "line-pulse-green",
+};
+
 /* ─────────── KOMPONEN STATUS TRACKER DINAMIS ─────────── */
 function StatusTracker({ currentStatus }: { currentStatus: string }) {
   const currentIdx = STEPS.findIndex(s => s.key === currentStatus);
@@ -40,49 +55,75 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
 
   return (
     <div className="relative flex justify-between px-2 md:px-8 mb-8 z-0 w-full">
+      {/* Garis Abu-Abu Background */}
       <div className="absolute left-[12.5%] right-[12.5%] top-[34px] -translate-y-1/2 h-2.5 bg-gray-300 z-[-1] rounded-full"></div>
 
-      {SEGMENT_GRADIENTS.map((seg, segIdx) => {
-        const isComplete = segIdx < currentIdx;
-        const inProgress = segIdx === currentIdx;
+      {/* Garis Segmen Warna Gradien + Shimmer */}
+      {SEGMENT_GRADIENTS.map((seg, i) => {
+        const isDone = i < currentIdx;
+        const isActive = i === currentIdx;
         
-        if (!isComplete && !inProgress) return null;
+        // Jangan render garis warna jika status belum sampai sini
+        if (!isDone && !isActive) return null;
 
         return (
           <div
-            key={`seg-${segIdx}`}
-            className={inProgress ? "animate-pulse opacity-80" : ""}
+            key={`seg-${i}`}
             style={{
               position: "absolute",
               top: "34px",
-              left: `${12.5 + (segIdx * 25)}%`, 
+              left: `${12.5 + (i * 25)}%`, 
               width: "25%", 
               height: "10px",
               transform: "translateY(-50%)",
-              background: `linear-gradient(to right, ${seg.from}, ${seg.to})`,
-              zIndex: inProgress ? 1 : 2,
+              background: isActive 
+                ? `${STEPS[i].color}40` // Transparan untuk base shimmer saat aktif
+                : `linear-gradient(to right, ${seg.from}, ${seg.to})`,
+              zIndex: isActive ? 3 : 2,
+              borderRadius: 9999,
+              overflow: "hidden"
             }}
-          />
+          >
+            {/* Animasi Shimmer berjalan untuk garis yang sedang aktif */}
+            {isActive && <div className={LINE_PULSE_CLASS[STEPS[i].key]} />}
+          </div>
         );
       })}
 
+      {/* Step Circles + Ring Pulse */}
       {STEPS.map((step, idx) => {
         const active = idx <= currentIdx;
-        const color  = active ? step.color : "#D1D5DB";
+        const isCurrent = idx === currentIdx;
+        const color = active ? step.color : "#D1D5DB";
 
         return (
           <div key={step.key} className="flex flex-col items-center w-1/4 z-10">
-            <div
-              className="w-[68px] h-[68px] rounded-full border-[4px] bg-white p-[3px] flex items-center justify-center transition-colors duration-500"
-              style={{ borderColor: color }}
-            >
+            <div style={{ position: "relative", width: 68, height: 68 }}>
+              
+              {/* Outer ring pulse */}
+              {isCurrent && (
+                <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />
+              )}
+              
+              {/* Inner ring pulse */}
+              {isCurrent && (
+                <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />
+              )}
+
+              {/* Base Circle */}
               <div
-                className="w-full h-full rounded-full flex items-center justify-center transition-colors duration-500"
-                style={{ backgroundColor: color }}
+                className="w-full h-full rounded-full border-[4px] bg-white p-[3px] flex items-center justify-center transition-colors duration-500 relative z-10"
+                style={{ borderColor: color }}
               >
-                {icons[idx]}
+                <div
+                  className="w-full h-full rounded-full flex items-center justify-center transition-colors duration-500"
+                  style={{ backgroundColor: color }}
+                >
+                  {icons[idx]}
+                </div>
               </div>
             </div>
+
             <span 
               className="text-sm md:text-base font-extrabold mt-3 text-center whitespace-nowrap transition-colors duration-500"
               style={{ color: active ? "#000" : "#9CA3AF" }}
@@ -300,6 +341,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
         </p>
       </div>
 
+      {/* Invoice Section */}
       <div className="flex flex-col items-end mb-8">
         <p className="text-sm font-extrabold text-black mb-2">Cek Invoice</p>
         <Link href={`/kasir/invoice/${order.id}`} className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">

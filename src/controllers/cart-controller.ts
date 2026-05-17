@@ -10,7 +10,6 @@ const toNumber = (value: unknown) => {
 
 export async function addToCart(menuId: string, quantity: number, notes: string) {
   try {
-    // 1. Cek apakah user sudah login
     const session = await auth();
     const userId = session?.user?.id;
 
