@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/customer/components/sidebar";
 import Topbar from "@/app/customer/components/topbar";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { getCustomerOrders } from "@/src/controllers/order-controller";
 
 type Order = {
@@ -31,8 +30,14 @@ export default function PesananPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // State untuk Filter dan Search
   const [filter, setFilter] = useState("semua");
   const [search, setSearch] = useState("");
+
+  // --- STATE UNTUK PAGINATION ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Tampilkan 5 data per halaman
 
   useEffect(() => {
     const fetch = async () => {
@@ -44,11 +49,51 @@ export default function PesananPage() {
     fetch();
   }, []);
 
-  const filtered = orders.filter((o) => {
-    const matchFilter = filter === "semua" || o.status === filter;
-    const matchSearch = search === "" || o.orderCode.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
+  // Kembalikan ke halaman 1 setiap kali pelanggan mengganti Tab atau mencari nama
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, search]);
+
+  // --- LOGIKA FILTERING (Gabungan Filter Tab dan Search) ---
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      const matchFilter = filter === "semua" || o.status === filter;
+      const matchSearch = search === "" || o.orderCode.toLowerCase().includes(search.toLowerCase());
+      return matchFilter && matchSearch;
+    });
+  }, [orders, filter, search]);
+
+  // --- LOGIKA PAGINATION ---
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
+
+  // Ambil hanya 5 data untuk halaman yang sedang aktif
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredOrders, currentPage]);
+
+  // Fungsi navigasi halaman
+  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handleFirstPage = () => setCurrentPage(1);
+  const handleLastPage = () => setCurrentPage(totalPages);
+
+  // Buat deretan angka halaman (maksimal 3 angka berurutan agar rapi)
+  const getPageNumbers = () => {
+    const maxPagesToShow = 3;
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -58,103 +103,195 @@ export default function PesananPage() {
   const formatPrice = (p: number) => "Rp " + p.toLocaleString("id-ID");
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] flex" style={{ fontFamily: "Poppins, sans-serif" }}>
+    <div className="min-h-screen bg-white flex font-sans text-gray-900">
       <Sidebar activeMenu="pesanan" />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
-        <main className="px-[26px] pt-[28px]">
-          <h1 className="mb-[30px] text-[40px] font-black text-black">Pesanan Saya</h1>
+        
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
+          
+          <h1 className="text-3xl font-extrabold mb-6 text-black">
+            Pesanan Saya
+          </h1>
 
-          <div className="mb-[34px] flex h-[76px] items-center rounded-full border-2 border-[#ffc400] bg-white">
-            <div className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#ffc400]">
-              <span className="text-[40px] text-white">⌕</span>
+          <div className="flex items-center w-full border-2 border-[#FFC700] rounded-full overflow-hidden mb-8">
+            <div className="bg-[#FFC700] w-12 h-12 rounded-full flex justify-center items-center shrink-0">
+              <Search className="text-white w-6 h-6" />
             </div>
             <input
+              type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Contoh : #DFC001"
-              className="ml-4 text-[17px] font-medium text-[#444] bg-transparent outline-none flex-1"
+              className="flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium bg-transparent"
             />
           </div>
 
-          <div className="mb-[34px] flex items-center justify-center gap-[38px]">
+          <div className="flex flex-wrap gap-4 mb-8">
             {[
               { key: "semua",       label: "Semua",       img: "/group 135.png" },
               { key: "masuk",       label: "Masuk",       img: "/Food Icon Illustrations Kit (1).png" },
               { key: "dimasak",     label: "Dimasak",     img: "/Food Icon Illustrations Kit (2).png" },
               { key: "siap_diambil",label: "Siap Diambil",img: "/Food Icon Illustrations Kit (3).png" },
               { key: "selesai",     label: "Selesai",     img: "/Food Icon Illustrations Kit (4).png" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key)}
-                className={`flex h-[56px] items-center justify-center gap-[13px] rounded-[22px] text-[18px] font-black px-6 ${
-                  filter === tab.key ? "bg-[#9b0000] text-white" : "border-[3px] border-[#9b0000] bg-white text-black"
-                }`}
-              >
-                <span className="flex h-[28px] w-[28px] items-center justify-center">
-                  <Image src={tab.img} alt={tab.label} width={24} height={24} />
-                </span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
+            ].map((tab) => {
+              const isActive = filter === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className={`flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
+                    isActive 
+                      ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white' 
+                      : 'bg-white border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50'
+                  }`}
+                >
+                  <img 
+                    src={tab.img} 
+                    alt={tab.label} 
+                    className={`w-5 h-5 object-contain ${isActive ? 'invert brightness-0' : ''}`}
+                  />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
-          {isLoading ? (
-            <div className="flex justify-center py-20 text-[#9b0000]">
-              <Loader2 className="animate-spin w-10 h-10" />
+          <div className="w-full mb-6">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px] border-collapse">
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={4} className="py-20 text-center text-[#8B1A1A]">
+                        <div className="flex justify-center items-center">
+                          <Loader2 className="animate-spin w-10 h-10" />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : paginatedOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-10 text-center font-bold text-gray-500">
+                        {search 
+                          ? `Tidak ditemukan pesanan dengan pencarian "${search}"` 
+                          : `Belum ada pesanan dengan status ${filter}.`
+                        }
+                      </td>
+                    </tr>
+                  ) : (
+                    // PERHATIKAN: Sekarang kita loop menggunakan paginatedOrders
+                    paginatedOrders.map((order) => {
+                      const cfg = statusConfig[order.status] || { label: order.status, color: "#333" };
+                      return (
+                        <tr key={order.id} className="border-b-2 border-gray-100 hover:bg-gray-50 transition-colors">
+                          <td className="py-5 px-4 flex items-center space-x-4">
+                            <div className="relative text-[#8B1A1A]">
+                              <img src="/material-symbols_order-approve-outline-rounded.png" alt="icon" className="w-8 h-8 object-contain" />
+                            </div>
+                            <div>
+                              <p className="font-extrabold text-black text-[15px]">#{order.orderCode}</p>
+                              <p className="text-[#8B1A1A] font-bold text-xs mt-0.5">{order.orderType}</p>
+                            </div>
+                          </td>
+                          <td className="py-5 px-4 text-center font-medium text-black text-sm">
+                            {order.itemCount} Menu
+                          </td>
+                          <td className="py-5 px-4 text-center font-medium text-black text-sm">
+                            {formatPrice(order.totalPrice)}
+                          </td>
+                          <td className="py-5 px-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-col items-center justify-center w-full mr-4">
+                                <span className="text-xs font-extrabold mb-1" style={{ color: cfg.color }}>
+                                  {cfg.label}
+                                </span>
+                                <span className="text-[10px] text-gray-500 font-medium whitespace-nowrap">
+                                  {formatDate(order.orderedAt)}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => router.push(`/customer/detail_pesanan/cash?orderId=${order.id}`)}
+                                className="bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-2 px-3 rounded-md transition-colors whitespace-nowrap leading-tight text-center shadow-sm"
+                              >
+                                Detail
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-20 text-gray-500 font-medium">Tidak ada pesanan ditemukan.</div>
-          ) : (
-            <div>
-              {filtered.map((order) => {
-                const cfg = statusConfig[order.status] || { label: order.status, color: "#333" };
-                return (
-                  <div key={order.id} className="flex h-[84px] items-center border-b border-[#333]">
-                    <div className="mr-[22px]">
-                      <Image src="/material-symbols_order-approve-outline-rounded.png" alt="Pesanan" width={52} height={52} className="object-contain" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[23px] font-black text-[#9b0000]">#{order.orderCode}</div>
-                      <div className="mt-1 text-[14px] text-black">Total {order.itemCount} Menu &nbsp;- {formatPrice(order.totalPrice)}</div>
-                    </div>
-                    <div className="mr-[22px] w-[160px] text-right">
-                      <div className="text-[14px] font-extrabold" style={{ color: cfg.color }}>{cfg.label}</div>
-                      <div className="mt-[6px] text-[12px] text-black">{formatDate(order.orderedAt)}</div>
-                    </div>
-                    <button
-                      onClick={() => router.push(`/customer/detail_pesanan/cash?orderId=${order.id}`)}
-                      className="h-[42px] w-[92px] rounded-md bg-[#9b0000] text-[13px] font-bold text-white hover:bg-[#7a0000] transition-colors"
-                    >
-                      Detail
-                    </button>
-                  </div>
-                );
-              })}
+
+            {/* Info Teks Menampilkan X dari Y Data */}
+            {!isLoading && filteredOrders.length > 0 && (
+              <div className="text-right text-xs text-gray-500 mt-4 font-medium">
+                Menampilkan {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, filteredOrders.length)} dari total {filteredOrders.length} pesanan
+              </div>
+            )}
+          </div>
+
+          {/* Pagination Section Dinamis */}
+          {!isLoading && totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 pb-8 mt-6">
+              <button 
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              
+              <button 
+                onClick={handleFirstPage}
+                disabled={currentPage === 1}
+                className="px-6 py-1.5 bg-gray-200 border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Awal
+              </button>
+
+              {getPageNumbers().map(pageNum => (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm shadow-sm transition-colors ${
+                    currentPage === pageNum 
+                      ? 'bg-[#8B1A1A] text-white' 
+                      : 'bg-gray-200 border border-gray-200 text-[#8B1A1A] hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+
+              {currentPage < totalPages - 2 && totalPages > 3 && (
+                <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm cursor-default">
+                  ...
+                </button>
+              )}
+              
+              <button 
+                onClick={handleLastPage}
+                disabled={currentPage === totalPages}
+                className="px-6 py-1.5 bg-gray-200 border border-gray-200 shadow-sm rounded-md text-xs font-bold text-[#8B1A1A] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Akhir
+              </button>
+              
+              <button 
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
           )}
 
-          <div className="mt-[70px] mb-10 flex w-full items-center justify-center gap-3">
-            <PageBtn text="‹" small />
-            <PageBtn text="Awal" wide />
-            <PageBtn text="1" active />
-            <PageBtn text="2" />
-            <PageBtn text="3" />
-            <PageBtn text="..." />
-            <PageBtn text="Akhir" wide />
-            <PageBtn text="›" small />
-          </div>
         </main>
       </div>
     </div>
-  );
-}
-
-function PageBtn({ text, active, wide, small }: { text: string; active?: boolean; wide?: boolean; small?: boolean }) {
-  return (
-    <button className={`flex items-center justify-center h-[46px] rounded-md shadow-[0_4px_8px_rgba(0,0,0,0.18)] ${wide ? "w-[155px] text-[15px] font-normal" : small ? "w-[48px] text-[22px] font-bold" : "w-[48px] text-[15px] font-bold"} ${active ? "bg-[#9b0000] text-white" : "bg-white text-[#9b0000]"}`}>
-      {text}
-    </button>
   );
 }
