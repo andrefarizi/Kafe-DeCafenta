@@ -14,7 +14,7 @@ export default function KasirSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-52 min-h-screen bg-[#9b0d0d] text-white flex flex-col shrink-0">
+    <aside className="w-52 h-full bg-[#9b0d0d] text-white flex flex-col shrink-0 sticky top-0">
       <div className="flex items-center gap-2 px-4 py-5 border-b border-white/10">
         <div className="w-10 h-10 flex items-center justify-center shrink-0">
           <img src="/Group 2 1.png" alt="Logo D" className="w-full h-full object-contain" />

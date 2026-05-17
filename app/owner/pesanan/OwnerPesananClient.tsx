@@ -13,90 +13,70 @@ type StatusPesanan = 'Masuk' | 'Dimasak' | 'Siap Diambil' | 'Selesai';
 type TabId = 'Semua' | StatusPesanan;
 
 const tabs: { id: TabId; label: string; icon: string }[] = [
-  { id: 'Semua', label: 'Semua', icon: '/Group 135.png' },
-  { id: 'Masuk', label: 'Masuk', icon: '/Food Icon Illustrations Kit (1).png' },
-  { id: 'Dimasak', label: 'Dimasak', icon: '/Food Icon Illustrations Kit (2).png' },
+  { id: 'Semua',        label: 'Semua',        icon: '/Group 135.png' },
+  { id: 'Masuk',        label: 'Masuk',        icon: '/Food Icon Illustrations Kit (1).png' },
+  { id: 'Dimasak',      label: 'Dimasak',      icon: '/Food Icon Illustrations Kit (2).png' },
   { id: 'Siap Diambil', label: 'Siap Diambil', icon: '/Food Icon Illustrations Kit (3).png' },
-  { id: 'Selesai', label: 'Selesai', icon: '/Food Icon Illustrations Kit (4).png' },
+  { id: 'Selesai',      label: 'Selesai',      icon: '/Food Icon Illustrations Kit (4).png' },
 ];
 
-export default function PesananMasukClient({
+export default function OwnerPesananClient({
   initialOrders,
-  activeTab: initialActiveTab = 'Semua',
 }: {
   initialOrders: OrderSummaryData[];
-  activeTab?: TabId;
 }) {
-  const [activeTab, setActiveTab] = useState<TabId>(initialActiveTab);
+  const [activeTab, setActiveTab] = useState<TabId>('Semua');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // --- STATE UNTUK PAGINATION ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Batas pesanan per halaman
+  const itemsPerPage = 5;
 
-  // Kembalikan ke halaman 1 setiap kali kasir mengganti Tab atau mencari nama
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [activeTab, searchTerm]);
 
-  // --- LOGIKA FILTERING ---
   const filteredOrders = useMemo(() => {
     return initialOrders.filter((order) => {
       const matchTab = activeTab === 'Semua' || order.status === activeTab;
       const matchSearch = searchTerm === '' || 
         order.orderCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.nama.toLowerCase().includes(searchTerm.toLowerCase());
-      
       return matchTab && matchSearch;
     });
   }, [initialOrders, activeTab, searchTerm]);
 
-  // --- LOGIKA PAGINATION ---
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
 
-  // Ambil hanya 5 data untuk halaman yang sedang aktif
   const paginatedOrders = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredOrders.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredOrders, currentPage]);
 
-  // Fungsi navigasi halaman
-  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePrevPage  = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage  = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const handleFirstPage = () => setCurrentPage(1);
-  const handleLastPage = () => setCurrentPage(totalPages);
+  const handleLastPage  = () => setCurrentPage(totalPages);
 
-  // Buat deretan angka halaman (maksimal 3 angka berurutan agar rapi)
   const getPageNumbers = () => {
     const maxPagesToShow = 3;
     let startPage = Math.max(1, currentPage - 1);
     const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
-
     const pages = [];
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
+    for (let i = startPage; i <= endPage; i++) pages.push(i);
     return pages;
   };
 
-  // Fungsi pembantu warna
   const getStatusColor = (status: StatusPesanan) => {
     switch (status) {
-      case 'Masuk': return 'text-[#FFC700]';
-      case 'Dimasak': return 'text-[#8B1A1A]';
+      case 'Masuk':        return 'text-[#FFC700]';
+      case 'Dimasak':      return 'text-[#8B1A1A]';
       case 'Siap Diambil': return 'text-[#3B82F6]';
-      case 'Selesai': return 'text-[#22C55E]';
-      default: return 'text-gray-900';
+      case 'Selesai':      return 'text-[#22C55E]';
+      default:             return 'text-gray-900';
     }
-  };
-
-  const getDetailHref = (status: StatusPesanan, dbId: string) => {
-    return `/kasir/daftar-pesanan/detail/${dbId}`;
   };
 
   return (
@@ -108,7 +88,7 @@ export default function PesananMasukClient({
 
       {/* Search Bar */}
       <div className="flex items-center w-full border-2 border-[#FFC700] rounded-full overflow-hidden mb-8">
-        <div className="bg-[#FFC700] w-12 h-12 rounded-full flex justify-center items-center ">
+        <div className="bg-[#FFC700] w-12 h-12 rounded-full flex justify-center items-center">
           <Search className="text-white w-6 h-6" />
         </div>
         <input
@@ -123,7 +103,7 @@ export default function PesananMasukClient({
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-4 mb-8">
         {tabs.map((tab) => {
-          const isActive = activeTab === tab.id; 
+          const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
@@ -168,7 +148,6 @@ export default function PesananMasukClient({
                   </td>
                 </tr>
               ) : (
-                // PERHATIKAN: Sekarang kita menggunakan paginatedOrders, bukan filteredOrders
                 paginatedOrders.map((order) => (
                   <tr key={order.dbId} className="border-b-2 border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="py-5 px-4 flex items-center space-x-4">
@@ -197,7 +176,7 @@ export default function PesananMasukClient({
                           </span>
                         </div>
                         <Link
-                          href={getDetailHref(order.status, order.dbId)}
+                          href={`/owner/pesanan/detail/${order.dbId}`}
                           className="bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-2 px-3 rounded-md transition-colors whitespace-nowrap leading-tight text-center"
                         >
                           Detail<br/>Pesanan

@@ -14,12 +14,12 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
       <Sidebar />
 
       {/* Konten kanan */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Top bar kuning */}
         <TopBar />
 
         {/* Halaman konten */}
-        <main className="flex-1 bg-gray-50 p-8 overflow-auto">
+        <main className="flex-1 bg-gray-50 overflow-y-auto p-8">
           {children}
         </main>
       </div>

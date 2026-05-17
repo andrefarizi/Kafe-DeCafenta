@@ -295,3 +295,68 @@ export async function getMenuReviews(menuId: string, limit = 2): Promise<MenuRev
 }
 
 // export type { MenuListItem, MenuDetail, MenuReview };
+
+/* ─── OWNER: Ambil semua kategori dari DB ─── */
+export async function getCategories() {
+  const cats = await prisma.category.findMany({ orderBy: { name: 'asc' } });
+  return cats.map((c) => ({ id: c.id, name: c.name }));
+}
+
+/* ─── OWNER: Tipe hasil createMenu ─── */
+export type CreateMenuResult = {
+  success: boolean;
+  message: string;
+};
+
+/* ─── OWNER: Tambah menu baru ke database ─── */
+export async function createMenu(formData: FormData): Promise<CreateMenuResult> {
+  try {
+    const name        = (formData.get('name') as string | null)?.trim() ?? '';
+    const categoryId  = (formData.get('categoryId') as string | null)?.trim() ?? '';
+    const priceStr    = (formData.get('price') as string | null)?.trim() ?? '';
+    const description = (formData.get('description') as string | null)?.trim() ?? '';
+    const imageFile   = formData.get('image') as File | null;
+
+    // Validasi server-side
+    if (!name)       return { success: false, message: 'Nama menu tidak boleh kosong.' };
+    if (!categoryId) return { success: false, message: 'Kategori harus dipilih.' };
+    const price = Number(priceStr);
+    if (!priceStr || isNaN(price) || price <= 0)
+      return { success: false, message: 'Harga harus berupa angka lebih dari 0.' };
+    if (name.length > 100)
+      return { success: false, message: 'Nama menu maksimal 100 karakter.' };
+    if (description.length > 300)
+      return { success: false, message: 'Deskripsi maksimal 300 karakter.' };
+
+    // Simpan gambar jika ada
+    let imageUrl: string | null = null;
+    if (imageFile && imageFile.size > 0) {
+      const { writeFile, mkdir } = await import('fs/promises');
+      const { join }             = await import('path');
+      const bytes  = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'menus');
+      await mkdir(uploadDir, { recursive: true });
+      const ext      = (imageFile.name.split('.').pop() ?? 'jpg').toLowerCase();
+      const fileName = `menu-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      await writeFile(join(uploadDir, fileName), buffer);
+      imageUrl = `/uploads/menus/${fileName}`;
+    }
+
+    await prisma.menu.create({
+      data: {
+        name,
+        categoryId,
+        price,
+        description: description || null,
+        imageUrl,
+        isAvailable: true,
+      },
+    });
+
+    return { success: true, message: 'Menu berhasil ditambahkan!' };
+  } catch (err) {
+    console.error('createMenu error:', err);
+    return { success: false, message: 'Terjadi kesalahan. Silakan coba lagi.' };
+  }
+}

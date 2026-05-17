@@ -97,47 +97,39 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
 }
 
 /* ─────────── KOMPONEN UTAMA HALAMAN ─────────── */
-export default function DetailPesananClient({ order }: { order: OrderDetailData }) {
+export default function OwnerDetailPesananClient({ order }: { order: OrderDetailData }) {
   const router = useRouter();
 
-  // --- STATE UNTUK POPUP HAPUS PESANAN ---
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // --- STATE UNTUK POPUP & EKSEKUSI UBAH STATUS ---
+  const [showConfirmModal, setShowConfirmModal]     = useState(false);
+  const [showSuccessModal, setShowSuccessModal]     = useState(false);
+  const [isDeleting, setIsDeleting]                 = useState(false);
   const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus]     = useState(false);
 
-  // Helper Harga
   const formatPrice = (p: number) => "Rp " + p.toLocaleString("id-ID");
 
-  // Helper Warna Status Badge
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'Masuk': return 'bg-[#FFC700] text-black';
-      case 'Dimasak': return 'bg-[#8B1A1A] text-white';
+      case 'Masuk':        return 'bg-[#FFC700] text-black';
+      case 'Dimasak':      return 'bg-[#8B1A1A] text-white';
       case 'Siap Diambil': return 'bg-[#3B82F6] text-white';
-      case 'Selesai': return 'bg-[#22C55E] text-white';
-      default: return 'bg-gray-200 text-black';
+      case 'Selesai':      return 'bg-[#22C55E] text-white';
+      default:             return 'bg-gray-200 text-black';
     }
   };
 
-  // Helper Teks untuk Popup Konfirmasi Status
   const getNextStatusText = () => {
     if (order.status === 'Masuk' && !order.isPaid) return 'Lunas & Dimasak';
-    if (order.status === 'Masuk' && order.isPaid) return 'Dimasak';
-    if (order.status === 'Dimasak') return 'Siap Diambil';
-    if (order.status === 'Siap Diambil') return 'Selesai';
+    if (order.status === 'Masuk' && order.isPaid)  return 'Dimasak';
+    if (order.status === 'Dimasak')                return 'Siap Diambil';
+    if (order.status === 'Siap Diambil')           return 'Selesai';
     return '';
   };
 
-  // --- FUNGSI EKSEKUSI HAPUS PESANAN ---
   const handleCancelOrder = async () => {
     setIsDeleting(true);
     const result = await hapusPesananKasir(order.id);
     setIsDeleting(false);
-
     if (result.success) {
       setShowConfirmModal(false);
       setShowSuccessModal(true);
@@ -146,15 +138,13 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
     }
   };
 
-  // --- FUNGSI EKSEKUSI UBAH STATUS ---
   const handleUpdateStatus = async () => {
     setIsUpdatingStatus(true);
     const result = await updateOrderStatusKasir(order.id, order.status, order.isPaid);
     setIsUpdatingStatus(false);
-
     if (result.success) {
-      setShowStatusConfirmModal(false); // Tutup popup setelah sukses
-      router.refresh(); // Segarkan data UI
+      setShowStatusConfirmModal(false);
+      router.refresh();
     } else {
       alert(result.message);
     }
@@ -166,7 +156,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
       {/* Header */}
       <div className="flex items-center mb-8">
         <button 
-          onClick={() => router.push('/kasir/daftar-pesanan')}
+          onClick={() => router.push('/owner/pesanan')}
           aria-label="Kembali ke Pesanan" 
           title="Kembali ke Pesanan" 
           className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
@@ -210,7 +200,6 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
         
         <StatusTracker currentStatus={order.status} />
 
-        {/* Change Status Button - SEKARANG MEMBUKA POPUP */}
         {order.status !== 'Selesai' && (
           <div className="flex justify-end mt-4">
             <button 
@@ -300,9 +289,13 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
         </p>
       </div>
 
+      {/* Tombol Invoice */}
       <div className="flex flex-col items-end mb-8">
         <p className="text-sm font-extrabold text-black mb-2">Cek Invoice</p>
-        <Link href={`/kasir/invoice/${order.id}`} className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm">
+        <Link 
+          href={`/owner/invoice/${order.id}`} 
+          className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-6 py-2 rounded-md transition-colors shadow-sm"
+        >
           <FileText size={16} />
           <span className="text-xs font-bold">Invoice</span>
         </Link>
@@ -319,17 +312,14 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
       )}
 
       {/* =========================================
-          MODAL KONFIRMASI UBAH STATUS (BARU)
+          MODAL KONFIRMASI UBAH STATUS
       ========================================= */}
       {showStatusConfirmModal && (
         <div className="fixed inset-0 z-[100] bg-gray-900/40 flex items-center justify-center p-4 font-sans backdrop-blur-sm">
           <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
-            
-            {/* Question Icon */}
             <div className="w-20 h-20 bg-[#FFC700] rounded-full flex items-center justify-center mb-6 shadow-sm">
               <span className="text-white text-[40px] font-black leading-none mt-1">?</span>
             </div>
-
             <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-3">
               Yakin Ingin <br /> {order.status === 'Masuk' && !order.isPaid ? 'Konfirmasi Lunas?' : 'Ubah Status?'}
             </h2>
@@ -337,7 +327,6 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
               Status pesanan akan diubah menjadi <br/>
               <span className="font-extrabold text-[#8B1A1A] text-[15px]">{getNextStatusText()}</span>
             </p>
-
             <div className="w-full flex flex-col space-y-4">
               <button 
                 onClick={handleUpdateStatus}
@@ -346,7 +335,6 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
               >
                 {isUpdatingStatus ? 'Memproses...' : 'Ya, Lanjutkan'}
               </button>
-              
               <button 
                 onClick={() => setShowStatusConfirmModal(false)}
                 disabled={isUpdatingStatus}
@@ -408,7 +396,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
             <button 
               onClick={() => {
                 setShowSuccessModal(false);
-                router.push('/kasir/daftar-pesanan/');
+                router.push('/owner/pesanan');
                 router.refresh();
               }}
               className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
