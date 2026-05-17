@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { auth } from '@/lib/auth';
 
 type MenuListItem = {
   id: string;
@@ -292,3 +293,98 @@ export async function getMenuReviews(menuId: string, limit = 2): Promise<MenuRev
 }
 
 // export type { MenuListItem, MenuDetail, MenuReview };
+
+
+export async function addMenuReview(menuId: string, rating: number, comment: string, orderItemId: string) {
+  try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    
+    if (!userId) return { success: false, message: 'Harus login untuk mengulas.' };
+
+    const cleanComment = comment.trim() === "" ? null : comment.trim();
+
+    // 1. Buat Ulasannya (Ini yang udah berhasil masuk)
+    console.log("1. Menyimpan ulasan untuk menu:", menuId);
+    await prisma.review.create({
+      data: {
+        menuId: menuId,
+        userId: userId, 
+        rating: rating,
+        comment: cleanComment,
+      }
+    });
+
+    // 2. UBAH STATUS ITEM PESANAN (Nah, biasanya crash di sini nih!)
+    console.log("2. Mengubah status isReviewed untuk OrderItem ID:", orderItemId);
+    await prisma.orderItem.update({
+      where: { id: orderItemId },
+      data: { isReviewed: true }
+    });
+
+    // 3. Update Rata-rata Bintang Menu
+    try {
+      const aggregate = await prisma.review.aggregate({
+        where: { menuId }, _avg: { rating: true }, _count: { id: true }
+      });
+      await prisma.menu.update({
+        where: { id: menuId },
+        data: { avgRating: aggregate._avg.rating || 0, reviewCount: aggregate._count.id }
+      });
+    } catch (e) { 
+      console.log("Gagal update rata-rata bintang (Aman diabaikan)"); 
+    }
+
+    return { success: true, message: 'Ulasan berhasil ditambahkan!' };
+    
+  } catch (error: any) {
+    console.error('================ ERROR ADD MENU REVIEW ================');
+    console.error(error);
+    console.error('=======================================================');
+    
+    // KITA TAMPILKAN EROR ASLINYA KE LAYAR BIAR KETAHUAN!
+    return { 
+      success: false, 
+      message: `Eror Database: ${error.message || 'Gagal menyimpan status'}` 
+    };
+  }
+}
+
+/// Fungsi untuk mengambil semua ulasan dari satu menu (VERSI AMAN DARI DECIMAL ERROR)
+export async function getMenuWithReviews(menuId: string) {
+  try {
+    // 1. Ambil data menunya saja dulu
+    const menu = await prisma.menu.findUnique({
+      where: { id: menuId }
+    });
+
+    if (!menu) return null;
+
+    // 2. Ambil ulasannya secara terpisah
+    const reviews = await prisma.review.findMany({
+      where: { menuId: menuId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: true // Ambil user-nya
+      }
+    });
+
+    return {
+      menuName: menu.name,
+      avgRating: Number(menu.avgRating) || 0, 
+      reviewCount: menu.reviewCount || 0,
+      reviews: reviews.map((r: any) => ({
+        id: r.id,
+        name: r.user?.name || 'Pengguna',
+        date: r.createdAt.toISOString(),
+        text: r.comment || 'Tanpa komentar',
+        rating: r.rating,
+        img: r.user?.image || '/LOGOPROFIL.png'
+      }))
+    };
+  } catch (error: any) {
+    console.error("================ EROR GET REVIEWS ================");
+    console.error(error.message);
+    return { error: error.message }; 
+  }
+}

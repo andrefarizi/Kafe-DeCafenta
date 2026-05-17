@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addToCart } from '@/src/controllers/cart-controller';
+// IMPORT FUNGSI BARUNYA DISINI:
+import { addMenuReview } from '@/src/controllers/menu-controller'; 
 
 type MenuDetailProps = {
   id: string;
@@ -56,10 +58,13 @@ const formatReviewCount = (count: number) => {
 };
 
 const formatReviewDate = (value: string) => {
+  if (!value) return ''; 
+  
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return '';
   }
+  
   return date.toLocaleDateString('id-ID', {
     day: '2-digit',
     month: 'long',
@@ -81,6 +86,9 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
   const [notes, setNotes] = useState(''); 
   const [isPending, startTransition] = useTransition(); 
   
+  // State Loading khusus untuk Review
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  
   const pricePerItem = menu.price;
 
   const handleAddToCart = () => {
@@ -94,15 +102,6 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
         alert(result.message); 
       }
     });
-  };
-
-  const handleSendReview = () => {
-    if (selectedRating === 0) return;
-
-    setShowReviewToast(true);
-    setSelectedRating(0);
-    setReviewText('');
-    setTimeout(() => setShowReviewToast(false), 3000);
   };
 
   const averageRating = Number.isFinite(menu.avgRating) ? menu.avgRating.toFixed(1) : '0.0';
@@ -161,9 +160,16 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                 <h3 className="text-lg font-bold text-black tracking-tight">
                   Ringkasan Ulasan ({reviewSummaryLabel})
                 </h3>
-                <button className="text-[#8B0000] font-bold hover:text-red-700 text-sm transition-colors shrink-0">
-                  Lihat Semua
-                </button>
+                
+                {menu.reviewCount > 2 && (
+                  <button 
+                    onClick={() => router.push(`/customer/ulasan/${menu.id}`)} 
+                    className="text-[#8B0000] font-bold hover:text-red-700 text-sm transition-colors shrink-0"
+                  >
+                    Lihat Semua
+                  </button>
+                )}
+
               </div>
 
               <div className="flex items-center gap-5">
@@ -192,47 +198,6 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                       />
                     ))
                   )}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-[25px] p-6 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border border-gray-100 -mt-7">
-              <h3 className="text-md font-bold text-black mb-2">Beri Rating tentang Produk ini</h3>
-              <div className="w-full h-[1.2px] bg-gray-600 mb-4"></div>
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 border-2 border-gray-50 shadow-sm">
-                  <img src="/LOGOPROFIL.png" alt="Profile" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 space-y-4">
-                  <div className="flex gap-1" onMouseLeave={() => setHoverRating(0)}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={22}
-                        className={`cursor-pointer transition-all duration-200 ${
-                          star <= (hoverRating || selectedRating)
-                            ? 'text-yellow-400 fill-yellow-400 scale-110'
-                            : 'text-gray-200 fill-transparent'
-                        }`}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onClick={() => setSelectedRating(star)}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex flex-col items-end gap-3">
-                    <textarea
-                      value={reviewText}
-                      onChange={(event) => setReviewText(event.target.value)}
-                      placeholder="Berikan ulasan Anda..."
-                      className="w-full bg-[#F9FAFB] text-black placeholder:text-black rounded-xl p-4 text-xs focus:outline-none border border-gray-300 focus:border-gray-400 min-h-[80px] shadow-inner transition-all"
-                    />
-                    <button
-                      onClick={handleSendReview}
-                      className="bg-[#8B0000] text-white px-8 py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-all active:scale-[0.95] shadow-md"
-                    >
-                      Kirim Ulasan
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -294,7 +259,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                     <span className="font-bold text-black text-xs">Catatan (opsional)</span>
                   </div>
                   <textarea
-                    value={notes} // <-- Binding state kesini
+                    value={notes} 
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Contoh: jangan pedas, ya"
                     className="w-full flex-1 bg-gray-300 rounded-xl p-3 text-black placeholder:text-gray-600 text-[11px] focus:outline-none border border-transparent min-h-[75px] resize-none shadow-inner"
