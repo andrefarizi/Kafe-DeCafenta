@@ -412,13 +412,20 @@ export default function KeranjangPage() {
               </p>
               <div className="flex flex-col gap-4 px-10">
                 <button
-                  onClick={() => { setStep(""); router.push("/customer/Pesanan"); }}
+                  onClick={() => { 
+                    setStep(""); 
+                    router.push(`/customer/detail_pesanan/cash?orderId=${createdOrderId}`); 
+                  }}
                   className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
                 >
                   Periksa Pesanan
                 </button>
                 <button
-                  onClick={() => setStep("")}
+                  onClick={() => { 
+                    setStep("");
+                    setItems([]); 
+                    router.refresh(); 
+                  }}
                   className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
                 >
                   Kembali
