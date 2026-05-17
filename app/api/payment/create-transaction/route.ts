@@ -3,10 +3,21 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import midtransClient from 'midtrans-client';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
-    const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY?.trim() || 'SB-Mid-server-vtes-EfWHAIMBGLjEXF06HtG';
-    const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY?.trim() || process.env.MIDTRANS_CLIENT_KEY?.trim() || 'SB-Mid-client-JV1hxBKvK54RC4PV';
+    // Load env vars yang WAJIB exist
+    const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
+    const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || process.env.MIDTRANS_CLIENT_KEY;
+
+    if (!MIDTRANS_SERVER_KEY || !MIDTRANS_CLIENT_KEY) {
+      console.error("❌ ERROR: Midtrans credentials tidak terkonfigurasi di .env");
+      return NextResponse.json(
+        { success: false, message: "Server error: Payment gateway tidak terkonfigurasi" },
+        { status: 500 }
+      );
+    }
 
     const coreApi = new midtransClient.CoreApi({
       isProduction: false,
@@ -86,7 +97,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Panggil Midtrans Core API
-    const midtransData = await coreApi.charge(chargePayload);
+    const midtransData = await coreApi.charge(chargePayload) as {
+      status_code?: string;
+      status_message?: string;
+      transaction_id?: string;
+      [key: string]: unknown;
+    };
 
     if (midtransData.status_code && parseInt(midtransData.status_code) >= 400) {
       console.error('Midtrans error:', midtransData);

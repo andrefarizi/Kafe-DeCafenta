@@ -45,7 +45,7 @@ const Beranda = async () => {
     userId ? getCustomerCartMenus(userId, 5) : Promise.resolve([]),
   ]);
 
-  const formatRupiah = (price: any) => {
+  const formatRupiah = (price: number | string) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(price));
   };
 

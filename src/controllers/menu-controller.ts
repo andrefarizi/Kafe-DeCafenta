@@ -131,21 +131,24 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
 
   const menuMap = new Map(menus.map((menu) => [menu.id, menu]));
 
-  return ordered
-    .map((item) => {
-      const menu = menuMap.get(item.menuId);
-      if (!menu) return null;
-      return {
-        id: menu.id,
-        name: menu.name,
-        price: toNumber(menu.price),
-        avgRating: toNumber(menu.avgRating),
-        imageUrl: menu.imageUrl,
-        categoryName: menu.category.name,
-        totalOrdered: toNumber(item._sum.quantity),
-      };
-    })
-    .filter((menu): menu is MenuListItem => Boolean(menu));
+  const bestSellers: MenuListItem[] = [];
+
+  for (const item of ordered) {
+    const menu = menuMap.get(item.menuId);
+    if (!menu) continue;
+
+    bestSellers.push({
+      id: menu.id,
+      name: menu.name,
+      price: toNumber(menu.price),
+      avgRating: toNumber(menu.avgRating),
+      imageUrl: menu.imageUrl,
+      categoryName: menu.category.name,
+      totalOrdered: toNumber(item._sum.quantity),
+    });
+  }
+
+  return bestSellers;
 }
 
 export async function getRecommendedMenus(limit = 4): Promise<MenuListItem[]> {

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function OwnerLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar merah kiri */}
       <Sidebar />
 

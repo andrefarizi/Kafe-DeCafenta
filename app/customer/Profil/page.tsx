@@ -22,12 +22,19 @@ export default async function ProfilPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, image: true, phone: true },
   });
 
   if (!user) {
     redirect('/login');
   }
+
+  const userProfile = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    image: user.image,
+    phone: (user as { phone?: string | null }).phone ?? null,
+  };
 
   return (
     <div
@@ -53,9 +60,9 @@ export default async function ProfilPage() {
             {/* FOTO */}
             <div className="flex h-[180px] w-[180px] items-center justify-center rounded-full border-[3px] border-[#9b0000] bg-white">
               <div className="h-[155px] w-[155px] overflow-hidden rounded-full flex items-center justify-center bg-gray-200">
-                {user.image ? (
+                {userProfile.image ? (
                   <Image
-                    src={user.image}
+                    src={userProfile.image}
                     alt="Foto Profil"
                     width={155}
                     height={155}
@@ -63,7 +70,7 @@ export default async function ProfilPage() {
                   />
                 ) : (
                   <span className="text-5xl font-bold text-gray-500">
-                    {user.name?.charAt(0).toUpperCase() ?? <User size={80} className="text-gray-400" />}
+                    {userProfile.name?.charAt(0).toUpperCase() ?? <User size={80} className="text-gray-400" />}
                   </span>
                 )}
               </div>
@@ -77,17 +84,17 @@ export default async function ProfilPage() {
               <InfoField
                 icon={<User size={22} color="white" fill="white" />}
                 title="Nama"
-                value={user.name || "-"}
+                value={userProfile.name || "-"}
               />
               <InfoField
                 icon={<Mail size={22} color="white" />}
                 title="Email"
-                value={user.email}
+                value={userProfile.email}
               />
               <InfoField
                 icon={<Phone size={22} color="white" fill="white" />}
                 title="Nomor Handphone"
-                value={user.phone || "-"}
+                value={userProfile.phone || "-"}
               />
             </div>
 

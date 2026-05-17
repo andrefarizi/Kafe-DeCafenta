@@ -17,14 +17,29 @@ import { useSession } from "next-auth/react";
 type OrderDetail = {
   id: string; orderCode: string; status: string;
   totalPrice: number; isPaid: boolean; paymentMethod: string;
-  orderType: string; orderedAt: string;
+  orderType: string; orderedAt: string; notes: string | null;
   items: { id: string; name: string; category: string; quantity: number; unitPrice: number; subtotal: number; notes: string }[];
 };
-type PaymentMethod = "gopay" | "dana" | "bank_va";
+type PaymentChannel = "gopay" | "dana" | "bank_va";
+type PaymentSelection = "cash" | PaymentChannel;
 
 /* ─────────── CONSTANTS ─────────── */
-const PAYMENT_LABELS: Record<PaymentMethod, string> = {
-  gopay: "GoPay", dana: "DANA / QRIS", bank_va: "Bank (Virtual Account BCA)",
+const PAYMENT_LABELS: Record<PaymentSelection, string> = {
+  cash: "Cash",
+  gopay: "GoPay",
+  dana: "DANA / QRIS",
+  bank_va: "Bank (Virtual Account BCA)",
+};
+
+const resolvePaymentSelection = (notes?: string | null): PaymentSelection | "" => {
+  if (!notes) return "";
+  const match = notes.match(/payment_method:([a-z_]+)/i);
+  if (!match) return "";
+  const value = match[1].toLowerCase();
+  if (value === "cash" || value === "gopay" || value === "dana" || value === "bank_va") {
+    return value as PaymentSelection;
+  }
+  return "";
 };
 
 const STEPS = [
@@ -263,7 +278,7 @@ function CashPageInner() {
   const [prevStatus, setPrevStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | "">("");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentSelection | "">("");
   const [isPaymentOpen, setIsPaymentOpen]   = useState(false);
   const [isProcessing, setIsProcessing]     = useState(false);
   const [paymentResult, setPaymentResult]   = useState<Record<string, unknown> | null>(null);
@@ -288,6 +303,8 @@ function CashPageInner() {
             setShowStatusToast(true); // toast hanya saat update, bukan load pertama
           }
         }
+        // Derive payment method from notes
+        setSelectedMethod(resolvePaymentSelection(data.notes));
         return data;
       });
       isFirstLoad.current = false;
@@ -454,6 +471,12 @@ function CashPageInner() {
                 <p className="text-xs text-gray-700 font-medium">{order.orderType}</p>
               </div>
               <div>
+                <h3 className="text-sm font-bold text-black">Metode Pembayaran</h3>
+                <p className="text-xs text-gray-700 font-medium">
+                  {selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Tidak dipilih"}
+                </p>
+              </div>
+              <div>
                 <h3 className="text-sm font-bold text-black">Status Pembayaran</h3>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-[10px] font-bold ${order.isPaid ? "bg-[#22C55E]" : "bg-[#484040]"}`}>
                   {order.isPaid && <CheckCircle2 size={11} />}
@@ -463,30 +486,23 @@ function CashPageInner() {
             </div>
 
             {/* Form Pembayaran */}
-            {!order.isPaid && !paymentResult && (
+            {!order.isPaid && !paymentResult && selectedMethod && selectedMethod !== "cash" && (
               <div className="border border-[#8A0000] rounded-xl p-4 bg-white w-full max-w-[420px]">
-                <h3 className="font-bold text-[14px] text-black mb-3">Pilih Metode Pembayaran</h3>
-                <div className="border-[1.5px] border-[#8B0000] rounded-xl overflow-hidden bg-white mb-4">
-                  <div onClick={() => setIsPaymentOpen(!isPaymentOpen)} className="p-3 flex justify-between items-center text-[#8B0000] font-medium text-[14px] cursor-pointer">
-                    <span>{selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Pilih Metode"}</span>
-                    <ChevronLeft size={18} className={`transition-transform duration-200 ${isPaymentOpen ? "-rotate-90" : "rotate-[270deg]"}`} />
-                  </div>
-                  {isPaymentOpen && (
-                    <div className="bg-white border-t border-[#8B0000]">
-                      {(Object.entries(PAYMENT_LABELS) as [PaymentMethod, string][]).map(([key, label], idx, arr) => (
-                        <div key={key} onClick={() => { setSelectedMethod(key); setIsPaymentOpen(false); }}
-                          className={`p-3 flex items-center text-[#8B0000] font-medium text-[14px] cursor-pointer hover:bg-red-50 transition-colors ${idx !== arr.length - 1 ? "border-b border-[#8B0000]" : ""}`}>
-                          {label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <h3 className="font-bold text-[14px] text-black mb-3">Instruksi Pembayaran</h3>
+                <p className="text-[12px] text-gray-600 mb-4">Metode: <span className="font-bold text-[#8B0000]">{PAYMENT_LABELS[selectedMethod]}</span></p>
                 {paymentError && <p className="text-red-600 text-[12px] font-medium mb-3">{paymentError}</p>}
                 <button onClick={handlePay} disabled={!selectedMethod || isProcessing}
                   className="w-full bg-[#8A0000] text-white py-3 rounded-lg font-bold text-[13px] hover:bg-[#6A0000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                   {isProcessing ? <><Loader2 size={16} className="animate-spin" /> Memproses...</> : "Bayar Sekarang"}
                 </button>
+              </div>
+            )}
+
+            {/* Cash payment - Langsung bayar opsional */}
+            {!order.isPaid && !paymentResult && selectedMethod === "cash" && (
+              <div className="border border-[#8A0000] rounded-xl p-4 bg-[#FFE2E2] w-full max-w-[420px]">
+                <h3 className="font-bold text-[14px] text-[#8B0000] mb-2">Pembayaran: Tunai</h3>
+                <p className="text-[12px] text-black">Silakan lakukan pembayaran tunai saat menerima pesanan atau sesuai kesepakatan dengan penjual.</p>
               </div>
             )}
 

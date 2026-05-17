@@ -90,12 +90,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   const [orderType, setOrderType] = useState("dine_in_kasir");
   
   // State Kode Pesanan Langsung di UI
-  const [orderCode, setOrderCode] = useState("");
-
-  // Buat kode pesanan saat halaman pertama kali dimuat
-  useEffect(() => {
-    setOrderCode(generateOrderCode());
-  }, []);
+  const [orderCode, setOrderCode] = useState(() => generateOrderCode());
 
   // State Searching & Filtering
   const [activeCategory, setActiveCategory] = useState('Semua Menu');

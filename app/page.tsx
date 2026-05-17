@@ -14,7 +14,7 @@ export default function LandingPage() {
         </div>
         
         <div className="hidden md:flex items-center gap-10 text-sm font-bold">
-          <a href="/" className="text-[#8b1c1c]">Home</a>
+          <Link href="/" className="text-[#8b1c1c]">Home</Link>
           <Link href="/menu" className="text-black hover:text-[#8b1c1c] transition-colors">Menu</Link>
           <a href="#footer" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
         </div>

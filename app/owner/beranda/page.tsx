@@ -1,6 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Home, ChevronRight, ChevronDown } from 'lucide-react';
+import { getOwnerDashboardStats } from '@/src/controllers/owner-controller';
+
+interface Props { searchParams?: Promise<{ month?: string }> }
 
 // --- Types ---
 interface MenuData {
@@ -37,7 +40,27 @@ const ketersediaanMeja: MejaData[] = [
   { name: 'Meja 6', id: '#MJ06', status: 'Tersedia' },
 ];
 
-export default function DashboardOwner() {
+export default async function DashboardOwner(props: Props) {
+  const searchParams = await props.searchParams;
+  const monthParam = searchParams?.month ? Number(searchParams.month) : undefined;
+  const stats = await getOwnerDashboardStats({ month: monthParam });
+
+  const menuTerfavorit = stats.topMenus.map((m) => ({ name: m.name, porsi: m.qty, width: '0%' }));
+  const maxQty = menuTerfavorit.reduce((a, b) => Math.max(a, b.porsi), 0) || 1;
+  // compute widths
+  for (const item of menuTerfavorit) {
+    item.width = `${Math.max(12, Math.round((item.porsi / maxQty) * 90))}%`;
+  }
+
+  const ketersediaanMeja = [
+    { name: 'Meja 1', id: '#MJ01', status: 'Tersedia' },
+    { name: 'Meja 2', id: '#MJ02', status: 'Dipakai' },
+    { name: 'Meja 3', id: '#MJ03', status: 'Tersedia' },
+    { name: 'Meja 4', id: '#MJ04', status: 'Tersedia' },
+    { name: 'Meja 5', id: '#MJ05', status: 'Dipakai' },
+    { name: 'Meja 6', id: '#MJ06', status: 'Tersedia' },
+  ];
+
   return (
     <div className="min-h-screen bg-white p-8 font-sans text-gray-900">
       
@@ -60,9 +83,9 @@ export default function DashboardOwner() {
           <div className="bg-[#FFECEC] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pendapatan</h2>
-              <p className="text-xs text-red-400 mt-1">Maret 2026</p>
+              <p className="text-xs text-red-400 mt-1">{stats.month}/{stats.year}</p>
             </div>
-            <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">Rp 150.000.000</p>
+            <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">Rp {stats.totalRevenue.toLocaleString('id-ID')}</p>
             <Link href="/owner/total-pendapatan" className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
               Selengkapnya <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -72,9 +95,9 @@ export default function DashboardOwner() {
           <div className="bg-[#FFECEC] rounded-2xl border border-red-700 p-8 relative overflow-hidden flex flex-col justify-between h-40">
             <div>
               <h2 className="text-lg font-bold">Total Pesanan</h2>
-              <p className="text-xs text-red-400 mt-1">Maret 2026</p>
+              <p className="text-xs text-red-400 mt-1">{stats.month}/{stats.year}</p>
             </div>
-            <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">2820 Pesanan</p>
+            <p className="text-3xl font-extrabold text-[#8B1A1A] mt-2">{stats.totalOrders} Pesanan</p>
             <Link href="/owner/total-pesanan" className="absolute bottom-4 right-4 flex items-center text-xs text-red-700 font-medium group">
               Selengkapnya <ChevronRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform" />
             </Link>

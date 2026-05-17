@@ -45,9 +45,9 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-800">
-          <a href="/" className="hover:text-[#8b1c1c] transition-colors">
+          <Link href="/" className="hover:text-[#8b1c1c] transition-colors">
             Home
-          </a>
+          </Link>
           <a href="#" className="text-[#8b1c1c]">
             Menu
           </a>

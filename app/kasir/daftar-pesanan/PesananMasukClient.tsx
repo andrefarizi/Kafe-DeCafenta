@@ -10,8 +10,9 @@ import {
 import { OrderSummaryData } from '@/src/controllers/kasir-order-controller';
 
 type StatusPesanan = 'Masuk' | 'Dimasak' | 'Siap Diambil' | 'Selesai';
+type TabId = 'Semua' | StatusPesanan;
 
-const tabs = [
+const tabs: { id: TabId; label: string; icon: string }[] = [
   { id: 'Semua', label: 'Semua', icon: '/Group 135.png' },
   { id: 'Masuk', label: 'Masuk', icon: '/Food Icon Illustrations Kit (1).png' },
   { id: 'Dimasak', label: 'Dimasak', icon: '/Food Icon Illustrations Kit (2).png' },
@@ -19,8 +20,14 @@ const tabs = [
   { id: 'Selesai', label: 'Selesai', icon: '/Food Icon Illustrations Kit (4).png' },
 ];
 
-export default function PesananMasukClient({ initialOrders }: { initialOrders: OrderSummaryData[] }) {
-  const [activeTab, setActiveTab] = useState('Semua');
+export default function PesananMasukClient({
+  initialOrders,
+  activeTab: initialActiveTab = 'Semua',
+}: {
+  initialOrders: OrderSummaryData[];
+  activeTab?: TabId;
+}) {
+  const [activeTab, setActiveTab] = useState<TabId>(initialActiveTab);
   const [searchTerm, setSearchTerm] = useState('');
   
   // --- STATE UNTUK PAGINATION ---
@@ -29,6 +36,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
 
   // Kembalikan ke halaman 1 setiap kali kasir mengganti Tab atau mencari nama
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [activeTab, searchTerm]);
 
@@ -63,7 +71,7 @@ export default function PesananMasukClient({ initialOrders }: { initialOrders: O
   const getPageNumbers = () => {
     const maxPagesToShow = 3;
     let startPage = Math.max(1, currentPage - 1);
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);

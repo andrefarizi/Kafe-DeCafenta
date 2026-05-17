@@ -17,8 +17,11 @@ export type CreateOrderResult = {
   orderCode?: string;
 };
 
+type PaymentChannel = 'cash' | 'gopay' | 'dana' | 'bank_va';
+
 export async function createOrderFromCart(
-  orderType: 'dine_in' | 'takeaway'
+  orderType: 'dine_in' | 'takeaway',
+  paymentMethod: PaymentChannel
 ): Promise<CreateOrderResult> {
   try {
     const session = await auth();
@@ -26,6 +29,10 @@ export async function createOrderFromCart(
 
     if (!userId) {
       return { success: false, message: 'Silakan login terlebih dahulu.' };
+    }
+
+    if (!paymentMethod) {
+      return { success: false, message: 'Metode pembayaran belum dipilih.' };
     }
 
     // Ambil keranjang user
@@ -53,6 +60,10 @@ export async function createOrderFromCart(
     // Map orderType ke enum Prisma
     const orderTypeEnum = orderType === 'dine_in' ? 'dine_in_app' : 'dine_in_app';
 
+    const orderTypeLabel = orderType === 'dine_in' ? 'Makan Ditempat' : 'Bawa Pulang';
+    const paymentMethodEnum = paymentMethod === 'cash' ? 'cash' : 'ewallet';
+    const notes = `${orderTypeLabel} | payment_method:${paymentMethod}`;
+
     // Ambil nama user untuk customerName
     const userRecord = await prisma.user.findUnique({
       where: { id: userId },
@@ -69,10 +80,10 @@ export async function createOrderFromCart(
           customerName: userRecord?.name ?? null,
           orderType: orderTypeEnum,
           status: 'masuk',
-          paymentMethod: 'ewallet',
+          paymentMethod: paymentMethodEnum,
           totalPrice,
           isPaid: false,
-          notes: orderType === 'dine_in' ? 'Makan Ditempat' : 'Bawa Pulang',
+          notes,
         },
       });
 
@@ -197,6 +208,7 @@ export async function getOrderDetail(orderId: string) {
       status: order.status,
       totalPrice: Number(order.totalPrice),
       isPaid: order.isPaid,
+      notes: order.notes,
       paymentMethod: order.paymentMethod,
       orderType: order.notes?.includes('Bawa Pulang') ? 'Bawa Pulang' : 'Makan Ditempat',
       orderedAt: order.orderedAt.toISOString(),

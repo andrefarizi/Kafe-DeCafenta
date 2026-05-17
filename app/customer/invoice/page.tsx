@@ -138,7 +138,7 @@ const DetailRow = ({ label, value }: { label: string, value: string }) => (
   </div>
 );
 
-const ProductRow = ({ name, note, price, qty, total }: any) => (
+const ProductRow = ({ name, note, price, qty, total }: { name: string, note: string, price: string, qty: string | number, total: string }) => (
   <tr className="text-sm">
     <td className="py-3.5 px-4">
       <div className="font-bold text-black">{name}</div>

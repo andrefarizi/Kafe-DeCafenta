@@ -131,7 +131,7 @@ const ReviewPage = () => {
 };
 
 /* Sub-component */
-const PaginationButton = ({ label, icon, active = false, onClick }: { label?: string, icon?: any, active?: boolean, onClick?: () => void }) => {
+const PaginationButton = ({ label, icon, active = false, onClick }: { label?: string, icon?: React.ReactNode, active?: boolean, onClick?: () => void }) => {
   const isLargeButton = label === "Awal" || label === "Akhir";
   return (
     <button

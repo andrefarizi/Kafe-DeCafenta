@@ -1,56 +1,61 @@
-"use client";
-
-import React, { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import { ChevronLeft, ChevronDown, Banknote, Wallet } from 'lucide-react';
+import { getOwnerMonthlyReport } from '@/src/controllers/owner-controller';
+import DateCarouselClient from '../components/DateCarouselClient';
+import YearDropdownClient from '../components/YearDropdownClient';
+import ExportExcelButtonClient from '../components/ExportExcelButtonClient';
 
-export default function DetailPesanan() {
-  const [selectedMonth, setSelectedMonth] = useState('Januari');
-  const [selectedDate, setSelectedDate] = useState(1);
+interface Props { searchParams?: Promise<{ month?: string; day?: string; year?: string }> }
+
+export default async function DetailPesanan(props: Props) {
+  const searchParams = await props.searchParams;
+  const monthParam = searchParams?.month ? Number(searchParams.month) : undefined;
+  const yearParam = searchParams?.year ? Number(searchParams.year) : undefined;
+  const dayParam = searchParams?.day ? Number(searchParams.day) : undefined;
+  const report = await getOwnerMonthlyReport({ month: monthParam, year: yearParam, day: dayParam });
 
   const months = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
-  // Dummy data disesuaikan dengan mockup
-  const chartData = [
-    { label: 'Tanggal 1 - 7', value: '705 Pesanan', height: '100%' },
-    { label: 'Tanggal 8 - 14', value: '705 Pesanan', height: '100%' },
-    { label: 'Tanggal 15 - 21', value: '705 Pesanan', height: '100%' },
-    { label: 'Tanggal 22 - Akhir Bulan', value: '705 Pesanan', height: '100%' },
-  ];
+  const daysInMonth = report.daysInMonth ?? 31;
+  const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const selectedMonth = months[(report.month ?? 1) - 1];
+  const selectedDay = searchParams?.day ? Number(searchParams.day) : 1;
+  const activeYear = yearParam ?? report.year;
 
-  // Menggunakan urutan angka yang logis untuk slider tanggal
-  const dates = [1, 2, 3, 4, 5, 6, 7];
+  const maxCount = Math.max(...(report.weeklyRevenue.map((w) => w.count)), 1);
+  const chartData = report.weeklyRevenue.map((w) => ({ label: w.label, value: `${w.count} Pesanan`, height: `${Math.max(12, Math.round((w.count / maxCount) * 100))}%` }));
+  const selectedDate = 1;
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900">
       
       {/* Header Section */}
       <div className="flex items-start mb-8">
-        <button className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mt-1">
+        <Link href="/owner/beranda" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors mt-1 inline-flex items-center">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />
-        </button>
+        </Link>
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-black">Total Pesanan</h1>
           <p className="text-sm text-[#8B1A1A] font-bold mt-1">Lihat Laporan Pesanan Secara Detail</p>
         </div>
       </div>
 
-      {/* Filter Tahun */}
-      <div className="mb-6">
-        <button className="flex items-center justify-between w-48 px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs font-medium text-gray-600">
-          <span>Filter Tahun : <span className="font-bold text-black">2026</span></span>
-          <ChevronDown size={14} />
-        </button>
+      {/* Action Bar */}
+      <div className="mb-6 flex items-center justify-end w-full gap-4">
+        <ExportExcelButtonClient report={report} type="pesanan" />
+        <YearDropdownClient currentYear={report.year} month={report.month ?? 1} />
       </div>
 
       {/* Bulan Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-12">
-        {months.map((month) => (
-          <button
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-4">
+        {months.map((month, idx) => (
+          <Link
             key={month}
-            onClick={() => setSelectedMonth(month)}
+            href={`/owner/total-pesanan?month=${idx + 1}&year=${activeYear}`}
             className={`py-3 px-4 rounded-md border text-sm font-bold transition-all ${
               selectedMonth === month
                 ? 'bg-[#8B1A1A] text-white border-[#8B1A1A]'
@@ -58,15 +63,17 @@ export default function DetailPesanan() {
             }`}
           >
             {month}
-          </button>
+          </Link>
         ))}
       </div>
+
+
 
       {/* Ringkasan Bulan */}
       <div className="mb-10 text-center">
         <h2 className="text-2xl font-bold text-black mb-6 text-left">Bulan {selectedMonth}</h2>
         <p className="text-sm font-bold text-black mb-2">Total Pesanan</p>
-        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">2820 Pesanan</p>
+        <p className="text-4xl md:text-5xl font-extrabold text-[#8B1A1A] mb-8">{report.ordersCount} Pesanan</p>
         <hr className="border-t border-gray-400" />
       </div>
 
@@ -109,24 +116,9 @@ export default function DetailPesanan() {
       <div>
         <h3 className="text-sm font-extrabold text-black mb-4">Rincian Pesanan</h3>
         
-        {/* Date Selector Slider */}
-        <div className="flex overflow-x-auto space-x-3 pb-4 mb-6 scrollbar-hide">
-          {dates.map((date) => (
-            <button
-              key={date}
-              onClick={() => setSelectedDate(date)}
-              className={`flex-shrink-0 flex flex-col items-center justify-center w-20 h-20 rounded-md border-2 transition-all ${
-                selectedDate === date
-                  ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white'
-                  : 'bg-white border-[#8B1A1A] text-black hover:bg-red-50'
-              }`}
-            >
-              <span className={`text-[10px] mb-1 ${selectedDate === date ? 'text-gray-200' : 'text-gray-600'}`}>
-                Tanggal
-              </span>
-              <span className="text-2xl font-extrabold">{date}</span>
-            </button>
-          ))}
+        {/* Date Selector Slider (client) */}
+        <div className="mb-6">
+          <DateCarouselClient basePath="/owner/total-pesanan" month={report.month ?? 1} year={report.year} daysInMonth={daysInMonth} initialDay={selectedDay} />
         </div>
 
         {/* Breakdown List */}
@@ -137,7 +129,7 @@ export default function DetailPesanan() {
               <Banknote size={20} className="text-black" />
               <span className="text-xs font-bold text-black">Total Pesanan Cash</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">30 Pesanan</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">{report.dailyBreakdown?.paymentCounts?.cash ?? report.paymentCounts?.cash ?? 0} Pesanan</span>
           </div>
 
           {/* E-Wallet / Transfer */}
@@ -146,7 +138,7 @@ export default function DetailPesanan() {
               <Wallet size={20} className="text-black" />
               <span className="text-xs font-bold text-black">Total Pesanan E-Wallet/Transfer</span>
             </div>
-            <span className="text-sm font-extrabold text-[#8B1A1A]">50 Pesanan</span>
+            <span className="text-sm font-extrabold text-[#8B1A1A]">{report.dailyBreakdown?.paymentCounts?.ewallet ?? report.paymentCounts?.ewallet ?? 0} Pesanan</span>
           </div>
         </div>
       </div>

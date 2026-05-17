@@ -36,9 +36,10 @@ export default function PesananPage() {
     }
 
     if (actionState.success) {
-      setErrorMsg('');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowSuccessModal(true);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrorMsg(actionState.message);
     }
   }, [actionState]);
