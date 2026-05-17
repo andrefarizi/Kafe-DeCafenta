@@ -6,7 +6,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden selection:bg-[#f4d03f] selection:text-black scroll-smooth">
       
       {/* ================= NAVBAR ================= */}
-      <nav className="flex items-center justify-between px-8 py-5 bg-white shadow-sm sticky top-0 z-50">
+      <nav className="flex items-center justify-between px-8 py-5 bg-white shadow-sm fixed top-0 w-full z-50">
         <div className="flex items-center gap-1">
           {/* Placeholder Icon D Navbar */}
           <img src="/Group 2 1.png" alt="Icon" className="w-10 h-10  object-contain" />
@@ -30,7 +30,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ================= HERO SECTION ================= */}
-      <section className="relative text-white pt-20 pb-40 px-8 md:px-16 flex flex-col md:flex-row items-center justify-between">
+      <section className="relative text-white pt-32 pb-40 px-8 md:px-16 flex flex-col md:flex-row items-center justify-between mt-20 md:mt-0">
         
         {/* Background Full dari Figma, diposisikan ke bawah (object-bottom) agar kurva tidak terpotong */}
         <img 
