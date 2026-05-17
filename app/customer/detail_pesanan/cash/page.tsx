@@ -8,9 +8,10 @@ import Sidebar from "@/app/customer/components/sidebar";
 import Topbar from "@/app/customer/components/topbar";
 import {
   ChevronLeft, RotateCcw, ClipboardList, CookingPot,
-  Package, Check, Loader2, Copy, CheckCircle2,
+  Package, Check, Loader2, Copy, CheckCircle2, Star, X
 } from "lucide-react";
 import { getOrderDetail } from "@/src/controllers/order-controller";
+import { addMenuReview } from "@/src/controllers/menu-controller";
 import { useSession } from "next-auth/react";
 
 /* ─────────── TYPES ─────────── */
@@ -18,8 +19,18 @@ type OrderDetail = {
   id: string; orderCode: string; status: string;
   totalPrice: number; isPaid: boolean; paymentMethod: string;
   orderType: string; orderedAt: string;
-  items: { id: string; name: string; category: string; quantity: number; unitPrice: number; subtotal: number; notes: string }[];
-};
+  items: { 
+    id: string; 
+    menuId?: string; 
+    name: string; 
+    category: string; 
+    quantity: number; 
+    unitPrice: number; 
+    subtotal: number; 
+    notes: string;
+    isReviewed: boolean; 
+  }[];
+}
 type PaymentMethod = "gopay" | "dana" | "bank_va";
 
 /* ─────────── CONSTANTS ─────────── */
@@ -29,12 +40,11 @@ const PAYMENT_LABELS: Record<PaymentMethod, string> = {
 
 const STEPS = [
   { key: "masuk",        label: "Masuk",        color: "#FFC700" },
-  { key: "dimasak",      label: "Dimasak",       color: "#8B0000" },
-  { key: "siap_diambil", label: "Siap Diambil",  color: "#0077D9" },
+  { key: "dimasak",      label: "Dimasak",       color: "#8B1A1A" },
+  { key: "siap_diambil", label: "Siap Diambil",  color: "#3B82F6" },
   { key: "selesai",      label: "Selesai",        color: "#22C55E" },
 ] as const;
 
-// Warna ring pulse per step
 const PULSE_RING_CLASS: Record<string, string> = {
   masuk:        "pulse-ring-yellow",
   dimasak:      "pulse-ring-red",
@@ -42,7 +52,6 @@ const PULSE_RING_CLASS: Record<string, string> = {
   selesai:      "pulse-ring-green",
 };
 
-// CSS kelas shimmer untuk garis antar-step (Gojek-style)
 const LINE_PULSE_CLASS: Record<string, string> = {
   masuk:        "line-pulse-yellow",
   dimasak:      "line-pulse-red",
@@ -57,18 +66,12 @@ const fmt = (p: number) => "Rp " + p.toLocaleString("id-ID");
 ═══════════════════════════════════ */
 const STATUS_LABEL: Record<string, { label: string; color: string; emoji: string }> = {
   masuk:        { label: "Pesanan Masuk",       color: "#FFC700", emoji: "📋" },
-  dimasak:      { label: "Sedang Dimasak",      color: "#8B0000", emoji: "👨‍🍳" },
-  siap_diambil: { label: "Siap Diambil!",       color: "#0077D9", emoji: "📦" },
+  dimasak:      { label: "Sedang Dimasak",      color: "#8B1A1A", emoji: "👨‍🍳" },
+  siap_diambil: { label: "Siap Diambil!",       color: "#3B82F6", emoji: "📦" },
   selesai:      { label: "Pesanan Selesai! 🎉", color: "#22C55E", emoji: "✅" },
 };
 
-function StatusTracker({
-  currentStatus,
-  prevStatus,
-}: {
-  currentStatus: string;
-  prevStatus: string | null;
-}) {
+function StatusTracker({ currentStatus, prevStatus }: { currentStatus: string; prevStatus: string | null; }) {
   const currentIdx   = STEPS.findIndex(s => s.key === currentStatus);
   const prevIdx      = STEPS.findIndex(s => s.key === prevStatus);
   const justAdvanced = prevStatus !== null && currentIdx > prevIdx;
@@ -80,10 +83,6 @@ function StatusTracker({
     <Check         key="3" size={36} className={currentIdx >= 3 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
   ];
 
-  // Segmen garis: ada 3 segmen (antara 4 step)
-  // "done"    → sudah dilewati, solid warna step kanan
-  // "active"  → sedang berjalan (currentIdx → currentIdx+1), shimmer berwarna step kiri
-  // "pending" → belum dilewati, abu-abu
   const segments = STEPS.slice(0, -1).map((_, i) => {
     if (i < currentIdx)   return "done";
     if (i === currentIdx) return "active";
@@ -92,8 +91,6 @@ function StatusTracker({
 
   return (
     <div className="relative flex items-start justify-between w-full" style={{ paddingTop: 6, paddingBottom: 6 }}>
-
-      {/* ── SEGMEN GARIS ANTAR-STEP ── */}
       {segments.map((segStatus, i) => {
         const leftStep  = STEPS[i];
         const rightStep = STEPS[i + 1];
@@ -101,36 +98,23 @@ function StatusTracker({
         const isActive  = segStatus === "active";
         const segWidth  = `calc((100% - 68px) / ${STEPS.length - 1})`;
         const segLeft   = `calc(34px + (100% - 68px) * ${i / (STEPS.length - 1)})`;
-
-        // Base color segmen aktif: warna status saat ini tapi transparan (shimmer di atasnya)
-        const activeBaseBg = leftStep.color + "40"; // hex opacity ~25%
+        const activeBaseBg = leftStep.color + "40"; 
 
         return (
           <div
             key={i}
             style={{
-              position: "absolute",
-              top: 40,
-              left: segLeft,
-              width: segWidth,
-              height: 8,
-              borderRadius: 9999,
-              zIndex: isDone ? 2 : isActive ? 3 : 0,
-              overflow: "hidden",
+              position: "absolute", top: 40, left: segLeft, width: segWidth, height: 8,
+              borderRadius: 9999, zIndex: isDone ? 2 : isActive ? 3 : 0, overflow: "hidden",
               background: isDone ? rightStep.color : isActive ? activeBaseBg : "#E5E7EB",
               transition: "background 0.5s ease",
             }}
           >
-            {/* Shimmer traveling pulse untuk segmen aktif (Gojek-style, kiri→kanan) */}
-            {isActive && (
-              <div className={LINE_PULSE_CLASS[leftStep.key]} />
-            )}
+            {isActive && <div className={LINE_PULSE_CLASS[leftStep.key]} />}
           </div>
         );
       })}
 
-
-      {/* ── STEP CIRCLES ── */}
       {STEPS.map((step, idx) => {
         const active    = idx <= currentIdx;
         const isCurrent = idx === currentIdx;
@@ -140,41 +124,21 @@ function StatusTracker({
         return (
           <div key={step.key} className="flex flex-col items-center" style={{ zIndex: 10, position: "relative" }}>
             <div style={{ position: "relative", width: 68, height: 68 }}>
-
-              {/* Outer ring pulse (lebih besar, delay 0.5s) — Gojek double-ring */}
-              {isCurrent && (
-                <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />
-              )}
-
-              {/* Inner ring pulse */}
-              {isCurrent && (
-                <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />
-              )}
-
-              {/* Lingkaran step */}
+              {isCurrent && <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />}
+              {isCurrent && <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />}
               <div
                 style={{
-                  width: 68, height: 68,
-                  borderRadius: "50%",
-                  border: `4px solid ${color}`,
-                  padding: 3,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  width: 68, height: 68, borderRadius: "50%", border: `4px solid ${color}`,
+                  padding: 3, display: "flex", alignItems: "center", justifyContent: "center",
                   transition: "border-color 0.4s ease",
                   animation: isNewStep ? "step-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards" : "none",
-                  position: "relative",
-                  zIndex: 5,
+                  position: "relative", zIndex: 5,
                 }}
               >
                 <div
                   style={{
-                    width: "100%", height: "100%",
-                    borderRadius: "50%",
-                    backgroundColor: color,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    width: "100%", height: "100%", borderRadius: "50%", backgroundColor: color,
+                    display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "background-color 0.4s ease",
                   }}
                 >
@@ -185,12 +149,8 @@ function StatusTracker({
 
             <span
               style={{
-                marginTop: 12,
-                fontSize: 14,
-                fontWeight: 800,
-                color: active ? "#000" : "#9CA3AF",
-                whiteSpace: "nowrap",
-                transition: "color 0.4s ease",
+                marginTop: 12, fontSize: 14, fontWeight: 800,
+                color: active ? "#000" : "#9CA3AF", whiteSpace: "nowrap", transition: "color 0.4s ease",
               }}
             >
               {step.label}
@@ -203,7 +163,7 @@ function StatusTracker({
 }
 
 /* ═══════════════════════════════════
-   STATUS UPDATE TOAST
+   STATUS UPDATE TOAST & BANNER
 ═══════════════════════════════════ */
 function StatusUpdateToast({ status, onClose }: { status: string; onClose: () => void }) {
   const [exiting, setExiting] = useState(false);
@@ -212,10 +172,7 @@ function StatusUpdateToast({ status, onClose }: { status: string; onClose: () =>
   useEffect(() => { const t = setTimeout(close, 5000); return () => clearTimeout(t); }, []); // eslint-disable-line
   return (
     <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] px-4 ${exiting ? "status-toast-exit" : "status-toast-enter"}`}>
-      <div
-        className="flex items-center gap-3 rounded-2xl shadow-2xl px-5 py-3 text-white"
-        style={{ background: info.color, minWidth: 220 }}
-      >
+      <div className="flex items-center gap-3 rounded-2xl shadow-2xl px-5 py-3 text-white" style={{ background: info.color, minWidth: 220 }}>
         <span className="text-2xl">{info.emoji}</span>
         <div>
           <p className="font-extrabold text-[14px] leading-tight">Status Diperbarui!</p>
@@ -227,9 +184,6 @@ function StatusUpdateToast({ status, onClose }: { status: string; onClose: () =>
   );
 }
 
-/* ═══════════════════════════════════
-   FLOATING SUCCESS BANNER
-═══════════════════════════════════ */
 function PaymentSuccessBanner({ onClose }: { onClose: () => void }) {
   const [exiting, setExiting] = useState(false);
   const close = () => { setExiting(true); setTimeout(onClose, 300); };
@@ -263,6 +217,16 @@ function CashPageInner() {
   const [prevStatus, setPrevStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // STATE UNTUK MODAL ULASAN
+  const [reviewItem, setReviewItem] = useState<any | null>(null);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  
+  // STATE BARU UNTUK POPUP SUKSES ULASAN
+  const [showReviewSuccessModal, setShowReviewSuccessModal] = useState(false);
+
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | "">("");
   const [isPaymentOpen, setIsPaymentOpen]   = useState(false);
   const [isProcessing, setIsProcessing]     = useState(false);
@@ -283,10 +247,8 @@ function CashPageInner() {
     if (data) {
       setOrder(prev => {
         if (prev && prev.status !== data.status) {
-          setPrevStatus(prev.status); // trigger animasi garis
-          if (!isFirstLoad.current) {
-            setShowStatusToast(true); // toast hanya saat update, bukan load pertama
-          }
+          setPrevStatus(prev.status); 
+          if (!isFirstLoad.current) setShowStatusToast(true); 
         }
         return data;
       });
@@ -311,7 +273,7 @@ function CashPageInner() {
           setIsPolling(false);
           setShowSuccessBanner(true);
           await loadOrder();
-          router.refresh(); // <-- Paksa Next.js hapus cache client-side
+          router.refresh(); 
         }
       } catch { /* silent */ }
     }, 4000);
@@ -356,7 +318,7 @@ function CashPageInner() {
       if (json.isPaid) {
         setShowSuccessBanner(true);
         await loadOrder();
-        router.refresh(); // <-- Paksa Next.js hapus cache client-side
+        router.refresh(); 
       }
     } finally { setIsPolling(false); }
   };
@@ -366,181 +328,223 @@ function CashPageInner() {
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
 
+  /* ── Handle Buka Modal Ulasan ── */
+  const openReviewModal = (item: any) => {
+    setReviewItem(item);
+    setSelectedRating(0);
+    setHoverRating(0);
+    setReviewText("");
+  };
+
+  const closeReviewModal = () => {
+    setReviewItem(null);
+  };
+
+  const submitReview = async () => {
+    if (!reviewItem || selectedRating === 0) return;
+    setIsSubmittingReview(true);
+    
+    const targetMenuId = reviewItem.menuId || reviewItem.id;
+    // Parameter ke-4 adalah ID OrderItem
+    const result = await addMenuReview(targetMenuId, selectedRating, reviewText, reviewItem.id);
+    
+    setIsSubmittingReview(false);
+
+    if (result.success) {
+      closeReviewModal();
+      setShowReviewSuccessModal(true);
+      await loadOrder(); // <--- Refresh data diam-diam dari DB
+      router.refresh(); 
+    } else {
+      alert(result.message);
+    }
+  };
+
+  /* Fallback gambar ringan */
+  const getFallbackImg = (cat: string) => {
+    if (cat === 'Minuman') return '/Rectangle 43 (1).png';
+    return '/Rectangle 43.png';
+  }
+
   /* ── loading / not found ── */
   if (isLoading) return (
-    <div className="flex min-h-screen bg-[#F8F9FA]">
+    <div className="flex min-h-screen bg-white">
       <Sidebar activeMenu="pesanan" />
       <main className="flex-1 flex items-center justify-center">
-        <Loader2 className="animate-spin w-10 h-10 text-[#8A0000]" />
+        <Loader2 className="animate-spin w-10 h-10 text-[#8B1A1A]" />
       </main>
     </div>
   );
   if (!order) return (
-    <div className="flex min-h-screen bg-[#F8F9FA]">
+    <div className="flex min-h-screen bg-white">
       <Sidebar activeMenu="pesanan" />
       <main className="flex-1 flex items-center justify-center flex-col gap-4">
         <p className="text-gray-500 font-medium">Pesanan tidak ditemukan.</p>
-        <button onClick={() => router.back()} className="bg-[#8A0000] text-white px-6 py-2 rounded-lg font-bold">Kembali</button>
+        <button onClick={() => router.back()} className="bg-[#8B1A1A] text-white px-6 py-2 rounded-lg font-bold">Kembali</button>
       </main>
     </div>
   );
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
+    <div className="flex min-h-screen bg-white font-sans text-gray-900">
       {showSuccessBanner && <PaymentSuccessBanner onClose={() => setShowSuccessBanner(false)} />}
       {showStatusToast && order && <StatusUpdateToast status={order.status} onClose={() => setShowStatusToast(false)} />}
 
       <Sidebar activeMenu="pesanan" />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden text-left">
+      
+      <main className="flex-1 flex flex-col h-screen overflow-hidden text-left relative">
         <div className="flex-none"><Topbar /></div>
 
-        <div className="p-5 w-full overflow-y-auto">
-
-          {/* ── Header ── */}
-          <div className="flex justify-between items-start mb-4 w-full">
-            <div className="flex items-center gap-3">
-              <button onClick={() => router.back()} className="p-1 border rounded-md bg-white hover:bg-gray-50">
-                <ChevronLeft size={16} />
+        <div className="flex-1 overflow-y-auto w-full">
+          <div className="max-w-5xl mx-auto p-5 md:p-8 pb-24">
+            
+            {/* ── Header ── */}
+            <div className="flex items-center mb-8 w-full">
+              <button onClick={() => router.back()} className="mr-4 p-1.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                <ChevronLeft size={20} className="text-black" />
               </button>
-              <div className="text-left">
-                <h1 className="text-xl font-bold text-black leading-tight">Detail Pesanan</h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="font-semibold text-[#8A0000] text-xs">#{order.orderCode}</span>
-                  <span
-                    className="text-[8px] px-1.5 py-0.5 rounded font-bold uppercase text-white"
-                    style={{ backgroundColor: STEPS.find(s => s.key === order.status)?.color || "#333" }}
-                  >
-                    {order.status.replace(/_/g, " ")}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <p className="text-[#8A0000] font-bold text-[10px] mt-6">
-              {new Date(order.orderedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-            </p>
-          </div>
-
-          {/* ── STATUS TRACKER CARD ── */}
-          <div className="bg-white rounded-lg border border-[#8A0000] p-6 mb-6 shadow-sm w-full">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-[#8A0000] font-bold text-[12px]">Status Pesanan</h2>
-              <button
-                onClick={loadOrder}
-                className="flex items-center gap-1 bg-[#8A0000] text-white text-[9px] px-2 py-1 rounded-md hover:bg-[#6A0000] transition-colors"
-              >
-                <RotateCcw size={10} /> Refresh Status
-              </button>
+              <h1 className="text-[32px] font-extrabold text-black">Detail Pesanan</h1>
             </div>
 
-            {/* Status tracker dengan animasi gradien */}
-            <div className="mb-4">
-              <StatusTracker
-                currentStatus={order.status}
-                prevStatus={prevStatus}
-              />
-            </div>
-          </div>
-
-          {/* ── Pembayaran Section ── */}
-          <section className="mb-6 flex flex-col gap-4 w-full text-left">
-            <div>
-              <h3 className="font-bold text-lg text-black">Pembayaran</h3>
-              <p className="text-[11px] text-gray-500">Selesaikan pembayaran untuk melanjutkan pesanan anda</p>
-            </div>
-
-            <div className="space-y-2">
+            {/* ── Order Info Card ── */}
+            <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 flex justify-between items-center mb-6 bg-white shadow-sm">
               <div>
-                <h3 className="text-sm font-bold text-black">Tipe Pesanan</h3>
-                <p className="text-xs text-gray-700 font-medium">{order.orderType}</p>
+                <p className="text-[11px] text-gray-500 font-medium mb-1">Kode Pesanan</p>
+                <p className="text-[22px] font-black text-[#8B1A1A]">#{order.orderCode}</p>
+                <p className="text-[#8B1A1A] font-bold text-[12px] mt-1">
+                  {new Date(order.orderedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                </p>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-black">Status Pembayaran</h3>
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-[10px] font-bold ${order.isPaid ? "bg-[#22C55E]" : "bg-[#484040]"}`}>
-                  {order.isPaid && <CheckCircle2 size={11} />}
-                  {order.isPaid ? "Sudah Dibayar" : "Belum Dibayar"}
+              <div className="text-right flex flex-col items-end">
+                <p className="text-[11px] text-gray-500 font-medium mb-1.5">Status</p>
+                <span 
+                  className="text-[11px] px-4 py-1.5 rounded-md font-black uppercase text-white shadow-sm"
+                  style={{ backgroundColor: STEPS.find(s => s.key === order.status)?.color || "#333" }}
+                >
+                  {order.status.replace(/_/g, " ")}
                 </span>
               </div>
             </div>
 
-            {/* Form Pembayaran */}
+            {/* ── STATUS TRACKER CARD ── */}
+            <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 mb-8 relative bg-white shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-[15px] font-extrabold text-[#8B1A1A]">Status Pesanan</h3>
+                <button
+                  onClick={loadOrder}
+                  className="flex items-center gap-1.5 bg-[#8B1A1A] text-white text-[11px] font-bold px-3 py-1.5 rounded-md hover:bg-red-900 transition-colors shadow-sm"
+                >
+                  <RotateCcw size={12} /> Refresh Status
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <StatusTracker currentStatus={order.status} prevStatus={prevStatus} />
+              </div>
+            </div>
+
+            {/* ── Pembayaran Section ── */}
+            <section className="mb-8 w-full text-left">
+              <div className="mb-6">
+                <h3 className="font-extrabold text-[16px] text-black">Pembayaran</h3>
+                <p className="text-[13px] text-gray-500 font-medium mt-0.5">Selesaikan pembayaran untuk melanjutkan pesanan anda</p>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-[14px] font-extrabold text-black mb-1">Tipe Pesanan</h3>
+                  <p className="text-[13px] text-black font-medium">{order.orderType}</p>
+                </div>
+                <div>
+                  <h3 className="text-[14px] font-extrabold text-black mb-2">Status Pembayaran</h3>
+                  <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-white text-[11px] font-bold shadow-sm ${order.isPaid ? "bg-[#22C55E]" : "bg-[#444444]"}`}>
+                    {order.isPaid && <CheckCircle2 size={12} />}
+                    {order.isPaid ? "Sudah Dibayar" : "Belum Dibayar"}
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            {/* Form Pembayaran (Jika belum bayar & belum ada VA) */}
             {!order.isPaid && !paymentResult && (
-              <div className="border border-[#8A0000] rounded-xl p-4 bg-white w-full max-w-[420px]">
-                <h3 className="font-bold text-[14px] text-black mb-3">Pilih Metode Pembayaran</h3>
-                <div className="border-[1.5px] border-[#8B0000] rounded-xl overflow-hidden bg-white mb-4">
-                  <div onClick={() => setIsPaymentOpen(!isPaymentOpen)} className="p-3 flex justify-between items-center text-[#8B0000] font-medium text-[14px] cursor-pointer">
-                    <span>{selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Pilih Metode"}</span>
+              <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 bg-white w-full mb-10 shadow-sm">
+                <h3 className="font-extrabold text-[14px] text-black mb-4">Pilih Metode Pembayaran</h3>
+                <div className="border border-[#8B1A1A] rounded-xl overflow-hidden bg-white mb-5">
+                  <div onClick={() => setIsPaymentOpen(!isPaymentOpen)} className="p-4 flex justify-between items-center text-[#8B1A1A] font-bold text-[13px] cursor-pointer">
+                    <span>{selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Pilih Metode Pembayaran"}</span>
                     <ChevronLeft size={18} className={`transition-transform duration-200 ${isPaymentOpen ? "-rotate-90" : "rotate-[270deg]"}`} />
                   </div>
                   {isPaymentOpen && (
-                    <div className="bg-white border-t border-[#8B0000]">
+                    <div className="bg-white border-t border-[#8B1A1A]">
                       {(Object.entries(PAYMENT_LABELS) as [PaymentMethod, string][]).map(([key, label], idx, arr) => (
                         <div key={key} onClick={() => { setSelectedMethod(key); setIsPaymentOpen(false); }}
-                          className={`p-3 flex items-center text-[#8B0000] font-medium text-[14px] cursor-pointer hover:bg-red-50 transition-colors ${idx !== arr.length - 1 ? "border-b border-[#8B0000]" : ""}`}>
+                          className={`p-4 flex items-center text-[#8B1A1A] font-semibold text-[13px] cursor-pointer hover:bg-red-50 transition-colors ${idx !== arr.length - 1 ? "border-b border-[#8B1A1A]" : ""}`}>
                           {label}
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-                {paymentError && <p className="text-red-600 text-[12px] font-medium mb-3">{paymentError}</p>}
+                {paymentError && <p className="text-red-600 text-xs font-bold mb-3">{paymentError}</p>}
                 <button onClick={handlePay} disabled={!selectedMethod || isProcessing}
-                  className="w-full bg-[#8A0000] text-white py-3 rounded-lg font-bold text-[13px] hover:bg-[#6A0000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-                  {isProcessing ? <><Loader2 size={16} className="animate-spin" /> Memproses...</> : "Bayar Sekarang"}
+                  className="w-full bg-[#8B1A1A] text-white py-3.5 rounded-xl font-bold text-[14px] hover:bg-red-900 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm">
+                  {isProcessing ? <><Loader2 size={18} className="animate-spin" /> Memproses...</> : "Bayar Sekarang"}
                 </button>
               </div>
             )}
 
-            {/* Instruksi setelah charge */}
+            {/* Instruksi setelah charge (Virtual Account dll) */}
             {paymentResult && !order.isPaid && (
-              <div className="border border-[#8A0000] rounded-xl p-4 bg-white w-full max-w-[420px] space-y-3">
-                <h3 className="font-bold text-[14px] text-black">Instruksi Pembayaran</h3>
-                <p className="text-[12px] text-gray-500">Status: <span className="font-bold text-[#D8A700] capitalize">{String((paymentResult).transaction_status || "")}</span></p>
+              <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 bg-white w-full mb-10 space-y-4 shadow-sm">
+                <h3 className="font-extrabold text-[15px] text-black">Instruksi Pembayaran</h3>
+                <p className="text-[13px] text-gray-500 font-medium">Status: <span className="font-extrabold text-[#FFC700] capitalize">{String((paymentResult).transaction_status || "")}</span></p>
 
-                {/* QR / deeplink GoPay */}
                 {Array.isArray(paymentResult.actions) && (
-                  <div className="space-y-2">
+                  <div className="space-y-4 mt-2">
                     {(paymentResult.actions as Record<string, string>[]).map((a, i) => {
                       if (a.name === "generate-qr-code") return (
-                        <div key={i}><p className="text-[12px] font-bold text-black mb-1">Scan QR Code:</p>
-                          <img src={a.url} alt="QR" className="w-32 h-32 border border-gray-200 rounded" />
+                        <div key={i}>
+                          <p className="text-[13px] font-extrabold text-black mb-2">Scan QR Code:</p>
+                          <div className="p-3 border-2 border-gray-100 rounded-xl w-fit shadow-sm">
+                            <img src={a.url} alt="QR" className="w-40 h-40 object-contain" />
+                          </div>
                         </div>
                       );
                       if (a.name === "deeplink-redirect") return (
-                        <a key={i} href={a.url} className="block bg-[#8A0000] text-white text-center py-2 rounded-lg text-[12px] font-bold">Buka GoPay</a>
+                        <a key={i} href={a.url} className="block w-full bg-[#8B1A1A] text-white text-center py-3.5 rounded-xl text-[14px] font-bold hover:bg-red-900 shadow-sm mt-4">Buka Aplikasi GoPay</a>
                       );
                       return null;
                     })}
                   </div>
                 )}
 
-                {/* VA BCA */}
                 {Array.isArray(paymentResult.va_numbers) && (
-                  <div>
-                    <p className="text-[12px] font-bold text-black mb-1">Nomor Virtual Account BCA:</p>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleCopy((paymentResult.va_numbers as Record<string,string>[])[0]?.va_number || "")} className="text-[#8A0000] hover:text-[#6A0000]">
-                        <Copy size={14} />
+                  <div className="mt-2">
+                    <p className="text-[13px] font-extrabold text-black mb-2">Nomor Virtual Account BCA:</p>
+                    <div className="flex items-center gap-3 mb-1.5">
+                      <button onClick={() => handleCopy((paymentResult.va_numbers as Record<string,string>[])[0]?.va_number || "")} className="text-[#8B1A1A] hover:text-red-900 bg-red-50 p-2 rounded-lg">
+                        <Copy size={16} />
                       </button>
-                      <span className="text-xs font-mono font-bold text-gray-700">
+                      <span className="text-[15px] font-mono font-black text-gray-900 tracking-wide">
                         {(paymentResult.va_numbers as Record<string,string>[])[0]?.va_number}
                       </span>
-                      {copied && <span className="text-[10px] text-green-600 font-bold">✓ Disalin!</span>}
+                      {copied && <span className="text-[11px] text-green-600 font-extrabold bg-green-50 px-2 py-1 rounded-md">✓ Disalin</span>}
                     </div>
-                    <p className="text-[11px] text-gray-500 mt-1">Bank: BCA • Bayar sebelum transaksi expired</p>
+                    <p className="text-[11px] text-gray-500 font-medium">Bank: BCA • Bayar sebelum transaksi expired</p>
                   </div>
                 )}
 
                 <button onClick={handleCheckStatus} disabled={isPolling}
-                  className="w-full border border-[#8A0000] text-[#8A0000] py-2 rounded-lg text-[12px] font-bold hover:bg-red-50 flex items-center justify-center gap-1.5 disabled:opacity-60 transition-colors">
-                  {isPolling ? <><Loader2 size={12} className="animate-spin" /> Mengecek...</> : <><RotateCcw size={12} /> Cek Status Pembayaran</>}
+                  className="w-full border-[1.5px] border-[#8B1A1A] text-[#8B1A1A] py-3.5 rounded-xl text-[13px] font-extrabold hover:bg-red-50 flex items-center justify-center gap-2 disabled:opacity-60 transition-colors mt-6 shadow-sm">
+                  {isPolling ? <><Loader2 size={16} className="animate-spin" /> Mengecek...</> : <><RotateCcw size={16} /> Cek Status Pembayaran</>}
                 </button>
-                {isPolling && <p className="text-[10px] text-gray-400 text-center">🔄 Menunggu konfirmasi otomatis…</p>}
+                {isPolling && <p className="text-[11px] text-gray-400 font-medium text-center mt-2">🔄 Menunggu konfirmasi otomatis…</p>}
               </div>
             )}
 
             {/* Sudah bayar */}
             {order.isPaid && (
-              <div className="border border-[#22C55E] rounded-xl p-4 bg-[#F0FFF4] w-full max-w-[420px]">
+              <div className="border border-[#22C55E] rounded-xl p-4 bg-[#F0FFF4] w-full max-w-[420px] mb-8 ">
                 <div className="flex items-center gap-2 mb-1">
                   <CheckCircle2 size={18} className="text-[#16A34A]" />
                   <h3 className="font-bold text-[14px] text-[#16A34A]">Pembayaran Terverifikasi</h3>
@@ -548,47 +552,211 @@ function CashPageInner() {
                 <p className="text-[12px] text-gray-600">Pesanan anda sedang diproses oleh dapur. Pantau status di atas.</p>
               </div>
             )}
-          </section>
 
-          {/* ── Tabel Produk ── */}
-          <div className="overflow-x-auto mb-6 w-full text-left">
-            <table className="w-full">
-              <thead>
-                <tr className="text-black border-b border-gray-200">
-                  <th className="pb-2 font-bold text-[11px] text-left">Produk</th>
-                  <th className="pb-2 font-bold text-[11px] text-center">Kategori</th>
-                  <th className="pb-2 font-bold text-[11px] text-center">Jumlah</th>
-                  <th className="pb-2 font-bold text-[11px] text-right">Harga</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {order.items.map(item => (
-                  <tr key={item.id} className="border-b border-gray-50">
-                    <td className="py-3">
-                      <p className="font-bold text-black text-[11px]">{item.name}</p>
-                      {item.notes && <p className="text-[9px] text-gray-500 italic">Catatan: {item.notes}</p>}
-                    </td>
-                    <td className="py-3 text-center font-bold text-black text-[11px]">{item.category}</td>
-                    <td className="py-3 text-center font-bold text-black text-[11px]">{item.quantity}</td>
-                    <td className="py-3 text-right font-bold text-black text-[11px]">{fmt(item.unitPrice)}</td>
+            {/* ── Tabel Produk ── */}
+            <div className="mb-10 w-full overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="border-b-[1.5px] border-black">
+                    <th className="pb-3 font-extrabold text-black text-[13px] w-2/5">Produk</th>
+                    <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Kategori</th>
+                    <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Jumlah</th>
+                    <th className="pb-3 font-extrabold text-black text-right text-[13px] w-1/5">Harga</th>
+                    {order.status === 'selesai' && <th className="pb-3 font-extrabold text-black text-center text-[13px] pl-4">Aksi</th>}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="border-t border-black mt-4 pt-2 flex justify-end">
-              <h2 className="text-base font-bold text-[#8A0000]">Total {order.items.length} Menu : {fmt(order.totalPrice)}</h2>
+                </thead>
+                <tbody>
+                  {order.items.map(item => (
+                    <ProductRowItem 
+                      key={item.id} 
+                      item={item} 
+                      isCompleted={order.status === 'selesai'} 
+                      isReviewed={item.isReviewed}
+                      onOpenReview={() => openReviewModal(item)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="border-t-[1.5px] border-black mt-1 pt-4 flex justify-end">
+                <h2 className="text-[17px] font-black text-[#8B1A1A]">
+                  Total {order.items.length} Menu : {fmt(order.totalPrice)}
+                </h2>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════
+            MODAL POPUP BERI ULASAN
+        ═══════════════════════════════════ */}
+        {reviewItem && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeReviewModal}></div>
+            <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B1A1A] p-6 animate-in fade-in zoom-in duration-200">
+              
+              <button
+                onClick={closeReviewModal}
+                className="absolute -top-2 -right-2 bg-[#8B1A1A] text-white rounded-full p-1.5 shadow-lg hover:bg-red-900 transition-colors z-10"
+              >
+                <X size={18} strokeWidth={3} />
+              </button>
+
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-extrabold text-black tracking-tight leading-none">Beri Ulasan</h2>
+              </div>
+
+              {/* Produk Info */}
+              <div className="flex gap-4 mb-5">
+                <div className="w-[100px] h-[90px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
+                  <img src={getFallbackImg(reviewItem.category)} alt={reviewItem.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 flex flex-col justify-center min-w-0">
+                  <h4 className="font-extrabold text-black text-[15px] mb-1 leading-tight">{reviewItem.name}</h4>
+                  <p className="text-[11px] font-medium text-gray-500 leading-tight">Bagaimana rasa dan kualitas menu ini?</p>
+                </div>
+              </div>
+
+              <div className="w-full h-[1.5px] bg-gray-300 mb-5"></div>
+
+              {/* Input Rating Bintang */}
+              <div className="mb-6 flex flex-col items-center">
+                <p className="text-[13px] font-extrabold text-black mb-3">Berikan Rating Bintang <span className="text-red-500">*</span></p>
+                <div className="flex gap-2" onMouseLeave={() => setHoverRating(0)}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={38}
+                      className={`cursor-pointer transition-all duration-200 ${
+                        star <= (hoverRating || selectedRating)
+                          ? 'text-[#FFC700] fill-[#FFC700] scale-110'
+                          : 'text-gray-300 fill-transparent'
+                      }`}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onClick={() => setSelectedRating(star)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Input Teks Ulasan */}
+              <div className="mb-6">
+                <p className="text-[12px] font-extrabold text-black mb-2">Tulis Ulasan (Opsional)</p>
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Ceritakan pengalamanmu menikmati menu ini..."
+                  className="w-full bg-white rounded-xl p-4 text-black placeholder:text-gray-400 text-[13px] font-medium focus:outline-none border-[1.5px] border-gray-300 focus:border-[#8B1A1A] min-h-[100px] resize-none shadow-inner"
+                />
+              </div>
+
+              {/* Tombol Kirim */}
+              <button
+                disabled={isSubmittingReview || selectedRating === 0}
+                onClick={submitReview}
+                className="w-full bg-[#8B1A1A] text-white py-3.5 rounded-xl text-[14px] font-extrabold hover:bg-red-900 transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isSubmittingReview ? (
+                  <><Loader2 size={18} className="animate-spin" /> Mengirim...</>
+                ) : (
+                  "Kirim Ulasan"
+                )}
+              </button>
+
             </div>
           </div>
+        )}
 
-        </div>
+        {/* ═══════════════════════════════════
+            MODAL POPUP SUKSES ULASAN
+        ═══════════════════════════════════ */}
+        {showReviewSuccessModal && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[36px] w-full max-w-[450px] p-10 text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+              <div className="flex justify-center mb-6">
+                <div className="w-24 h-24 bg-[#DCFCE7] rounded-full flex items-center justify-center">
+                  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+                    <circle cx="26" cy="26" r="26" fill="#22C55E" fillOpacity="0.2"/>
+                    <path d="M14 26L22 34L38 18" stroke="#16A34A" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-[24px] font-extrabold text-black mb-3 leading-tight">Ulasan Berhasil Dikirim!</h2>
+              <p className="text-gray-600 font-medium text-[14px] mb-8">Terima kasih telah memberikan ulasan. Penilaian Anda sangat berarti bagi kami.</p>
+              
+              <button
+                onClick={() => setShowReviewSuccessModal(false)}
+                className="w-full bg-[#8B1A1A] text-white py-3.5 rounded-[16px] font-extrabold text-[16px] hover:bg-red-900 transition-colors shadow-md flex items-center justify-center gap-2"
+              >
+                Lanjutkan
+              </button>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
 }
 
+/* Fallback gambar ringan global untuk dipakai ProductRowItem */
+const getFallbackImg = (cat: string) => {
+  if (cat === 'Minuman') return '/Rectangle 43 (1).png';
+  return '/Rectangle 43.png';
+}
+
+/* ═══════════════════════════════════
+   KOMPONEN BARIS PRODUK
+═══════════════════════════════════ */
+function ProductRowItem({ item, isCompleted, isReviewed, onOpenReview }: { item: any, isCompleted: boolean, isReviewed: boolean, onOpenReview: () => void }) {
+  return (
+    <tr key={item.id} className="border-b-[1.5px] border-gray-100 hover:bg-gray-50 transition-colors">
+      <td className="py-4 flex items-center space-x-4">
+        <img 
+          src={getFallbackImg(item.category)} 
+          alt={item.name} 
+          className="w-14 h-14 rounded-xl object-cover shadow-sm border border-gray-100 shrink-0"
+        />
+        <div>
+          <p className="font-extrabold text-black text-[14px]">{item.name}</p>
+          {item.notes && <p className="text-[11px] text-gray-500 font-medium italic mt-0.5">Catatan: {item.notes}</p>}
+        </div>
+      </td>
+      <td className="py-4 text-center font-extrabold text-black text-[13px]">
+        {item.category}
+      </td>
+      <td className="py-4 text-center font-bold text-black text-[13px]">
+        {item.quantity}
+      </td>
+      <td className="py-4 text-right font-bold text-black text-[13px]">
+        {fmt(item.unitPrice)}
+      </td>
+      
+      {/* Tombol Beri Ulasan */}
+      {isCompleted && (
+        <td className="py-4 text-center pl-4">
+          {isReviewed ? (
+            <span className="text-[10px] font-extrabold text-green-600 bg-green-50 px-3 py-1.5 rounded-md whitespace-nowrap">
+              ✓ Telah Diulas
+            </span>
+          ) : (
+            <button 
+              onClick={onOpenReview}
+              className="bg-[#8B1A1A] text-white px-4 py-2 rounded-md text-[11px] font-bold hover:bg-red-900 transition-colors shadow-sm whitespace-nowrap active:scale-95"
+            >
+              Beri Ulasan
+            </button>
+          )}
+        </td>
+      )}
+    </tr>
+  );
+}
+
 export default function CashPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin w-10 h-10 text-[#8A0000]" /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin w-10 h-10 text-[#8B1A1A]" /></div>}>
       <CashPageInner />
     </Suspense>
   );

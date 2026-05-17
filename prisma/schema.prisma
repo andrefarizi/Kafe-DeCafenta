@@ -147,7 +147,6 @@ model Review {
   menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([menuId, userId])
   @@map("reviews")
 }
 
@@ -210,6 +209,7 @@ model OrderItem {
   customNotes String?  @db.Text
   unitPrice   Decimal  @db.Decimal(10, 2)
   subtotal    Decimal? @db.Decimal(10, 2) 
+  isReviewed  Boolean  @default(false)
 
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menu        Menu     @relation(fields: [menuId], references: [id], onDelete: Restrict)
