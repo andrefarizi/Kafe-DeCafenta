@@ -1,11 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useActionState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { resetPasswordAction } from './actions';
 
-export default function ResetPassword() {
+function ResetPasswordForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get('email') || '';
+  
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(''));
+
+  const [actionState, formAction, isPending] = useActionState(
+    resetPasswordAction,
+    { success: false, message: '' }
+  );
+
+  useEffect(() => {
+    if (actionState?.success) {
+      router.push('/login?reset=success');
+    }
+  }, [actionState, router]);
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) value = value.slice(-1);
+    const newOtp = [...otpValues];
+    newOtp[index] = value;
+    setOtpValues(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpValues[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      prevInput?.focus();
+    }
+  };
 
   return (
     // Background utama merah gelap
@@ -27,7 +65,7 @@ export default function ResetPassword() {
       <div className="relative z-10 w-full max-w-6xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row">
         
         {/* Tombol Kembali (Absolute inside card) */}
-        <Link href="/forgot-password" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-4 py-2 bg-white text-[#8b1c1c] font-bold text-sm md:text-base rounded-full border-2 border-[#8b1c1c] hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group shadow-sm">
+        <Link href="/konfirmasi-email" className="absolute top-6 left-6 md:top-8 md:left-8 z-50 flex items-center gap-2 px-4 py-2 bg-white text-[#8b1c1c] font-bold text-sm md:text-base rounded-full border-2 border-[#8b1c1c] hover:bg-[#8b1c1c] hover:text-white transition-all duration-300 group shadow-sm">
           <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           Kembali
         </Link>
@@ -57,8 +95,19 @@ export default function ResetPassword() {
           </div>
 
           {/* Form Container */}
-          <form className="space-y-4 flex flex-col w-full max-w-sm mx-auto">
+          <form action={formAction} className="space-y-4 flex flex-col w-full max-w-sm mx-auto">
             
+            {/* Tampilkan Pesan Error */}
+            {actionState?.message && !actionState.success && (
+              <div className="text-red-600 font-semibold text-sm text-center bg-red-100 p-2 rounded-lg">
+                {actionState.message}
+              </div>
+            )}
+
+            {/* Hidden inputs untuk email dan OTP */}
+            <input type="hidden" name="email" value={emailParam} />
+            <input type="hidden" name="otp" value={otpValues.join('')} />
+
             {/* 1. Email Tujuan */}
             <div className="space-y-1">
               <div className="relative flex items-center h-[52px]">
@@ -67,7 +116,7 @@ export default function ResetPassword() {
                 </div>
                 <div className="w-full pl-14 pr-4 h-full rounded-full bg-white/80 border border-[#f4d03f] flex flex-col justify-center shadow-inner">
                   <span className="text-[10px] text-gray-500 font-semibold leading-tight">Email Tujuan</span>
-                  <span className="text-xs font-bold text-gray-800 leading-tight">Enjelysemangka7@gmail.com</span>
+                  <span className="text-xs font-bold text-gray-800 leading-tight truncate">{emailParam || 'Belum ada email'}</span>
                 </div>
               </div>
             </div>
@@ -79,8 +128,12 @@ export default function ResetPassword() {
                 {[...Array(6)].map((_, i) => (
                   <input
                     key={i}
+                    id={`otp-${i}`}
                     type="text"
                     maxLength={1}
+                    value={otpValues[i]}
+                    onChange={(e) => handleOtpChange(i, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
                     className="w-11 h-11 md:w-[46px] md:h-[46px] text-center text-lg font-bold rounded-xl bg-white/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-800 shadow-sm"
                   />
                 ))}
@@ -96,6 +149,8 @@ export default function ResetPassword() {
               <div className="relative flex items-center h-[52px]">
                 <input 
                   type={showPass ? "text" : "password"} 
+                  name="password"
+                  required
                   placeholder="Password" 
                   className="w-full pl-6 pr-20 h-full rounded-full bg-[#f4eae1]/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-500 shadow-inner text-sm font-medium"
                 />
@@ -125,6 +180,8 @@ export default function ResetPassword() {
                 </div>
                 <input 
                   type={showConfirmPass ? "text" : "password"} 
+                  name="confirmPassword"
+                  required
                   placeholder="Masukkan ulang password" 
                   className="w-full pl-14 pr-12 h-full rounded-full bg-[#f4eae1]/80 border border-[#f4d03f] focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-500 shadow-inner text-sm font-medium"
                 />
@@ -144,17 +201,18 @@ export default function ResetPassword() {
 
             {/* Tombol Submit */}
             <button 
-              type="button"
-              className="w-full py-3.5 mt-2 rounded-full bg-[#8b1c1c] text-white hover:bg-[#6b1d1d] font-bold text-sm transition-colors shadow-sm"
+              type="submit"
+              disabled={isPending}
+              className={`w-full py-3.5 mt-2 rounded-full bg-[#8b1c1c] text-white hover:bg-[#6b1d1d] font-bold text-sm transition-colors shadow-sm ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Reset Password
+              {isPending ? 'Memproses...' : 'Reset Password'}
             </button>
 
             {/* Link Kirim Ulang */}
             <div className="text-center pt-2">
               <p className="text-[12px] font-bold text-gray-800">
                 Tidak menerima kode?{' '}
-                <button type="button" className="text-[#8b1c1c] hover:underline">Kirim Ulang</button>
+                <Link href="/konfirmasi-email" className="text-[#8b1c1c] hover:underline">Kirim Ulang</Link>
               </p>
             </div>
 
@@ -162,5 +220,13 @@ export default function ResetPassword() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPassword() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center text-white font-bold">Memuat...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

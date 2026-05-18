@@ -1,9 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useActionState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { requestOTPAction } from './actions';
 
 export default function ForgotPassword() {
+  const router = useRouter();
+  const [actionState, formAction, isPending] = useActionState(
+    requestOTPAction,
+    { success: false, message: '', email: '' }
+  );
+
+  useEffect(() => {
+    if (actionState?.success && actionState.email) {
+      // Redirect to reset password with email as query param
+      router.push(`/reset-password?email=${encodeURIComponent(actionState.email)}`);
+    }
+  }, [actionState, router]);
+
   return (
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
 
@@ -43,8 +58,15 @@ export default function ForgotPassword() {
             </p>
 
             {/* Form */}
-            <form className="space-y-6 flex flex-col">
+            <form action={formAction} className="space-y-6 flex flex-col">
               
+              {/* Tampilkan Pesan Error */}
+              {actionState?.message && !actionState.success && (
+                <div className="text-red-600 font-semibold text-sm text-center bg-red-100 p-2 rounded-lg">
+                  {actionState.message}
+                </div>
+              )}
+
               {/* Input Email */}
               <div className="relative flex items-center">
                 <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
@@ -54,6 +76,8 @@ export default function ForgotPassword() {
                 </div>
                 <input
                   type="email"
+                  name="email"
+                  required
                   placeholder="Email"
                   className="w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border-none focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-500 shadow-inner font-medium"
                 />
@@ -62,9 +86,10 @@ export default function ForgotPassword() {
               {/* Tombol Kirim */}
               <button 
                 type="submit"
-                className="w-full py-3 rounded-full bg-[#8b1c1c] text-white font-bold text-base hover:bg-[#6b1d1d] transition-colors shadow-lg"
+                disabled={isPending}
+                className={`w-full py-3 rounded-full bg-[#8b1c1c] text-white font-bold text-base hover:bg-[#6b1d1d] transition-colors shadow-lg ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Kirim Kode OTP
+                {isPending ? 'Mengirim OTP...' : 'Kirim Kode OTP'}
               </button>
 
             </form>
