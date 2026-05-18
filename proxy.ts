@@ -36,10 +36,9 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  // Jika user sudah login dan coba akses halaman login/daftar → redirect ke beranda
-  // (role-based redirect dilakukan di server component / layout)
+  // Jika user sudah login dan coba akses halaman login/daftar → redirect ke /redirect (untuk dicheck role)
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/owner/beranda", nextUrl));
+    return NextResponse.redirect(new URL("/redirect", nextUrl));
   }
 
   return NextResponse.next();
