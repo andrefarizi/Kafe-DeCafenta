@@ -11,7 +11,7 @@ export default function TataLetakMejaPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Meja yang ada di denah (direpresentasikan sebagai array 12 slot yang bisa berisi meja atau null)
+  // Meja yang ada di denah (max 12 sesuai Figma), null artinya slot kosong
   const [diDenah, setDiDenah] = useState<(MejaData | null)[]>(Array(12).fill(null));
   // Meja yang belum digunakan / belum masuk denah
   const [belumDigunakan, setBelumDigunakan] = useState<MejaData[]>([]);
@@ -24,26 +24,31 @@ export default function TataLetakMejaPage() {
       );
       
       const inLayout = sorted.filter((m) => m.isInLayout);
-      const outOfLayout = sorted.filter((m) => !m.isInLayout);
+      const grid = Array(12).fill(null);
       
-      const initialSlots = Array(12).fill(null);
-      inLayout.forEach((meja, idx) => {
-        if (idx < 12) initialSlots[idx] = meja;
+      inLayout.forEach((meja) => {
+        const match = meja.tableCode.match(/\d+$/);
+        const idx = match ? parseInt(match[0], 10) - 1 : -1;
+        if (idx >= 0 && idx < 12 && !grid[idx]) {
+          grid[idx] = meja;
+        } else {
+          // Fallback if slot taken or invalid id
+          const emptyIdx = grid.findIndex(m => m === null);
+          if (emptyIdx !== -1) grid[emptyIdx] = meja;
+        }
       });
-      
-      setDiDenah(initialSlots);
-      setBelumDigunakan(outOfLayout);
+
+      setDiDenah(grid);
+      setBelumDigunakan(sorted.filter((m) => !m.isInLayout));
       setLoading(false);
     });
   }, []);
 
   // ── Keluarkan meja dari denah → belum digunakan ──────────────────
   const handleKeluarkan = (meja: MejaData, slotIndex: number) => {
-    setDiDenah((prev) => {
-      const newSlots = [...prev];
-      newSlots[slotIndex] = null;
-      return newSlots;
-    });
+    const newGrid = [...diDenah];
+    newGrid[slotIndex] = null;
+    setDiDenah(newGrid);
     setBelumDigunakan((prev) =>
       [...prev, meja].sort((a, b) =>
         a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
@@ -53,89 +58,21 @@ export default function TataLetakMejaPage() {
 
   // ── Tambahkan meja dari belum digunakan → denah ──────────────────
   const handleTambahkan = (meja: MejaData) => {
-    setDiDenah((prev) => {
-      // Cari slot kosong pertama
-      const emptyIndex = prev.findIndex((slot) => slot === null);
-      if (emptyIndex === -1) return prev; // penuh
-      
-      const newSlots = [...prev];
-      newSlots[emptyIndex] = meja;
-      return newSlots;
-    });
-    
+    const emptyIndex = diDenah.findIndex(m => m === null);
+    if (emptyIndex === -1) return; // penuh
+
+    const newGrid = [...diDenah];
+    newGrid[emptyIndex] = meja;
+    setDiDenah(newGrid);
+
     setBelumDigunakan((prev) => prev.filter((m) => m.id !== meja.id));
-  };
-
-  // ── Drag & Drop Handlers ─────────────────────────────────────────
-  const handleDragStart = (e: React.DragEvent, mejaId: string, fromSlotIndex: number = -1) => {
-    e.dataTransfer.setData('mejaId', mejaId);
-    e.dataTransfer.setData('fromSlotIndex', fromSlotIndex.toString());
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Mengizinkan drop
-  };
-
-  const handleDropToSlot = (e: React.DragEvent, toSlotIndex: number) => {
-    e.preventDefault();
-    const mejaId = e.dataTransfer.getData('mejaId');
-    const fromSlotIndex = parseInt(e.dataTransfer.getData('fromSlotIndex'), 10);
-
-    if (fromSlotIndex === -1) {
-      // Drag dari "Belum Digunakan" ke sebuah slot
-      const draggedMeja = belumDigunakan.find((m) => m.id === mejaId);
-      if (!draggedMeja) return;
-
-      setDiDenah((prev) => {
-        const newSlots = [...prev];
-        const existingMeja = newSlots[toSlotIndex];
-        newSlots[toSlotIndex] = draggedMeja;
-
-        // Jika slot sebelumnya berisi meja, kita kembalikan meja tersebut ke "Belum Digunakan"
-        setBelumDigunakan((prevBelum) => {
-          let updatedBelum = prevBelum.filter((m) => m.id !== mejaId);
-          if (existingMeja) {
-            updatedBelum = [...updatedBelum, existingMeja];
-          }
-          return updatedBelum.sort((a, b) =>
-            a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
-          );
-        });
-
-        return newSlots;
-      });
-    } else {
-      // Drag di antara slot denah (Tukar - Swap posisi)
-      if (fromSlotIndex === toSlotIndex) return;
-
-      setDiDenah((prev) => {
-        const newSlots = [...prev];
-        const temp = newSlots[toSlotIndex];
-        newSlots[toSlotIndex] = newSlots[fromSlotIndex];
-        newSlots[fromSlotIndex] = temp;
-        return newSlots;
-      });
-    }
-  };
-
-  const handleDropToBelumDigunakan = (e: React.DragEvent) => {
-    e.preventDefault();
-    const fromSlotIndex = parseInt(e.dataTransfer.getData('fromSlotIndex'), 10);
-
-    // Jika ditarik dari sebuah slot di dalam denah (-1 berarti sudah di area belum digunakan)
-    if (fromSlotIndex !== -1) {
-      const draggedMeja = diDenah[fromSlotIndex];
-      if (draggedMeja) {
-        handleKeluarkan(draggedMeja, fromSlotIndex);
-      }
-    }
   };
 
   // ── Simpan Tata Letak ────────────────────────────────────────────
   const handleSimpan = () => {
     setErrorMsg('');
     startTransition(async () => {
-      const activeIds = diDenah.filter((m): m is MejaData => m !== null).map((m) => m.id);
+      const activeIds = diDenah.filter((m) => m !== null).map((m) => m!.id);
       const result = await saveTataLetakMeja(activeIds);
       if (result.success) {
         setShowModal(true);
@@ -152,35 +89,20 @@ export default function TataLetakMejaPage() {
   const mejaTopRight = diDenah.slice(10, 12);
 
   // ── Kartu meja di dalam denah ────────────────────────────────────
-  const DenahCard = ({ meja, index }: { meja: MejaData | null, index: number }) => {
-    return (
-      <div 
-        className={`border ${meja ? 'border-[#8B1A1A] p-3 shadow-sm flex flex-col justify-between cursor-grab active:cursor-grabbing' : 'border-2 border-dashed border-gray-300 p-3 flex items-center justify-center cursor-pointer'} rounded-xl h-28 ${meja ? 'bg-white' : 'bg-gray-50 hover:bg-gray-100 transition-colors'}`}
-        draggable={meja !== null}
-        onDragStart={meja ? (e) => handleDragStart(e, meja.id, index) : undefined}
-        onDragOver={handleDragOver}
-        onDrop={(e) => handleDropToSlot(e, index)}
-      >
-        {!meja ? (
-          <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
-        ) : (
-          <>
-            <div>
-              <p className="font-extrabold text-sm text-black">{meja.name}</p>
-              <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">#{meja.tableCode}</p>
-            </div>
-            <div className="flex justify-end mt-auto">
-              <button
-                onClick={() => handleKeluarkan(meja, index)}
-                className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[9px] font-bold py-1.5 px-3 rounded-md transition-colors"
-                onMouseDown={(e) => e.stopPropagation()} // Mencegah drag ketika klik tombol
-              >
-                <MinusCircle size={10} strokeWidth={2.5} />
-                <span>Keluarkan</span>
-              </button>
-            </div>
-          </>
-        )}
+  const DenahCard = ({ meja, slotIndex }: { meja: MejaData, slotIndex: number }) => (
+    <div className="border border-[#8B1A1A] rounded-xl p-3 flex flex-col justify-between h-28 bg-white shadow-sm">
+      <div>
+        <p className="font-extrabold text-sm text-black">{meja.name}</p>
+        <p className="text-[10px] text-[#8B1A1A] font-bold mt-0.5">#{meja.tableCode}</p>
+      </div>
+      <div className="flex justify-end mt-auto">
+        <button
+          onClick={() => handleKeluarkan(meja, slotIndex)}
+          className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[9px] font-bold py-1.5 px-3 rounded-md transition-colors"
+        >
+          <MinusCircle size={10} strokeWidth={2.5} />
+          <span>Keluarkan Meja</span>
+        </button>
       </div>
     );
   };
@@ -218,22 +140,34 @@ export default function TataLetakMejaPage() {
 
           {/* ── Group Kiri: Meja 1–6 (3 baris × 2 kolom) ── */}
           <div className="absolute top-12 left-[5%] w-[40%] grid grid-cols-2 gap-x-6 gap-y-12 z-10">
-            {mejaLeft.map((meja, i) => (
-              <DenahCard key={meja ? meja.id : `empty-left-${i}`} meja={meja} index={i} />
+            {mejaLeft.map((meja, idx) => (
+              meja ? <DenahCard key={meja.id} meja={meja} slotIndex={idx} /> : (
+                <div key={`placeholder-left-${idx}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center">
+                  <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+                </div>
+              )
             ))}
           </div>
 
           {/* ── Group Kanan Atas: Meja 11–12 (1 baris × 2 kolom) ── */}
           <div className="absolute top-12 right-[5%] w-[38%] grid grid-cols-2 gap-x-6 z-10">
-            {mejaTopRight.map((meja, i) => (
-              <DenahCard key={meja ? meja.id : `empty-tr-${i}`} meja={meja} index={10 + i} />
+            {mejaTopRight.map((meja, idx) => (
+              meja ? <DenahCard key={meja.id} meja={meja} slotIndex={10 + idx} /> : (
+                <div key={`placeholder-tr-${idx}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center">
+                  <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+                </div>
+              )
             ))}
           </div>
 
           {/* ── Group Kanan Bawah: Meja 7–10 (2 baris × 2 kolom) ── */}
           <div className="absolute top-[42%] right-[5%] w-[38%] grid grid-cols-2 gap-x-6 gap-y-12 z-10">
-            {mejaBottomRight.map((meja, i) => (
-              <DenahCard key={meja ? meja.id : `empty-br-${i}`} meja={meja} index={6 + i} />
+            {mejaBottomRight.map((meja, idx) => (
+              meja ? <DenahCard key={meja.id} meja={meja} slotIndex={6 + idx} /> : (
+                <div key={`placeholder-br-${idx}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center">
+                  <p className="text-[10px] text-gray-400 font-medium">Slot Kosong</p>
+                </div>
+              )
             ))}
           </div>
 

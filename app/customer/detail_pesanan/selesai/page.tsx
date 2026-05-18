@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import Sidebar from '@/app/customer/components/sidebar';
 import Topbar from '@/app/customer/components/topbar';
 import {
@@ -43,9 +44,14 @@ const DetailPesanan = () => {
                     <div className="bg-white rounded-lg border border-1 border-[#8A0000] p-6 mb-6 relative shadow-sm w-full">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-[#8A0000] font-bold text-[12px]">Status Pesanan</h2>
-                            <button className="flex items-center gap-1 bg-[#8A0000] text-white text-[9px] px-2 py-1 rounded-md">
-                                <RotateCcw size={10} /> Refresh Status
-                            </button>
+                            <div className="flex gap-2">
+                                <Link href="/customer/invoice" className="flex items-center gap-1 border border-[#8A0000] text-[#8A0000] text-[9px] font-bold px-2 py-1 rounded-md hover:bg-red-50">
+                                    Cetak Invoice
+                                </Link>
+                                <button className="flex items-center gap-1 bg-[#8A0000] text-white text-[9px] px-2 py-1 rounded-md">
+                                    <RotateCcw size={10} /> Refresh Status
+                                </button>
+                            </div>
                         </div>
 
                         <div className="relative flex justify-between px-0 mb-8 z-0">
@@ -151,10 +157,10 @@ const DetailPesanan = () => {
 
                         <div className="mt-6 flex flex-col items-end gap-2">
                             <span className="text-[12px] font-bold text-black">Cek Invoice</span>
-                            <button className="flex items-center gap-4 bg-[#8A0000] text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-all shadow-md">
+                            <Link href="/customer/invoice" className="flex items-center gap-4 bg-[#8A0000] text-white px-4 py-2 rounded-lg hover:bg-red-900 transition-all shadow-md">
                                 <ClipboardList size={18} />
                                 <span className="text-[12px] font-bold">Invoice</span>
-                            </button>
+                            </Link>
                         </div>
                         <div className="flex flex-col min-h-[500px]">
                             <div className="py-3 flex justify-center items-center">

@@ -3,7 +3,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import AddToCartButton from './AddToCartButton';
 
 type PromoItem = {
   id: string;
@@ -92,17 +91,6 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
                 {formatRupiah(item.price + 15000)}
               </p>
               <p className="text-sm font-black mb-3">{formatRupiah(item.price)}</p>
-
-              <AddToCartButton
-                item={{
-                  id: item.id,
-                  name: item.name,
-                  price: item.price,
-                  image: item.image,
-                }}
-                label="TAMBAH"
-                className="w-full bg-[#FFF5E1] text-[#8A0000] text-xs font-black py-2 rounded-xl shadow-inner hover:bg-white transition-colors uppercase"
-              />
             </div>
           </div>
         ))}
