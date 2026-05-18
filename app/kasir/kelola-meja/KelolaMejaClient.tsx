@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from 'react';
 import { MejaData, updateTableStatus } from '@/src/controllers/table-controller';
+import { X, CheckCircle, AlertCircle } from 'lucide-react';
 
 // --- KOMPONEN KARTU MEJA (UI identik dengan desain asli) ---
 function RenderCard({
@@ -50,6 +51,16 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
   // State lokal untuk optimistic update agar UI responsif tanpa tunggu server
   const [localTables, setLocalTables] = useState<MejaData[]>(tables);
 
+  // States for modals
+  const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, tableId: string, currentStatus: 'Tersedia' | 'Dipakai' | null, tableName: string}>({
+    isOpen: false,
+    tableId: '',
+    currentStatus: null,
+    tableName: ''
+  });
+  const [successModal, setSuccessModal] = useState<{isOpen: boolean, message: string}>({isOpen: false, message: ''});
+  const [errorModal, setErrorModal] = useState<{isOpen: boolean, message: string}>({isOpen: false, message: ''});
+
   // Urutkan berdasarkan tableCode (MJ01, MJ02, ... MJ12)
   const sorted = [...localTables].sort((a, b) =>
     a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
@@ -63,11 +74,26 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
   const mejaBottomRight = sorted.slice(6, 10);
   const mejaTopRight    = sorted.slice(10, 12);
 
-  // Handler: optimistic update → panggil server action
-  const handleToggle = (tableId: string, currentStatus: 'Tersedia' | 'Dipakai') => {
+  // Handler: buka modal konfirmasi
+  const handleToggleClick = (tableId: string, currentStatus: 'Tersedia' | 'Dipakai') => {
+    const table = localTables.find(t => t.id === tableId);
+    setConfirmModal({
+      isOpen: true,
+      tableId,
+      currentStatus,
+      tableName: table?.name || ''
+    });
+  };
+
+  const handleConfirmToggle = () => {
+    const { tableId, currentStatus } = confirmModal;
+    if (!currentStatus) return;
+
     const nextStatus = currentStatus === 'Tersedia' ? 'Dipakai' : 'Tersedia';
 
-    // Optimistic: langsung update UI
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+
+    // Optimistic update
     setLocalTables((prev) =>
       prev.map((t) => (t.id === tableId ? { ...t, status: nextStatus } : t))
     );
@@ -75,11 +101,13 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
     startTransition(async () => {
       const result = await updateTableStatus(tableId, currentStatus);
       if (!result.success) {
-        // Revert jika server action gagal
+        // Revert jika gagal
         setLocalTables((prev) =>
           prev.map((t) => (t.id === tableId ? { ...t, status: currentStatus } : t))
         );
-        alert(result.message);
+        setErrorModal({ isOpen: true, message: result.message || "Gagal mengubah status meja" });
+      } else {
+        setSuccessModal({ isOpen: true, message: `Status meja berhasil diubah menjadi ${nextStatus}` });
       }
     });
   };
@@ -120,7 +148,7 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
                   <RenderCard
                     key={meja.id}
                     meja={meja}
-                    onToggle={handleToggle}
+                    onToggle={handleToggleClick}
                     isPending={isPending}
                   />
                 ))
@@ -140,7 +168,7 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
                   <RenderCard
                     key={meja.id}
                     meja={meja}
-                    onToggle={handleToggle}
+                    onToggle={handleToggleClick}
                     isPending={isPending}
                   />
                 ))}
@@ -152,7 +180,7 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
                   <RenderCard
                     key={meja.id}
                     meja={meja}
-                    onToggle={handleToggle}
+                    onToggle={handleToggleClick}
                     isPending={isPending}
                   />
                 ))}
@@ -166,6 +194,78 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
           </div>
 
         </div>
+
+        {/* Modal Konfirmasi */}
+        {confirmModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-xl">
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8 text-[#8B0000]" />
+              </div>
+              <h3 className="text-xl font-black mb-2">Ubah Status Meja</h3>
+              <p className="text-gray-600 mb-6 text-sm">
+                Apakah Anda yakin ingin mengubah status <strong>{confirmModal.tableName}</strong> menjadi <strong>{confirmModal.currentStatus === 'Tersedia' ? 'Dipakai' : 'Tersedia'}</strong>?
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmToggle}
+                  className="flex-1 bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
+                >
+                  Ya, Ubah
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Sukses */}
+        {successModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-xl">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-black mb-2">Berhasil!</h3>
+              <p className="text-gray-600 mb-6 text-sm">
+                {successModal.message}
+              </p>
+              <button
+                onClick={() => setSuccessModal({ isOpen: false, message: '' })}
+                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Error */}
+        {errorModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-xl">
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-xl font-black mb-2">Gagal!</h3>
+              <p className="text-gray-600 mb-6 text-sm">
+                {errorModal.message}
+              </p>
+              <button
+                onClick={() => setErrorModal({ isOpen: false, message: '' })}
+                className="w-full bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

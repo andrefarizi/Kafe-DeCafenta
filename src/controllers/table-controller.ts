@@ -45,6 +45,52 @@ export async function getTableList(): Promise<MejaData[]> {
 }
 
 // ─────────────────────────────────────────────
+//  CREATE (Owner only)
+// ─────────────────────────────────────────────
+
+export async function createTable(
+  name: string,
+  tableCode: string
+): Promise<{ success: boolean; message: string; table?: MejaData }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id || (session.user as { role?: string }).role !== 'OWNER') {
+      return { success: false, message: 'Akses ditolak.' };
+    }
+
+    const newTable = await prisma.table.create({
+      data: {
+        name,
+        tableCode,
+        status: 'tersedia',
+        isInLayout: false,
+      },
+    });
+
+    revalidatePath('/owner/meja');
+    revalidatePath('/kasir/kelola-meja');
+
+    return {
+      success: true,
+      message: 'Meja berhasil ditambahkan.',
+      table: {
+        id: newTable.id,
+        name: newTable.name,
+        tableCode: newTable.tableCode,
+        status: 'Tersedia',
+        isInLayout: newTable.isInLayout,
+      },
+    };
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      return { success: false, message: 'Kode Meja sudah digunakan.' };
+    }
+    console.error('createTable error:', error);
+    return { success: false, message: 'Gagal menambahkan meja.' };
+  }
+}
+
+// ─────────────────────────────────────────────
 //  UPDATE – Status (Kasir & Owner)
 // ─────────────────────────────────────────────
 

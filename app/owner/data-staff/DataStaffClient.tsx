@@ -32,6 +32,12 @@ export default function DataStaffClient({
   const [localList, setLocalList] = useState<StaffKasirData[]>(staffList);
   const [filterOpen, setFilterOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, staffId: string, currentStatus: 'Aktif' | 'Nonaktif' | null, staffName: string}>({
+    isOpen: false,
+    staffId: '',
+    currentStatus: null,
+    staffName: ''
+  });
 
   // ── Update URL search params ─────────────────────────────────────
   const updateParams = (updates: Record<string, string>) => {
@@ -44,9 +50,22 @@ export default function DataStaffClient({
   };
 
   // ── Toggle Status Kasir ──────────────────────────────────────────
-  const handleToggle = (staffId: string, currentStatus: 'Aktif' | 'Nonaktif') => {
-    const nextStatus: 'Aktif' | 'Nonaktif' =
-      currentStatus === 'Aktif' ? 'Nonaktif' : 'Aktif';
+  const handleToggleClick = (staffId: string, currentStatus: 'Aktif' | 'Nonaktif', staffName: string) => {
+    setConfirmModal({
+      isOpen: true,
+      staffId,
+      currentStatus,
+      staffName
+    });
+  };
+
+  const handleConfirmToggle = () => {
+    const { staffId, currentStatus } = confirmModal;
+    if (!currentStatus) return;
+
+    const nextStatus: 'Aktif' | 'Nonaktif' = currentStatus === 'Aktif' ? 'Nonaktif' : 'Aktif';
+
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
     // Optimistic update
     setLocalList((prev) =>
@@ -103,25 +122,19 @@ export default function DataStaffClient({
 
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             {/* Search Bar */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const val = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
-                updateParams({ search: val, page: '1' });
-              }}
-              className="relative w-full sm:w-64"
-            >
+            <div className="relative w-full sm:w-64">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search size={16} className="text-gray-400" />
               </div>
               <input
+                onChange={(e) => updateParams({ search: e.target.value, page: '1' })}
                 name="q"
                 type="text"
                 defaultValue={currentSearch}
                 placeholder="Cari nama / email..."
                 className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-[#8B1A1A] focus:outline-none"
               />
-            </form>
+            </div>
 
             {/* Filter Dropdown */}
             <div className="relative">
@@ -130,8 +143,7 @@ export default function DataStaffClient({
                 className="flex items-center justify-between w-full sm:w-56 px-4 py-2 bg-gray-50 rounded-lg text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors"
               >
                 <span>
-                  Urutkan berdasarkan :{' '}
-                  <span className="font-bold text-black">{currentStatus}</span>
+                  Filter : <span className="font-bold text-black">{currentStatus}</span>
                 </span>
                 <ChevronDown size={14} className="text-black" />
               </button>
@@ -209,7 +221,7 @@ export default function DataStaffClient({
                     <td className="py-4 text-center">
                       <div className="flex justify-center">
                         <button
-                          onClick={() => handleToggle(staff.id, staff.status)}
+                          onClick={() => handleToggleClick(staff.id, staff.status, staff.nama)}
                           disabled={isPending}
                           className={`flex items-center justify-center space-x-2 w-32 py-1.5 rounded-md text-xs font-bold transition-colors disabled:opacity-60 ${
                             staff.status === 'Aktif'
@@ -292,6 +304,32 @@ export default function DataStaffClient({
         )}
 
       </div>
+
+      {/* Modal Konfirmasi */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-xl">
+            <h3 className="text-xl font-black mb-2">Konfirmasi</h3>
+            <p className="text-gray-600 mb-6 text-sm">
+              Apakah Anda yakin ingin {confirmModal.currentStatus === 'Aktif' ? 'menonaktifkan' : 'mengaktifkan'} staff <strong>{confirmModal.staffName}</strong>?
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleConfirmToggle}
+                className="flex-1 bg-[#8B1A1A] text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-900 transition shadow-lg"
+              >
+                Ya, Lanjutkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
