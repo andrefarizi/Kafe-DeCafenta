@@ -31,13 +31,14 @@ type OrderDetail = {
     isReviewed: boolean; 
   }[];
 }
-type PaymentMethod = "gopay" | "dana" | "bank_va";
+type PaymentMethod = "cash" | "gopay" | "dana" | "bank_va";
 
 /* ─────────── CONSTANTS ─────────── */
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
-  gopay: "GoPay", dana: "DANA / QRIS", bank_va: "Bank (Virtual Account BCA)",
+  cash: "Cash", gopay: "GoPay", dana: "DANA / QRIS", bank_va: "Bank (Virtual Account BCA)",
 };
 
+/* ─────────── KONFIGURASI STATUS TRACKER ─────────── */
 const STEPS = [
   { key: "masuk",        label: "Masuk",        color: "#FFC700" },
   { key: "dimasak",      label: "Dimasak",       color: "#8B1A1A" },
@@ -45,18 +46,25 @@ const STEPS = [
   { key: "selesai",      label: "Selesai",        color: "#22C55E" },
 ] as const;
 
+const SEGMENT_GRADIENTS = [
+  { from: "#FFC700", to: "#8B1A1A" },
+  { from: "#8B1A1A", to: "#3B82F6" },
+  { from: "#3B82F6", to: "#22C55E" },
+];
+
+/* ─────────── KONFIGURASI ANIMASI PULSE ─────────── */
 const PULSE_RING_CLASS: Record<string, string> = {
-  masuk:        "pulse-ring-yellow",
-  dimasak:      "pulse-ring-red",
-  siap_diambil: "pulse-ring-blue",
-  selesai:      "pulse-ring-green",
+  'masuk':        "pulse-ring-yellow",
+  'dimasak':      "pulse-ring-red",
+  'siap_diambil': "pulse-ring-blue",
+  'selesai':      "pulse-ring-green",
 };
 
 const LINE_PULSE_CLASS: Record<string, string> = {
-  masuk:        "line-pulse-yellow",
-  dimasak:      "line-pulse-red",
-  siap_diambil: "line-pulse-blue",
-  selesai:      "line-pulse-green",
+  'masuk':        "line-pulse-yellow",
+  'dimasak':      "line-pulse-red",
+  'siap_diambil': "line-pulse-blue",
+  'selesai':      "line-pulse-green",
 };
 
 const fmt = (p: number) => "Rp " + p.toLocaleString("id-ID");
@@ -71,87 +79,90 @@ const STATUS_LABEL: Record<string, { label: string; color: string; emoji: string
   selesai:      { label: "Pesanan Selesai! 🎉", color: "#22C55E", emoji: "✅" },
 };
 
-function StatusTracker({ currentStatus, prevStatus }: { currentStatus: string; prevStatus: string | null; }) {
-  const currentIdx   = STEPS.findIndex(s => s.key === currentStatus);
-  const prevIdx      = STEPS.findIndex(s => s.key === prevStatus);
-  const justAdvanced = prevStatus !== null && currentIdx > prevIdx;
+function StatusTracker({ currentStatus }: { currentStatus: string }) {
+  const currentIdx = STEPS.findIndex(s => s.key === currentStatus);
 
   const icons = [
-    <ClipboardList key="0" size={26} className={currentIdx >= 0 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
-    <CookingPot    key="1" size={26} className={currentIdx >= 1 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
-    <Package       key="2" size={26} className={currentIdx >= 2 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
-    <Check         key="3" size={36} className={currentIdx >= 3 ? "text-white" : "text-gray-400"} strokeWidth={2.5} />,
+    <ClipboardList key="0" size={26} className="text-white" strokeWidth={2.5} />,
+    <CookingPot    key="1" size={26} className="text-white" strokeWidth={2.5} />,
+    <Package       key="2" size={26} className="text-white" strokeWidth={2.5} />,
+    <Check         key="3" size={36} className="text-white" strokeWidth={2.5} />,
   ];
 
-  const segments = STEPS.slice(0, -1).map((_, i) => {
-    if (i < currentIdx)   return "done";
-    if (i === currentIdx) return "active";
-    return "pending";
-  });
-
   return (
-    <div className="relative flex items-start justify-between w-full" style={{ paddingTop: 6, paddingBottom: 6 }}>
-      {segments.map((segStatus, i) => {
-        const leftStep  = STEPS[i];
-        const rightStep = STEPS[i + 1];
-        const isDone    = segStatus === "done";
-        const isActive  = segStatus === "active";
-        const segWidth  = `calc((100% - 68px) / ${STEPS.length - 1})`;
-        const segLeft   = `calc(34px + (100% - 68px) * ${i / (STEPS.length - 1)})`;
-        const activeBaseBg = leftStep.color + "40"; 
+    <div className="relative flex justify-between px-2 md:px-8 mb-8 z-0 w-full">
+      {/* Garis Abu-Abu Background */}
+      <div className="absolute left-[12.5%] right-[12.5%] top-[34px] -translate-y-1/2 h-2.5 bg-gray-300 z-[-1] rounded-full"></div>
+
+      {/* Garis Segmen Warna Gradien + Shimmer */}
+      {SEGMENT_GRADIENTS.map((seg, i) => {
+        const isDone = i < currentIdx;
+        const isActive = i === currentIdx;
+        
+        // Jangan render garis warna jika status belum sampai sini
+        if (!isDone && !isActive) return null;
 
         return (
           <div
-            key={i}
+            key={`seg-${i}`}
             style={{
-              position: "absolute", top: 40, left: segLeft, width: segWidth, height: 8,
-              borderRadius: 9999, zIndex: isDone ? 2 : isActive ? 3 : 0, overflow: "hidden",
-              background: isDone ? rightStep.color : isActive ? activeBaseBg : "#E5E7EB",
-              transition: "background 0.5s ease",
+              position: "absolute",
+              top: "34px",
+              left: `${12.5 + (i * 25)}%`, 
+              width: "25%", 
+              height: "10px",
+              transform: "translateY(-50%)",
+              background: isActive 
+                ? `${STEPS[i].color}40` // Transparan untuk base shimmer saat aktif
+                : `linear-gradient(to right, ${seg.from}, ${seg.to})`,
+              zIndex: isActive ? 3 : 2,
+              borderRadius: 9999,
+              overflow: "hidden"
             }}
           >
-            {isActive && <div className={LINE_PULSE_CLASS[leftStep.key]} />}
+            {/* Animasi Shimmer berjalan untuk garis yang sedang aktif */}
+            {isActive && <div className={LINE_PULSE_CLASS[STEPS[i].key]} />}
           </div>
         );
       })}
 
+      {/* Step Circles + Ring Pulse */}
       {STEPS.map((step, idx) => {
-        const active    = idx <= currentIdx;
+        const active = idx <= currentIdx;
         const isCurrent = idx === currentIdx;
-        const isNewStep = justAdvanced && idx === currentIdx;
-        const color     = active ? step.color : "#D1D5DB";
+        const color = active ? step.color : "#D1D5DB";
 
         return (
-          <div key={step.key} className="flex flex-col items-center" style={{ zIndex: 10, position: "relative" }}>
+          <div key={step.key} className="flex flex-col items-center w-1/4 z-10">
             <div style={{ position: "relative", width: 68, height: 68 }}>
-              {isCurrent && <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />}
-              {isCurrent && <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />}
+              
+              {/* Outer ring pulse */}
+              {isCurrent && (
+                <div className={`pulse-ring-outer ${PULSE_RING_CLASS[step.key]}`} />
+              )}
+              
+              {/* Inner ring pulse */}
+              {isCurrent && (
+                <div className={`pulse-ring ${PULSE_RING_CLASS[step.key]}`} />
+              )}
+
+              {/* Base Circle */}
               <div
-                style={{
-                  width: 68, height: 68, borderRadius: "50%", border: `4px solid ${color}`,
-                  padding: 3, display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "border-color 0.4s ease",
-                  animation: isNewStep ? "step-pop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards" : "none",
-                  position: "relative", zIndex: 5,
-                }}
+                className="w-full h-full rounded-full border-[4px] bg-white p-[3px] flex items-center justify-center transition-colors duration-500 relative z-10"
+                style={{ borderColor: color }}
               >
                 <div
-                  style={{
-                    width: "100%", height: "100%", borderRadius: "50%", backgroundColor: color,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "background-color 0.4s ease",
-                  }}
+                  className="w-full h-full rounded-full flex items-center justify-center transition-colors duration-500"
+                  style={{ backgroundColor: color }}
                 >
                   {icons[idx]}
                 </div>
               </div>
             </div>
 
-            <span
-              style={{
-                marginTop: 12, fontSize: 14, fontWeight: 800,
-                color: active ? "#000" : "#9CA3AF", whiteSpace: "nowrap", transition: "color 0.4s ease",
-              }}
+            <span 
+              className="text-sm md:text-base font-extrabold mt-3 text-center whitespace-nowrap transition-colors duration-500"
+              style={{ color: active ? "#000" : "#9CA3AF" }}
             >
               {step.label}
             </span>
@@ -253,6 +264,14 @@ function CashPageInner() {
         return data;
       });
       isFirstLoad.current = false;
+      
+      // Extract payment method from notes if available
+      const match = data.notes?.match(/payment_method:([^\s]+)/);
+      if (match && match[1]) {
+        setSelectedMethod(match[1] as PaymentMethod);
+      } else if (data.paymentMethod === 'cash') {
+        setSelectedMethod('cash');
+      }
     }
   }, [orderId]);
 
@@ -439,7 +458,7 @@ function CashPageInner() {
               </div>
 
               <div className="mb-4">
-                <StatusTracker currentStatus={order.status} prevStatus={prevStatus} />
+                <StatusTracker currentStatus={order.status} />
               </div>
             </div>
 
@@ -468,28 +487,25 @@ function CashPageInner() {
             {/* Form Pembayaran (Jika belum bayar & belum ada VA) */}
             {!order.isPaid && !paymentResult && (
               <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 bg-white w-full mb-10 shadow-sm">
-                <h3 className="font-extrabold text-[14px] text-black mb-4">Pilih Metode Pembayaran</h3>
-                <div className="border border-[#8B1A1A] rounded-xl overflow-hidden bg-white mb-5">
-                  <div onClick={() => setIsPaymentOpen(!isPaymentOpen)} className="p-4 flex justify-between items-center text-[#8B1A1A] font-bold text-[13px] cursor-pointer">
-                    <span>{selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Pilih Metode Pembayaran"}</span>
-                    <ChevronLeft size={18} className={`transition-transform duration-200 ${isPaymentOpen ? "-rotate-90" : "rotate-[270deg]"}`} />
-                  </div>
-                  {isPaymentOpen && (
-                    <div className="bg-white border-t border-[#8B1A1A]">
-                      {(Object.entries(PAYMENT_LABELS) as [PaymentMethod, string][]).map(([key, label], idx, arr) => (
-                        <div key={key} onClick={() => { setSelectedMethod(key); setIsPaymentOpen(false); }}
-                          className={`p-4 flex items-center text-[#8B1A1A] font-semibold text-[13px] cursor-pointer hover:bg-red-50 transition-colors ${idx !== arr.length - 1 ? "border-b border-[#8B1A1A]" : ""}`}>
-                          {label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <h3 className="font-extrabold text-[14px] text-black mb-4">Informasi Pembayaran</h3>
+                <div className="mb-5">
+                  <p className="text-[13px] text-gray-600 font-medium mb-1">Metode Pembayaran yang dipilih:</p>
+                  <p className="text-[15px] font-extrabold text-[#8B1A1A]">{selectedMethod ? PAYMENT_LABELS[selectedMethod] : "Memuat..."}</p>
                 </div>
-                {paymentError && <p className="text-red-600 text-xs font-bold mb-3">{paymentError}</p>}
-                <button onClick={handlePay} disabled={!selectedMethod || isProcessing}
-                  className="w-full bg-[#8B1A1A] text-white py-3.5 rounded-xl font-bold text-[14px] hover:bg-red-900 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm">
-                  {isProcessing ? <><Loader2 size={18} className="animate-spin" /> Memproses...</> : "Bayar Sekarang"}
-                </button>
+
+                {selectedMethod === 'cash' ? (
+                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+                    <p className="text-[13px] text-yellow-800 font-bold text-center">Silakan lakukan pembayaran langsung di kasir untuk menyelesaikan pesanan Anda.</p>
+                  </div>
+                ) : (
+                  <>
+                    {paymentError && <p className="text-red-600 text-xs font-bold mb-3">{paymentError}</p>}
+                    <button onClick={handlePay} disabled={!selectedMethod || isProcessing}
+                      className="w-full bg-[#8B1A1A] text-white py-3.5 rounded-xl font-bold text-[14px] hover:bg-red-900 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm">
+                      {isProcessing ? <><Loader2 size={18} className="animate-spin" /> Memproses...</> : `Lanjutkan Pembayaran`}
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
