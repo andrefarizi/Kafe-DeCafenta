@@ -212,7 +212,7 @@ const Beranda = async () => {
           <section className="pb-10">
             <div className="flex justify-between items-center mb-4 mt-2">
               <h3 className="text-[20px] font-bold text-black">Dari Keranjang Anda</h3>
-              <Link href="/customer/keranjang" className="text-[#8A0000] text-[12px] font-bold mt-1">Lihat Semua</Link>
+              <Link href="/customer/keranjang" className="text-[#8A0000] text-[12px] font-bold mt-2 relative z-10 p-2 -mr-2 cursor-pointer">Lihat Semua</Link>
             </div>
             {keranjangMenus.length === 0 ? (
               <p className="text-sm font-bold text-gray-600">Anda belum memesan menu apapun.</p>

@@ -3,7 +3,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import AddToCartButton from './AddToCartButton';
 
 type PromoItem = {
   id: string;
