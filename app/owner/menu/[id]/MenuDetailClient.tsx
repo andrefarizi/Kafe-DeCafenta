@@ -138,7 +138,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
 
           <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
             <div className="mb-8 relative group cursor-pointer inline-block w-fit" onClick={() => handleEdit('name', menu.name)}>
-              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1 transition-all opacity-0 group-hover:opacity-100 -ml-4 pl-4">
+              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1">
                 <Pencil size={12} strokeWidth={3} />
                 <span className="text-[11px] font-extrabold">Edit Nama</span>
               </button>
@@ -146,7 +146,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
             </div>
 
             <div className="mb-10 relative group cursor-pointer inline-block w-fit" onClick={() => handleEdit('price', menu.price)}>
-              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1 transition-all opacity-0 group-hover:opacity-100 -ml-4 pl-4">
+              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1">
                 <Pencil size={12} strokeWidth={3} />
                 <span className="text-[11px] font-extrabold">Edit Harga</span>
               </button>
@@ -169,14 +169,13 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-6 group cursor-pointer relative" onClick={() => handleEdit('description', menu.description)}>
-          <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-2 transition-all opacity-0 group-hover:opacity-100 absolute -top-3 right-0 bg-white px-2">
+        <div className="border-t border-gray-200 pt-6 group cursor-pointer" onClick={() => handleEdit('description', menu.description)}>
+          <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-2">
             <Pencil size={12} strokeWidth={3} />
             <span className="text-[11px] font-extrabold">Edit Deskripsi</span>
           </button>
-          <h3 className="text-lg font-extrabold text-black mb-3 flex items-center space-x-2">
-            <span>Deskripsi Menu</span>
-            <Pencil size={12} strokeWidth={3} className="text-gray-300 group-hover:text-[#8B1A1A] transition-colors" />
+          <h3 className="text-lg font-extrabold text-black mb-3">
+            Deskripsi Menu
           </h3>
           <p className="text-xs text-gray-700 leading-relaxed font-medium max-w-3xl group-hover:text-black transition-colors">
             {menu.description?.trim() || 'Deskripsi menu belum tersedia. Klik untuk menambahkan deskripsi.'}
