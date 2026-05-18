@@ -362,6 +362,31 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
   }
 }
 
+/* ─── OWNER: Update menu ─── */
+export async function updateMenuDetail(
+  menuId: string, 
+  data: { name?: string; price?: number; description?: string; }
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: 'Sesi tidak valid' };
+
+    await prisma.menu.update({
+      where: { id: menuId },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.price !== undefined && { price: data.price }),
+        ...(data.description !== undefined && { description: data.description || null }),
+      },
+    });
+
+    return { success: true, message: 'Menu berhasil diperbarui!' };
+  } catch (error: any) {
+    console.error('ERROR UPDATE MENU:', error);
+    return { success: false, message: 'Gagal memperbarui menu.' };
+  }
+}
+
 /* ─── CUSTOMER: Tambah ulasan menu ─── */
 export async function addMenuReview(menuId: string, rating: number, comment: string, orderItemId: string) {
   try {

@@ -6,6 +6,7 @@ import {
   getMenuDetail,
   getMenuReviews,
 } from '@/src/controllers/menu-controller';
+import MenuDetailClient from './MenuDetailClient';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -75,64 +76,16 @@ export default async function DetailMenu({ params }: PageProps) {
         <h1 className="text-2xl md:text-3xl font-extrabold text-black">Detail Menu</h1>
       </div>
 
-      <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 mb-8 bg-white shadow-sm">
-        <div className="flex flex-col md:flex-row gap-8 mb-8">
-          <div className="relative w-full md:w-1/2 aspect-square max-w-sm flex items-center justify-center mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
-            <img
-              src={resolveMenuImage(menu.name, menu.categoryName, menu.imageUrl)}
-              alt={menu.name}
-              className="w-full h-full object-cover"
-            />
-            <button className="absolute bottom-4 right-4 flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-2 rounded-xl transition-colors shadow-sm">
-              <Pencil size={14} fill="currentColor" className="text-white" />
-              <span className="text-xs font-bold">Edit Gambar</span>
-            </button>
-          </div>
-
-          <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
-            <div className="mb-8">
-              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1 transition-all">
-                <Pencil size={12} strokeWidth={3} />
-                <span className="text-[11px] font-extrabold">Edit Nama</span>
-              </button>
-              <h2 className="text-3xl font-extrabold text-black">{menu.name}</h2>
-            </div>
-
-            <div className="mb-10">
-              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1 transition-all">
-                <Pencil size={12} strokeWidth={3} />
-                <span className="text-[11px] font-extrabold">Edit Harga</span>
-              </button>
-              <p className="text-5xl font-black text-black">{formatRupiah(menu.price)}</p>
-            </div>
-
-            <div className="bg-[#8B1A1A] rounded-3xl p-2.5 w-60 shadow-sm">
-              <div className="bg-white text-[#8B1A1A] text-center font-extrabold text-lg py-2 rounded-2xl mb-2">
-                Rating
-              </div>
-              <div className="flex justify-center items-center space-x-3 pb-1 pt-1">
-                <span className="text-white font-black text-2xl">{averageRating}</span>
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={18} fill="#FFC700" className="text-[#FFC700]" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 pt-6">
-          <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-2 transition-all">
-            <Pencil size={12} strokeWidth={3} />
-            <span className="text-[11px] font-extrabold">Edit Deskripsi</span>
-          </button>
-          <h3 className="text-lg font-extrabold text-black mb-3">Deskripsi Menu</h3>
-          <p className="text-xs text-gray-700 leading-relaxed font-medium max-w-3xl">
-            {menu.description?.trim() || 'Deskripsi menu belum tersedia.'}
-          </p>
-        </div>
-      </div>
+      <MenuDetailClient 
+        menu={{
+          id: menu.id,
+          name: menu.name,
+          price: menu.price,
+          description: menu.description,
+          avgRating: averageRating,
+          imageUrl: resolveMenuImage(menu.name, menu.categoryName, menu.imageUrl)
+        }} 
+      />
 
       <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 bg-white shadow-sm">
         <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
