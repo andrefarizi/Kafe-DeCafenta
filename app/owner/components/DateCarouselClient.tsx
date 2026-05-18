@@ -8,15 +8,15 @@ interface Props {
   month: number;
   year: number;
   daysInMonth: number;
-  initialDay?: number;
+  initialDay?: number | null;
 }
 
-export default function DateCarouselClient({ basePath, month, year, daysInMonth, initialDay = 1 }: Props) {
+export default function DateCarouselClient({ basePath, month, year, daysInMonth, initialDay = null }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [selected, setSelected] = useState<number>(initialDay);
+  const [selected, setSelected] = useState<number | null>(initialDay);
 
   useEffect(() => {
     setSelected(initialDay);

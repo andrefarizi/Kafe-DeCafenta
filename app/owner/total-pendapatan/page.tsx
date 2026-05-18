@@ -26,7 +26,7 @@ export default async function DetailPendapatan(props: Props) {
   const dates = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const selectedMonth = months[(report.month ?? 1) - 1];
-  const selectedDay = searchParams?.day ? Number(searchParams.day) : 1;
+  const selectedDay = searchParams?.day ? Number(searchParams.day) : undefined;
   const activeYear = yearParam ?? report.year;
   const selectedDate = 1;
 
