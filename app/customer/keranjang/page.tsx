@@ -406,7 +406,7 @@ export default function KeranjangPage() {
                 />
               </div>
               <div className="flex gap-4">
-                <button onClick={() => setStep("detail")} className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
+                <button onClick={() => { setStep(""); setEditingItemId(null); setEditNoteText(""); }} className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
                 <button
                   disabled={isPending}
                   onClick={handleSaveNote}
