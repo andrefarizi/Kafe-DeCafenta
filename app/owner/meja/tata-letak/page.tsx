@@ -25,8 +25,17 @@ export default function TataLetakMejaPage() {
       
       const inLayout = sorted.filter((m) => m.isInLayout);
       const grid = Array(12).fill(null);
-      inLayout.forEach((meja, idx) => {
-        if (idx < 12) grid[idx] = meja;
+      
+      inLayout.forEach((meja) => {
+        const match = meja.tableCode.match(/\d+$/);
+        const idx = match ? parseInt(match[0], 10) - 1 : -1;
+        if (idx >= 0 && idx < 12 && !grid[idx]) {
+          grid[idx] = meja;
+        } else {
+          // Fallback if slot taken or invalid id
+          const emptyIdx = grid.findIndex(m => m === null);
+          if (emptyIdx !== -1) grid[emptyIdx] = meja;
+        }
       });
 
       setDiDenah(grid);
