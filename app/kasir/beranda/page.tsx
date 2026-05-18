@@ -62,7 +62,6 @@ export default async function DashboardKasir() {
               <p className="text-[#6a1713] text-sm font-medium">Kasir De Cafenta</p>
             </div>
           </div>
-          <KasirLogoutButton />
         </div>
 
         {/* Pesanan Aktif Section */}
@@ -79,10 +78,9 @@ export default async function DashboardKasir() {
               </div>
               <Link
                 href="/kasir/pesan-ditempat"
-                className="flex items-center gap-2 text-[#6a1713] text-sm hover:underline"
+                className="bg-[#6a1713] text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-red-800 transition-colors"
               >
-                Selengkapnya
-                <span className="border border-[#6a1713] rounded-full w-5 h-5 flex items-center justify-center text-xs">{'>'}</span>
+                Buat Pesanan Baru
               </Link>
             </div>
 
@@ -137,25 +135,6 @@ export default async function DashboardKasir() {
               </Link>
             </div>
 
-            {/* Filter Tabs - link ke halaman filter */}
-            <div className="flex gap-3 overflow-x-auto pb-4 mb-2">
-              <Link href="/kasir/daftar-pesanan" className="bg-[#6a1713] text-white px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap flex items-center gap-2">
-                <img src="/Group 135.png" alt="Semua" className="w-5 h-5 object-contain" style={{filter:'brightness(0) invert(1)'}} /> Semua
-              </Link>
-              <Link href="/kasir/daftar-pesanan" className="border border-[#6a1713] text-[#6a1713] px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap flex items-center gap-2 hover:bg-red-50 transition-colors">
-                <img src="/Food Icon Illustrations Kit (1).png" alt="Masuk" className="w-5 h-5 object-contain" /> Masuk
-              </Link>
-              <Link href="/kasir/daftar-pesanan" className="border border-[#6a1713] text-[#6a1713] px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap flex items-center gap-2 hover:bg-red-50 transition-colors">
-                <img src="/Food Icon Illustrations Kit (2).png" alt="Dimasak" className="w-5 h-5 object-contain" /> Dimasak
-              </Link>
-              <Link href="/kasir/daftar-pesanan" className="border border-[#6a1713] text-[#6a1713] px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap flex items-center gap-2 hover:bg-red-50 transition-colors">
-                <img src="/Food Icon Illustrations Kit (3).png" alt="Siap Diambil" className="w-5 h-5 object-contain" /> Siap Diambil
-              </Link>
-              <Link href="/kasir/daftar-pesanan" className="border border-[#6a1713] text-[#6a1713] px-5 py-2 rounded-full font-semibold text-sm whitespace-nowrap flex items-center gap-2 hover:bg-red-50 transition-colors">
-                <img src="/Food Icon Illustrations Kit (4).png" alt="Selesai" className="w-5 h-5 object-contain" /> Selesai
-              </Link>
-            </div>
-
             {/* Table Header */}
             <div className="bg-[#FFC7C7] rounded-md py-3 px-4 grid grid-cols-4 text-sm font-bold mb-2">
               <div className="col-span-2">Nama Pelanggan</div>
@@ -194,13 +173,22 @@ export default async function DashboardKasir() {
 
         {/* Ketersediaan Meja Section */}
         <div>
-          <h1 className="text-2xl font-bold mb-4">Ketersediaan Meja</h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">Ketersediaan Meja</h1>
+            <Link
+              href="/kasir/kelola-meja"
+              className="flex items-center gap-2 text-[#6a1713] text-sm hover:underline"
+            >
+              Selengkapnya
+              <span className="border border-[#6a1713] rounded-full w-5 h-5 flex items-center justify-center text-xs">{'>'}</span>
+            </Link>
+          </div>
 
           <div className="bg-white border border-red-200 rounded-2xl p-6 relative">
             {tables.length === 0 ? (
               <p className="text-center text-gray-500 py-4 text-sm font-medium">Belum ada data meja.</p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {tables.map((meja) => (
                   <div
                     key={meja.id}
@@ -220,16 +208,6 @@ export default async function DashboardKasir() {
                 ))}
               </div>
             )}
-
-            <div className="flex justify-end">
-              <Link
-                href="/kasir/kelola-meja"
-                className="flex items-center gap-2 text-[#6a1713] text-sm hover:underline"
-              >
-                Selengkapnya
-                <span className="border border-[#6a1713] rounded-full w-5 h-5 flex items-center justify-center text-xs">{'>'}</span>
-              </Link>
-            </div>
           </div>
         </div>
 

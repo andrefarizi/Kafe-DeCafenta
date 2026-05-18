@@ -216,25 +216,31 @@ export default function OwnerPesananClient({
             Awal
           </button>
 
-          {getPageNumbers().map(pageNum => (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum)}
-              className={`w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm shadow-sm transition-colors ${
-                currentPage === pageNum 
-                  ? 'bg-[#8B1A1A] text-white' 
-                  : 'bg-gray-200 border border-gray-200 text-[#8B1A1A] hover:bg-gray-50'
-              }`}
-            >
-              {pageNum}
-            </button>
-          ))}
-
-          {currentPage < totalPages - 2 && totalPages > 3 && (
-            <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm cursor-default">
-              ...
-            </button>
-          )}
+          {(() => {
+            const pageNums = getPageNumbers();
+            return (
+              <>
+                {pageNums.map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm shadow-sm transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-[#8B1A1A] text-white'
+                        : 'bg-gray-200 border border-gray-200 text-[#8B1A1A] hover:bg-gray-50'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+                {pageNums[pageNums.length - 1] < totalPages && (
+                  <button className="w-8 h-8 flex items-center justify-center rounded-md bg-gray-200 border border-gray-200 shadow-sm text-[#8B1A1A] font-bold text-sm cursor-default">
+                    ...
+                  </button>
+                )}
+              </>
+            );
+          })()}
           
           <button 
             onClick={handleLastPage}

@@ -82,32 +82,28 @@ export default function MenuClient({ items }: MenuClientProps) {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-12">
         {filteredItems.map((item) => (
-          <div key={item.id} className="bg-[#FAFAFA] border border-gray-200 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow">
-            <div className="relative h-36 md:h-44 w-full bg-gray-200">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-md flex items-center space-x-1">
-                <Star size={10} className="text-[#FFC700] fill-[#FFC700]" />
-                <span className="text-white text-[10px] font-bold">{item.rating}</span>
+          <Link href={`/owner/menu/${item.id}`} key={item.id} className="block h-full cursor-pointer">
+            <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
+              <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
+                  <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                  {item.rating}
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-bold text-black text-md mb-1 line-clamp-1">{item.name}</h3>
+                  <p className="text-sm text-black font-medium">{item.price}</p>
+                </div>
+                <div className="mt-4">
+                  <div className="w-full bg-[#8B0000] text-center text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-colors">
+                    Detail
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="p-4 flex flex-col flex-1">
-              <div>
-                <h3 className="font-extrabold text-sm text-black line-clamp-1">{item.name}</h3>
-                <p className="text-[10px] text-gray-600 font-medium mt-1">{item.price}</p>
-              </div>
-
-              <div className="mt-auto pt-4">
-                <Link href={`/owner/menu/${item.id}`} className="block w-full bg-[#8B1A1A] hover:bg-red-900 text-white font-bold text-xs py-2 rounded-lg transition-colors shadow-sm text-center">
-                  Detail
-                </Link>
-              </div>
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

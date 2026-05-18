@@ -381,24 +381,26 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 <div className="col-span-full py-10 text-center text-gray-500 font-bold">Menu tidak ditemukan.</div>
               ) : (
                 filteredMenus.map((item) => (
-                  <div key={item.id} className="border-[1.5px] border-gray-200 rounded-xl p-2.5 bg-white shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                    <div className="relative aspect-square mb-2.5 rounded-lg overflow-hidden shrink-0">
+                  <div key={item.id} className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
                       <img src={getDummyImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className="w-full h-full object-cover" />
-                      <div className="absolute top-1.5 right-1.5 bg-black/75 text-white text-[9px] px-1.5 py-0.5 rounded-[4px] flex items-center font-bold">
+                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
                         <StarIcon /> {item.avgRating.toFixed(1)}
                       </div>
                     </div>
-                    <div className="flex flex-col flex-grow justify-between">
+                    <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="font-bold text-[12px] truncate mb-0.5" title={item.name}>{item.name}</h3>
-                        <p className="text-[11px] text-gray-700 mb-3">{formatPrice(item.price)}</p>
+                        <h3 className="font-bold text-black text-md mb-1 line-clamp-1" title={item.name}>{item.name}</h3>
+                        <p className="text-sm text-black font-medium">{formatPrice(item.price)}</p>
                       </div>
-                      <button 
-                        onClick={() => handleOpenAddModal(item)}
-                        className="w-full bg-[#8b0000] text-white py-2 rounded-md font-bold text-[11px] hover:bg-[#6b0000] transition active:scale-95"
-                      >
-                        Tambah
-                      </button>
+                      <div className="mt-4">
+                        <button 
+                          onClick={() => handleOpenAddModal(item)}
+                          className="w-full bg-[#8b0000] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6b0000] transition active:scale-95"
+                        >
+                          Tambah
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -419,12 +421,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               className="w-full bg-[#8b0000] text-white py-3.5 rounded-md font-bold text-sm hover:bg-[#6b0000] transition shadow-sm active:scale-[0.99]"
             >
               Konfirmasi Pesanan
-            </button>
-            <button 
-              onClick={handleReset}
-              className="w-full bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] py-3.5 rounded-md font-bold text-sm hover:bg-red-50 transition shadow-sm active:scale-[0.99]"
-            >
-              Batalkan Pesanan
             </button>
           </div>
 

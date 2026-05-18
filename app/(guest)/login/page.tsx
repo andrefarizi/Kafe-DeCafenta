@@ -195,9 +195,9 @@ export default function LoginPage() {
 
             {/* Lupa Password */}
             <div className="text-right mt-2">
-              <a href="#" className="text-sm font-medium text-[#8b1c1c] hover:underline">
+              <Link href="/konfirmasi-email" className="text-sm font-medium text-[#8b1c1c] hover:underline">
                 Lupa Password?
-              </a>
+              </Link>
             </div>
 
             {/* Tombol Masuk */}

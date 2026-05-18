@@ -83,12 +83,10 @@ export default function TataLetakMejaPage() {
   };
 
   // ── Bagi denah menjadi 3 group (sesuai Figma) ───────────────────
-  // Kiri         : slot 0–5  (3 baris × 2 kolom) → Meja 1–6
-  // Kanan Atas   : slot 10–11 (1 baris × 2 kolom) → Meja 11–12
-  // Kanan Bawah  : slot 6–9  (2 baris × 2 kolom) → Meja 7–10
-  const mejaLeft        = diDenah.slice(0, 6);
-  const mejaTopRight    = diDenah.slice(10, 12);
+  // Kita sudah menggunakan array 12 diDenah, jadi cukup slice saja.
+  const mejaLeft = diDenah.slice(0, 6);
   const mejaBottomRight = diDenah.slice(6, 10);
+  const mejaTopRight = diDenah.slice(10, 12);
 
   // ── Kartu meja di dalam denah ────────────────────────────────────
   const DenahCard = ({ meja, slotIndex }: { meja: MejaData, slotIndex: number }) => (
@@ -106,8 +104,8 @@ export default function TataLetakMejaPage() {
           <span>Keluarkan Meja</span>
         </button>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (loading) {
     return (
@@ -177,19 +175,25 @@ export default function TataLetakMejaPage() {
       </div>
 
       {/* ── SECTION 2: DAFTAR MEJA BELUM DIGUNAKAN ── */}
-      <div className="border-[3px] border-[#8B1A1A] rounded-2xl p-6 bg-[#FAFAFA] mb-8 shadow-sm">
+      <div 
+        className="border-[3px] border-[#8B1A1A] rounded-2xl p-6 bg-[#FAFAFA] mb-8 shadow-sm"
+        onDragOver={handleDragOver}
+        onDrop={handleDropToBelumDigunakan}
+      >
         <h2 className="text-lg font-extrabold text-black mb-6">Daftar Meja Belum Digunakan</h2>
 
         {belumDigunakan.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">
-            Semua meja sudah ditempatkan di denah.
+          <p className="text-sm text-gray-400 text-center py-4 border-2 border-dashed border-gray-300 rounded-xl" >
+            Semua meja sudah ditempatkan di denah atau tarik meja ke area ini.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {belumDigunakan.map((meja) => (
               <div
                 key={`unused-${meja.id}`}
-                className="border border-[#8B1A1A] rounded-xl p-4 flex flex-col justify-between h-28 bg-white shadow-sm"
+                className="border border-[#8B1A1A] rounded-xl p-4 flex flex-col justify-between h-28 bg-white shadow-sm cursor-grab active:cursor-grabbing hover:scale-[1.02] hover:shadow-md transition-all"
+                draggable
+                onDragStart={(e) => handleDragStart(e, meja.id, -1)}
               >
                 <div className="flex justify-between items-start">
                   <p className="font-extrabold text-base text-black">{meja.name}</p>
@@ -198,7 +202,7 @@ export default function TataLetakMejaPage() {
                 <div className="flex justify-end mt-auto">
                   <button
                     onClick={() => handleTambahkan(meja)}
-                    disabled={diDenah.length >= 12}
+                    disabled={diDenah.filter(m => m !== null).length >= 12}
                     className="flex items-center space-x-1.5 bg-[#8B1A1A] hover:bg-red-900 text-white text-[10px] font-bold py-1.5 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus size={12} strokeWidth={3} />
