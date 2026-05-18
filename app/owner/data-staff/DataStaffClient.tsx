@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition, useEffect } from 'react';
+import React, { useState, useTransition } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Search, ChevronDown, Power, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { StaffKasirData, toggleStaffStatus } from '@/src/controllers/staff-controller';
@@ -38,10 +38,6 @@ export default function DataStaffClient({
     currentStatus: null,
     staffName: ''
   });
-
-  useEffect(() => {
-    setLocalList(staffList);
-  }, [staffList]);
 
   // ── Update URL search params ─────────────────────────────────────
   const updateParams = (updates: Record<string, string>) => {
@@ -194,12 +190,8 @@ export default function DataStaffClient({
             <tbody>
               {localList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-12 text-gray-400">
-                    <div className="flex flex-col items-center justify-center">
-                      <span className="text-4xl font-black text-gray-300 mb-2">404</span>
-                      <span className="font-bold text-gray-500">Not Found</span>
-                      <span className="text-sm mt-1">Data staff kasir tidak ditemukan.</span>
-                    </div>
+                  <td colSpan={5} className="text-center py-12 text-gray-400 text-sm">
+                    Tidak ada data staff kasir ditemukan.
                   </td>
                 </tr>
               ) : (

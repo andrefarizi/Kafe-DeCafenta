@@ -32,6 +32,11 @@ export default function InvoiceFullPage() {
             </button>
             <h1 className="text-3xl md:text-4xl font-extrabold text-black">Invoice</h1>
           </div>
+          
+          <button className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+            <Printer size={18} />
+            <span>Print Invoice</span>
+          </button>
         </div>
 
         {/* --- INVOICE CARD --- */}

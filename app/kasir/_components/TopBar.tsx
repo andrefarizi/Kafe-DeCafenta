@@ -60,17 +60,7 @@ export default function TopBar() {
             </span>
           </div>
 
-          {/* Profil button */}
-          <button
-            onClick={() => {
-              setOpen(false);
-              router.push('/kasir/profil');
-            }}
-            className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-          >
-            <User size={15} className="text-gray-400" />
-            Profil
-          </button>
+
 
           {/* Logout button */}
           <button
@@ -94,7 +84,7 @@ export default function TopBar() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm">
             <h2 className="text-xl font-bold text-gray-800 mb-2">Konfirmasi Logout</h2>
-            <p className="text-gray-600 mb-6 font-medium">Are you sure you want to logout?</p>
+            <p className="text-gray-600 mb-6 font-medium">Apakah kamu yakin ingin logout?</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowLogoutModal(false)}

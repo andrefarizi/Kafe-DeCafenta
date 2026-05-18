@@ -26,7 +26,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email: normalizedEmail },
-          include: { staffDetail: true },
         });
 
         if (!user || !user.password) {
@@ -40,10 +39,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!isPasswordValid) {
           return null;
-        }
-
-        if (user.role === 'KASIR' && user.staffDetail?.workStatus === 'non_aktif') {
-          return null; // Silent failure prevents throwing 500 error and stops login
         }
 
         return {
@@ -60,30 +55,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: "CUSTOMER",
-        };
-      },
     }),
 
     // ===== FACEBOOK =====
     FacebookProvider({
       clientId: process.env.FACEBOOK_CLIENT_ID!,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-      profile(profile) {
-        return {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture?.data?.url || null,
-          role: "CUSTOMER",
-        };
-      },
     }),
   ],
 
@@ -101,20 +78,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       // Untuk OAuth (Google/Facebook): simpan user ke DB jika belum ada
-      if (account && account.provider !== "credentials") {
+      if (account && account.provider !== "credentials" && token.email) {
         try {
-          const email = token.email || `${account.providerAccountId}@${account.provider}.com`;
           let dbUser = await prisma.user.findUnique({
-            where: { email: email },
+            where: { email: token.email },
           });
 
           if (!dbUser) {
             // Buat user baru untuk OAuth login
             dbUser = await prisma.user.create({
               data: {
-                email: email,
+                email: token.email,
                 name: token.name ?? null,
-                image: (token.picture as string) ?? null,
+                image: token.picture ?? null,
                 role: "CUSTOMER",
               },
             });

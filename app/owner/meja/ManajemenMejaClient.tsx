@@ -36,17 +36,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
   );
 
   // Split berdasarkan isInLayout (tersimpan di DB)
-  const grid = Array(12).fill(null);
-  sorted.filter((m) => m.isInLayout).forEach((meja) => {
-    const match = meja.tableCode.match(/\d+$/);
-    const idx = match ? parseInt(match[0], 10) - 1 : -1;
-    if (idx >= 0 && idx < 12 && !grid[idx]) grid[idx] = meja;
-    else {
-      const e = grid.findIndex(m => m === null);
-      if (e !== -1) grid[e] = meja;
-    }
-  });
-  const diDenah = grid;
+  const diDenah = sorted.filter((m) => m.isInLayout);
 
   // Bagi denah ke 3 group sesuai Figma:
   // Kiri        : slot 0–5  → Meja 1–6
@@ -228,22 +218,22 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
 
           {/* Group Kiri (Meja 1–6) */}
           <div className="absolute top-20 left-[5%] w-[38%] grid grid-cols-2 gap-x-6 gap-y-12">
-            {mejaLeft.map((meja, i) => (
-              meja ? <DenahCard key={meja.id} meja={meja} /> : <div key={`el-${i}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"><span className="text-xs text-gray-400 font-medium">Kosong</span></div>
+            {mejaLeft.map((meja, idx) => (
+              <DenahCard key={meja ? meja.id : `empty-l-${idx}`} meja={meja} index={idx} />
             ))}
           </div>
 
           {/* Group Kanan Atas (MJ11–MJ12) */}
           <div className="absolute top-20 right-[5%] w-[38%] grid grid-cols-2 gap-x-6">
-            {mejaTopRight.map((meja, i) => (
-              meja ? <DenahCard key={meja.id} meja={meja} /> : <div key={`etr-${i}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"><span className="text-xs text-gray-400 font-medium">Kosong</span></div>
+            {mejaTopRight.map((meja, idx) => (
+              <DenahCard key={meja ? meja.id : `empty-tr-${idx}`} meja={meja} index={idx} />
             ))}
           </div>
 
           {/* Group Kanan Bawah (MJ07–MJ10) */}
           <div className="absolute top-[45%] right-[5%] w-[38%] grid grid-cols-2 gap-x-6 gap-y-12">
-            {mejaBottomRight.map((meja, i) => (
-              meja ? <DenahCard key={meja.id} meja={meja} /> : <div key={`ebr-${i}`} className="border-2 border-dashed border-gray-300 rounded-xl h-28 bg-gray-50 flex items-center justify-center"><span className="text-xs text-gray-400 font-medium">Kosong</span></div>
+            {mejaBottomRight.map((meja, idx) => (
+              <DenahCard key={meja ? meja.id : `empty-br-${idx}`} meja={meja} index={idx} />
             ))}
           </div>
 

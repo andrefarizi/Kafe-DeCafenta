@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Printer } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import * as XLSX from 'xlsx';
 
 interface Props {
@@ -50,7 +50,7 @@ export default function ExportExcelButtonClient({ report, type }: Props) {
       onClick={handleExport}
       className="flex items-center gap-2 px-4 py-2 bg-[#8B1A1A] hover:bg-red-800 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
     >
-      <Printer className="w-5 h-5 text-white" />
+      <Icon icon="mdi:printer" className="w-5 h-5 text-white" />
       Cetak Rekapitulasi
     </button>
   );
