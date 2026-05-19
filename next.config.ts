@@ -8,6 +8,11 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['midtrans-client'],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
   images: {
     remotePatterns: [
       {
