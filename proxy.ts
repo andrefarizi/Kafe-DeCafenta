@@ -1,51 +1,62 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-// Route yang membutuhkan login
-const protectedRoutes = ["/owner", "/kasir", "/customer"];
-
-// Route yang hanya bisa diakses jika BELUM login
-const authRoutes = ["/login", "/daftar"];
-
-// Next.js 16: file ini menggantikan middleware.ts
-// PENTING: Proxy TIDAK boleh import Prisma atau module Node.js berat
-// Session dibaca dari cookie JWT yang di-set oleh NextAuth
-// Docs: node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md
-
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { nextUrl } = req;
+  const token = await getToken({ 
+    req, 
+    secret: process.env.AUTH_SECRET,
+    // Add explicitly secure cookie names if developing locally sometimes misses it
+    secureCookie: process.env.NODE_ENV === "production"
+  });
 
-  // Baca session token dari cookie NextAuth (JWT)
-  // NextAuth v5 menyimpan token di cookie "authjs.session-token" atau "__Secure-authjs.session-token"
-  const sessionToken =
-    req.cookies.get("authjs.session-token")?.value ||
-    req.cookies.get("__Secure-authjs.session-token")?.value;
+  const isLoggedIn = !!token;
+  const role = token?.role as string | undefined;
 
-  const isLoggedIn = !!sessionToken;
+  const isGuestPath =
+    nextUrl.pathname.startsWith("/login") ||
+    nextUrl.pathname.startsWith("/daftar") ||
+    nextUrl.pathname.startsWith("/reset-password") ||
+    nextUrl.pathname.startsWith("/konfirmasi-email");
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
+  const isOwnerPath = nextUrl.pathname.startsWith("/owner");
+  const isKasirPath = nextUrl.pathname.startsWith("/kasir");
+  const isCustomerPath = nextUrl.pathname.startsWith("/customer");
 
-  const isAuthRoute = authRoutes.some((route) =>
-    nextUrl.pathname.startsWith(route)
-  );
+  if (isGuestPath) {
+    if (isLoggedIn) {
+      if (role === "OWNER") return NextResponse.redirect(new URL("/owner/beranda", nextUrl));
+      if (role === "KASIR") return NextResponse.redirect(new URL("/kasir/beranda", nextUrl));
+      return NextResponse.redirect(new URL("/customer/beranda", nextUrl));
+    }
+    return NextResponse.next();
+  }
 
-  // Jika user belum login dan coba akses halaman protected → redirect ke login
-  if (isProtectedRoute && !isLoggedIn) {
+  if (!isLoggedIn && (isOwnerPath || isKasirPath || isCustomerPath)) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  // (Komentar: redirect dari halaman auth dihapus agar user tetap bisa melihat halaman login/daftar jika diinginkan)
+  if (isOwnerPath && role !== "OWNER") {
+    if (role === "KASIR") return NextResponse.redirect(new URL("/kasir/beranda", nextUrl));
+    return NextResponse.redirect(new URL("/customer/beranda", nextUrl));
+  }
+
+  if (isKasirPath && role !== "KASIR") {
+    if (role === "OWNER") return NextResponse.redirect(new URL("/owner/beranda", nextUrl));
+    return NextResponse.redirect(new URL("/customer/beranda", nextUrl));
+  }
+
+  if (isCustomerPath && role !== "CUSTOMER") {
+    if (role === "OWNER") return NextResponse.redirect(new URL("/owner/beranda", nextUrl));
+    if (role === "KASIR") return NextResponse.redirect(new URL("/kasir/beranda", nextUrl));
+  }
 
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // Jalankan di semua route kecuali:
-    // - _next/static, _next/image, favicon, gambar
-    // - /api/auth (NextAuth endpoints — jangan di-intercept!)
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)$).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|manifest.json|avatars|uploads|.*\\..*).*)",
   ],
 };
