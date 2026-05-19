@@ -372,9 +372,9 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
     });
 
     return { success: true, message: 'Menu berhasil ditambahkan!' };
-  } catch (err) {
+  } catch (err: any) {
     console.error('createMenu error:', err);
-    return { success: false, message: 'Terjadi kesalahan. Silakan coba lagi.' };
+    return { success: false, message: `Terjadi kesalahan: ${err.message || 'Unknown error'}. Silakan coba lagi.` };
   }
 }
 
