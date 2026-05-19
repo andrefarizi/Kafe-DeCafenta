@@ -7,7 +7,24 @@ export const metadata: Metadata = {
   description: 'Panel kasir De Cafenta',
 };
 
-export default function KasirLayout({ children }: { children: React.ReactNode }) {
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export default async function KasirLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { staffDetail: true },
+    });
+
+    if (user?.role === "KASIR" && user.staffDetail?.workStatus === "non_aktif") {
+      redirect("/login");
+    }
+  }
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
