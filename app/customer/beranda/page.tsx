@@ -212,7 +212,9 @@ const Beranda = async () => {
           <section className="pb-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[20px] font-bold text-black">Dari Keranjang Anda</h3>
-              <button className="text-[#8A0000] text-[12px]">Lihat Semua</button>
+              {keranjangMenus.length > 0 && (
+                <button className="text-[#8A0000] text-[12px]">Lihat Semua</button>
+              )}
             </div>
             {keranjangMenus.length === 0 ? (
               <p className="text-sm font-bold text-gray-600">Anda belum memesan menu apapun.</p>

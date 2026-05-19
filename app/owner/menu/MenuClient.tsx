@@ -58,21 +58,20 @@ export default function MenuClient({ items }: MenuClientProps) {
           />
         </div>
 
-        <div className="flex">
-          <div className="relative">
-            <select
-              value={activeCategory}
-              onChange={(event) => setActiveCategory(event.target.value)}
-              className="appearance-none flex items-center justify-between w-auto min-w-[200px] px-3 py-2 bg-white border border-gray-300 rounded-lg text-[10px] font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm pr-8"
+        <div className="flex flex-wrap gap-3 mb-8">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`px-6 py-2 rounded-full text-sm font-bold border-2 transition-all ${
+                activeCategory === category
+                  ? 'bg-[#8B0000] border-[#8B0000] text-white'
+                  : 'bg-white border-[#8B0000] text-black hover:bg-gray-50'
+              }`}
             >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  Kategori berdasarkan : {category}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-black" />
-          </div>
+              {category}
+            </button>
+          ))}
         </div>
       </div>
 

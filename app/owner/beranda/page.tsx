@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Home, ChevronRight, ChevronDown } from 'lucide-react';
 import { getOwnerDashboardStats } from '@/src/controllers/owner-controller';
+import FilterMonthDropdown from './FilterMonthDropdown';
 
 interface Props { searchParams?: Promise<{ month?: string }> }
 
@@ -112,10 +113,7 @@ export default async function DashboardOwner(props: Props) {
         <div className="bg-[#FCF9F9] border border-red-200 rounded-3xl p-8">
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-lg font-bold">Diagram menu paling banyak dipesan</h3>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600">
-              <span>Filter bulan : <span className="font-semibold text-black">Maret</span></span>
-              <ChevronDown size={16} />
-            </button>
+            <FilterMonthDropdown />
           </div>
 
           {/* Chart Wrapper */}

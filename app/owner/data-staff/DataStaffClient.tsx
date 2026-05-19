@@ -30,6 +30,10 @@ export default function DataStaffClient({
 
   // Optimistic state
   const [localList, setLocalList] = useState<StaffKasirData[]>(staffList);
+
+  React.useEffect(() => {
+    setLocalList(staffList);
+  }, [staffList]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, staffId: string, currentStatus: 'Aktif' | 'Nonaktif' | null, staffName: string}>({

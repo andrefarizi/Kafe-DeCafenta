@@ -27,7 +27,8 @@ export default function YearDropdownClient({ currentYear, month }: Props) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
+  const actualYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => actualYear - i);
 
   const handleSelect = (year: number) => {
     setIsOpen(false);

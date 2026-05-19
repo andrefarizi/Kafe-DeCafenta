@@ -90,9 +90,11 @@ export default async function DetailMenu({ params }: PageProps) {
       <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 bg-white shadow-sm">
         <div className="flex justify-between items-center mb-8 border-b border-gray-200 pb-4">
           <h3 className="text-xl font-extrabold text-black">Ringkasan Ulasan ({reviewSummaryLabel})</h3>
-          <Link href={`/owner/ulasan/${menu.id}`} className="text-[#8B1A1A] font-extrabold text-sm hover:underline">
-            Lihat Semua
-          </Link>
+          {reviews.length > 0 && (
+            <Link href={`/owner/ulasan/${menu.id}`} className="text-[#8B1A1A] font-extrabold text-sm hover:underline">
+              Lihat Semua
+            </Link>
+          )}
         </div>
 
         {reviews.length === 0 ? (

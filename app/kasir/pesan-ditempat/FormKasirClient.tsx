@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import { createKasirOrder } from '@/src/controllers/kasir-order-controller';
-import { Plus, Minus, X, FileText, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Minus, X, FileText, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -97,6 +97,14 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   const [activeCategory, setActiveCategory] = useState('Semua Menu');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Pagination for Menus
+  const [menuPage, setMenuPage] = useState(1);
+  const menusPerPage = 8;
+
+  useEffect(() => {
+    setMenuPage(1);
+  }, [activeCategory, searchTerm]);
+
   // State Modal Tambah Menu
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
@@ -141,6 +149,9 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       return matchesCategory && matchesSearch;
     });
   }, [initialMenus, activeCategory, searchTerm]);
+
+  const totalPages = Math.ceil(filteredMenus.length / menusPerPage);
+  const paginatedMenus = filteredMenus.slice((menuPage - 1) * menusPerPage, menuPage * menusPerPage);
 
   // Kalkulasi Harga (Subtotal, Pajak 10%, Total)
   const formatPrice = (price: number) => "Rp " + price.toLocaleString("id-ID");
@@ -378,10 +389,10 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {filteredMenus.length === 0 ? (
+              {paginatedMenus.length === 0 ? (
                 <div className="col-span-full py-10 text-center text-gray-500 font-bold">Menu tidak ditemukan.</div>
               ) : (
-                filteredMenus.map((item) => (
+                paginatedMenus.map((item) => (
                   <div key={item.id} className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
                       <img src={getDummyImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className="w-full h-full object-cover" />
@@ -407,6 +418,40 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 ))
               )}
             </div>
+
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-8 space-x-2">
+                <button
+                  onClick={() => setMenuPage(Math.max(1, menuPage - 1))}
+                  disabled={menuPage <= 1}
+                  className="w-8 h-8 flex items-center justify-center rounded-md text-[#8B1A1A] hover:bg-red-50 transition-colors disabled:opacity-40"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setMenuPage(p)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm transition-colors ${
+                      p === menuPage
+                        ? 'bg-[#8B1A1A] text-white'
+                        : 'text-[#8B1A1A] hover:bg-red-50'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setMenuPage(Math.min(totalPages, menuPage + 1))}
+                  disabled={menuPage >= totalPages}
+                  className="w-8 h-8 flex items-center justify-center rounded-md text-[#8B1A1A] hover:bg-red-50 transition-colors disabled:opacity-40"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Section 4: Action Buttons */}

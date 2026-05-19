@@ -12,6 +12,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import BackButton from './BackButton';
 
 export default async function ProfilPage() {
   const session = await auth();
@@ -46,9 +47,7 @@ export default async function ProfilPage() {
       <main className="flex-1 px-[48px] pt-[30px]">
         {/* HEADER */}
         <div className="flex items-center gap-5">
-          <Link href="/customer/beranda" className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md">
-            <ChevronLeft size={26} strokeWidth={3} />
-          </Link>
+          <BackButton />
 
           <h1 className="text-[40px] font-semibold text-black">Profil</h1>
         </div>
@@ -75,9 +74,6 @@ export default async function ProfilPage() {
                 )}
               </div>
             </div>
-
-            {/* GANTI FOTO */}
-            <EditProfilLink />
 
             {/* FORM */}
             <div className="mt-[22px] flex flex-col gap-[16px]">
@@ -136,19 +132,6 @@ function InfoField({
         </div>
       </div>
     </div>
-  );
-}
-
-/* Link "Ganti Foto Profil" — menuju halaman edit profil */
-function EditProfilLink() {
-  return (
-    <Link
-      href="/customer/Profil/edit"
-      className="mt-[10px] flex items-center gap-2 text-[16px] font-medium text-[#9b0000] hover:underline"
-    >
-      <span>Ganti Foto Profil</span>
-      <SquarePen size={18} />
-    </Link>
   );
 }
 

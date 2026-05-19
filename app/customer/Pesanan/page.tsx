@@ -174,7 +174,7 @@ export default function PesananPage() {
                       <td colSpan={4} className="py-10 text-center font-bold text-gray-500">
                         {search 
                           ? `Tidak ditemukan pesanan dengan pencarian "${search}"` 
-                          : `Belum ada pesanan dengan status ${filter}.`
+                          : `Belum ada pesanan ${filter === 'semua' ? 'apapun' : `dengan status ${statusConfig[filter]?.label || filter}`}.`
                         }
                       </td>
                     </tr>
