@@ -23,6 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "De Cafenta",
   description: "Sistem manajemen kafe De Cafenta",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
