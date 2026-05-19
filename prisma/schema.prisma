@@ -124,6 +124,7 @@ model Menu {
   price       Decimal     @db.Decimal(10, 2)
   imageUrl    String?     @db.Text
   isAvailable Boolean     @default(true)
+  isPromo     Boolean     @default(false)
   avgRating   Decimal     @default(0.00) @db.Decimal(3, 2)
   createdAt   DateTime    @default(now()) @db.Timestamptz()
   updatedAt   DateTime    @updatedAt @db.Timestamptz()

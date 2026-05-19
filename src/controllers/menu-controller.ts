@@ -35,6 +35,7 @@ type MenuDetail = {
   imageUrl: string | null;
   categoryName: string;
   isAvailable: boolean;
+  isPromo: boolean;
   reviewCount: number;
 };
 
@@ -197,6 +198,7 @@ export async function getPromoMenus(limit = 4): Promise<MenuListItem[]> {
     FROM menus m
     JOIN categories c ON c.id = m."categoryId"
     LEFT JOIN order_items oi ON oi."menuId" = m.id
+    WHERE m."isPromo" = true
     GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", c.name
     ORDER BY "totalOrdered" DESC, m."avgRating" DESC, m.price ASC
     LIMIT ${limit}
@@ -286,6 +288,7 @@ export async function getMenuDetail(menuId: string): Promise<MenuDetail | null> 
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
+    isPromo: menu.isPromo,
     reviewCount: menu._count.reviews,
   };
 }
@@ -378,7 +381,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
 /* ─── OWNER: Update menu ─── */
 export async function updateMenuDetail(
   menuId: string, 
-  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; }
+  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; isPromo?: boolean; }
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -391,13 +394,14 @@ export async function updateMenuDetail(
         ...(data.price !== undefined && { price: data.price }),
         ...(data.description !== undefined && { description: data.description || null }),
         ...(data.isAvailable !== undefined && { isAvailable: data.isAvailable }),
+        ...(data.isPromo !== undefined && { isPromo: data.isPromo }),
       },
     });
 
     return { success: true, message: 'Menu berhasil diperbarui!' };
   } catch (error: any) {
     console.error('ERROR UPDATE MENU:', error);
-    return { success: false, message: 'Gagal memperbarui menu.' };
+    return { success: false, message: 'Gagal memperbarui menu. Error: ' + (error.message || 'Unknown error') };
   }
 }
 

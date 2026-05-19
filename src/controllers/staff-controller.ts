@@ -127,7 +127,6 @@ export async function toggleStaffStatus(
     });
 
     revalidatePath('/owner/data-staff');
-
     return {
       success: true,
       message: `Status kasir berhasil diubah menjadi ${nextStatus === 'aktif' ? 'Aktif' : 'Nonaktif'}.`,
@@ -136,5 +135,87 @@ export async function toggleStaffStatus(
   } catch (error) {
     console.error('toggleStaffStatus error:', error);
     return { success: false, message: 'Gagal mengubah status kasir. Coba lagi.' };
+  }
+}
+
+export async function addStaffKasir(data: {
+  nama: string;
+  email: string;
+  telepon: string;
+  staffNumber: string;
+}): Promise<{ success: boolean; message: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id || (session.user as { role?: string }).role !== 'OWNER') {
+      return { success: false, message: 'Akses ditolak. Hanya owner yang dapat menambahkan kasir.' };
+    }
+
+    const { nama, email, telepon, staffNumber } = data;
+
+    if (!nama || !email || !staffNumber) {
+      return { success: false, message: 'Nama, Email, dan ID Staff wajib diisi.' };
+    }
+
+    // Validasi Format Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return { success: false, message: 'Format email tidak valid.' };
+    }
+
+    // Validasi Nomor Telepon
+    if (telepon) {
+      const phoneRegex = /^(08|628)[0-9]{7,13}$/;
+      if (!phoneRegex.test(telepon)) {
+        return { success: false, message: 'Nomor telepon harus valid (diawali 08 atau 628, minimal 9 digit angka).' };
+      }
+    }
+
+    const bcryptjs = require('bcryptjs');
+    const hashedPassword = await bcryptjs.hash('Kasir123!', 10);
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return { success: false, message: 'Email sudah terdaftar. Silakan gunakan email lain.' };
+    }
+
+    if (telepon) {
+      const existingPhone = await prisma.user.findFirst({ where: { phone: telepon } });
+      if (existingPhone) {
+        return { success: false, message: 'Nomor telepon sudah terdaftar. Silakan gunakan nomor lain.' };
+      }
+    }
+
+    const existingStaffDetail = await prisma.staffDetail.findUnique({ where: { staffNumber } });
+    if (existingStaffDetail) {
+      return { success: false, message: 'ID Staff sudah digunakan. Silakan gunakan ID yang lain.' };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name: nama,
+          email,
+          phone: telepon,
+          password: hashedPassword,
+          role: 'KASIR',
+        },
+      });
+
+      await tx.staffDetail.create({
+        data: {
+          userId: user.id,
+          phone: telepon,
+          staffNumber,
+          workStatus: 'aktif',
+        },
+      });
+    });
+
+    revalidatePath('/owner/data-staff');
+
+    return { success: true, message: 'Kasir berhasil ditambahkan.' };
+  } catch (error) {
+    console.error('addStaffKasir error:', error);
+    return { success: false, message: 'Gagal menambahkan kasir. Coba lagi.' };
   }
 }

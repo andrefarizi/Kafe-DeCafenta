@@ -21,6 +21,7 @@ type MenuProps = {
   avgRating: string;
   imageUrl: string;
   isAvailable: boolean;
+  isPromo: boolean;
 };
 
 export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
@@ -61,6 +62,19 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     
     if (res.success) {
       toast.success(menu.isAvailable ? 'Menu ditandai tidak tersedia' : 'Menu ditandai tersedia');
+      router.refresh();
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  const handleTogglePromo = async () => {
+    setIsSaving(true);
+    const res = await updateMenuDetail(menu.id, { isPromo: !menu.isPromo });
+    setIsSaving(false);
+    
+    if (res.success) {
+      toast.success(menu.isPromo ? 'Menu dihapus dari promo' : 'Menu ditambahkan ke promo');
       router.refresh();
     } else {
       toast.error(res.message);
@@ -160,17 +174,30 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
                 </button>
                 <h2 className="text-3xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors">{menu.name}</h2>
               </div>
-              <button
-                disabled={isSaving}
-                onClick={handleToggleAvailable}
-                className={`px-4 py-2 rounded-full text-xs font-bold border-2 transition-all ${
-                  menu.isAvailable 
-                    ? 'bg-green-100 text-green-700 border-green-500 hover:bg-green-200' 
-                    : 'bg-red-100 text-red-700 border-red-500 hover:bg-red-200'
-                }`}
-              >
-                {menu.isAvailable ? 'Tersedia' : 'Tidak Tersedia'}
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  disabled={isSaving}
+                  onClick={handleTogglePromo}
+                  className={`px-4 py-2 rounded-full text-xs font-bold border-2 transition-all ${
+                    menu.isPromo 
+                      ? 'bg-yellow-100 text-yellow-700 border-yellow-500 hover:bg-yellow-200' 
+                      : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  {menu.isPromo ? 'Status: Sedang Promo' : 'Jadikan Promo'}
+                </button>
+                <button
+                  disabled={isSaving}
+                  onClick={handleToggleAvailable}
+                  className={`px-4 py-2 rounded-full text-xs font-bold border-2 transition-all ${
+                    menu.isAvailable 
+                      ? 'bg-green-100 text-green-700 border-green-500 hover:bg-green-200' 
+                      : 'bg-red-100 text-red-700 border-red-500 hover:bg-red-200'
+                  }`}
+                >
+                  {menu.isAvailable ? 'Tersedia' : 'Tidak Tersedia'}
+                </button>
+              </div>
             </div>
 
             <div className="mb-10 relative group cursor-pointer inline-block w-fit" onClick={() => handleEdit('price', menu.price)}>

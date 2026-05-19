@@ -84,7 +84,8 @@ export default async function DetailMenu({ params }: PageProps) {
           description: menu.description,
           avgRating: averageRating,
           imageUrl: resolveMenuImage(menu.name, menu.categoryName, menu.imageUrl),
-          isAvailable: menu.isAvailable
+          isAvailable: menu.isAvailable,
+          isPromo: menu.isPromo
         }} 
       />
 

@@ -2,8 +2,9 @@
 
 import React, { useState, useTransition } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Search, ChevronDown, Power, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { StaffKasirData, toggleStaffStatus } from '@/src/controllers/staff-controller';
+import { Search, ChevronDown, Power, ChevronLeft, ChevronRight, X, Plus, Loader2 } from 'lucide-react';
+import { StaffKasirData, toggleStaffStatus, addStaffKasir } from '@/src/controllers/staff-controller';
+import toast from 'react-hot-toast';
 
 interface Props {
   staffList: StaffKasirData[];
@@ -41,6 +42,21 @@ export default function DataStaffClient({
     staffId: '',
     currentStatus: null,
     staffName: ''
+  });
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newKasir, setNewKasir] = useState({
+    nama: '',
+    email: '',
+    telepon: '',
+    staffNumber: ''
+  });
+  const [formErrors, setFormErrors] = useState({
+    nama: '',
+    email: '',
+    telepon: '',
+    staffNumber: '',
+    general: ''
   });
 
   // ── Update URL search params ─────────────────────────────────────
@@ -98,6 +114,68 @@ export default function DataStaffClient({
 
   const statusOptions: Array<'Semua' | 'Aktif' | 'Nonaktif'> = ['Semua', 'Aktif', 'Nonaktif'];
 
+  const handleAddKasir = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormErrors({ nama: '', email: '', telepon: '', staffNumber: '', general: '' });
+
+    let hasError = false;
+    const errors = { nama: '', email: '', telepon: '', staffNumber: '', general: '' };
+
+    if (!newKasir.nama.trim()) {
+      errors.nama = 'Nama wajib diisi.';
+      hasError = true;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!newKasir.email.trim()) {
+      errors.email = 'Email wajib diisi.';
+      hasError = true;
+    } else if (!emailRegex.test(newKasir.email)) {
+      errors.email = 'Format email tidak valid.';
+      hasError = true;
+    }
+
+    if (newKasir.telepon) {
+      const phoneRegex = /^(08|628)[0-9]{7,13}$/;
+      if (!phoneRegex.test(newKasir.telepon)) {
+        errors.telepon = 'Nomor telepon harus valid (diawali 08 atau 628, minimal 9 digit angka).';
+        hasError = true;
+      }
+    }
+
+    if (!newKasir.staffNumber.trim()) {
+      errors.staffNumber = 'ID Staff wajib diisi.';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsAdding(true);
+    const res = await addStaffKasir(newKasir);
+    setIsAdding(false);
+    
+    if (res.success) {
+      toast.success(res.message);
+      setAddModalOpen(false);
+      setNewKasir({ nama: '', email: '', telepon: '', staffNumber: '' });
+      setFormErrors({ nama: '', email: '', telepon: '', staffNumber: '', general: '' });
+      router.refresh();
+    } else {
+      if (res.message.includes('Email')) {
+        setFormErrors(prev => ({ ...prev, email: res.message }));
+      } else if (res.message.includes('telepon')) {
+        setFormErrors(prev => ({ ...prev, telepon: res.message }));
+      } else if (res.message.includes('ID Staff')) {
+        setFormErrors(prev => ({ ...prev, staffNumber: res.message }));
+      } else {
+        setFormErrors(prev => ({ ...prev, general: res.message }));
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F9FAFB] p-4 md:p-8 font-sans text-gray-900">
 
@@ -119,10 +197,18 @@ export default function DataStaffClient({
 
         {/* Top Controls */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h2 className="text-xl font-bold text-black">
-            Semua Staff
-            <span className="ml-2 text-sm font-normal text-gray-400">({total} kasir)</span>
-          </h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl font-bold text-black">
+              Semua Staff
+              <span className="ml-2 text-sm font-normal text-gray-400">({total} kasir)</span>
+            </h2>
+            <button
+              onClick={() => setAddModalOpen(true)}
+              className="flex items-center gap-2 bg-[#8B1A1A] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-900 transition-colors"
+            >
+              <Plus size={16} /> Tambah Staff
+            </button>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             {/* Search Bar */}
@@ -184,7 +270,7 @@ export default function DataStaffClient({
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="pb-4 font-medium text-gray-400 text-sm">Nama Staff Kasir</th>
+                <th className="pb-4 font-medium text-gray-400 text-sm">Nama Staff</th>
                 <th className="pb-4 font-medium text-gray-400 text-sm text-center">Email</th>
                 <th className="pb-4 font-medium text-gray-400 text-sm text-center">No Telepon</th>
                 <th className="pb-4 font-medium text-gray-400 text-sm text-center">Status Kerja</th>
@@ -331,6 +417,114 @@ export default function DataStaffClient({
                 Ya, Lanjutkan
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Tambah Kasir */}
+      {addModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-black mb-4">Tambah Kasir Baru</h3>
+            
+            {formErrors.general && (
+              <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm font-bold rounded-lg border border-red-200">
+                {formErrors.general}
+              </div>
+            )}
+
+            <form onSubmit={handleAddKasir} noValidate className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Nama</label>
+                <input
+                  type="text"
+                  required
+                  value={newKasir.nama}
+                  onChange={(e) => {
+                    setNewKasir({ ...newKasir, nama: e.target.value });
+                    if (formErrors.nama) setFormErrors(prev => ({ ...prev, nama: '' }));
+                  }}
+                  className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
+                    formErrors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
+                  }`}
+                  placeholder="Nama Kasir"
+                />
+                {formErrors.nama && <p className="text-xs text-red-500 font-bold mt-1">{formErrors.nama}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={newKasir.email}
+                  onChange={(e) => {
+                    setNewKasir({ ...newKasir, email: e.target.value });
+                    if (formErrors.email) setFormErrors(prev => ({ ...prev, email: '' }));
+                  }}
+                  className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
+                    formErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
+                  }`}
+                  placeholder="email@example.com"
+                />
+                {formErrors.email && <p className="text-xs text-red-500 font-bold mt-1">{formErrors.email}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Nomor Telepon</label>
+                <input
+                  type="text"
+                  value={newKasir.telepon}
+                  onChange={(e) => {
+                    setNewKasir({ ...newKasir, telepon: e.target.value });
+                    if (formErrors.telepon) setFormErrors(prev => ({ ...prev, telepon: '' }));
+                  }}
+                  className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
+                    formErrors.telepon ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
+                  }`}
+                  placeholder="081234567890"
+                />
+                {formErrors.telepon && <p className="text-xs text-red-500 font-bold mt-1">{formErrors.telepon}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">ID Staff (Staff Number)</label>
+                <input
+                  type="text"
+                  required
+                  value={newKasir.staffNumber}
+                  onChange={(e) => {
+                    setNewKasir({ ...newKasir, staffNumber: e.target.value });
+                    if (formErrors.staffNumber) setFormErrors(prev => ({ ...prev, staffNumber: '' }));
+                  }}
+                  className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
+                    formErrors.staffNumber ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
+                  }`}
+                  placeholder="STF-001"
+                />
+                {formErrors.staffNumber && <p className="text-xs text-red-500 font-bold mt-1">{formErrors.staffNumber}</p>}
+              </div>
+              <p className="text-xs text-gray-500 italic mt-2">Password default akan diatur ke: Kasir123!</p>
+              
+              <div className="flex gap-4 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAddModalOpen(false);
+                    setFormErrors({ nama: '', email: '', telepon: '', staffNumber: '', general: '' });
+                  }}
+                  className="flex-1 bg-white border border-gray-300 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition"
+                  disabled={isAdding}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isAdding}
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#8B1A1A] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-900 transition shadow-md disabled:opacity-70"
+                >
+                  {isAdding ? <Loader2 size={16} className="animate-spin" /> : null}
+                  Simpan Kasir
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
