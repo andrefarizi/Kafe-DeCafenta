@@ -11,6 +11,7 @@ type OwnerMenuItem = {
   rating: string;
   category: string;
   isAvailable: boolean;
+  image: string;
 };
 
 type MenuClientProps = {
