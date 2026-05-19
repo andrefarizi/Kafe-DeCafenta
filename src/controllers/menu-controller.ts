@@ -417,7 +417,7 @@ export async function addMenuReview(menuId: string, rating: number, comment: str
       });
       await prisma.menu.update({
         where: { id: menuId },
-        data: { avgRating: aggregate._avg.rating || 0, reviewCount: aggregate._count.id }
+        data: { avgRating: aggregate._avg.rating || 0 }
       });
     } catch (e) { 
       console.log("Gagal update rata-rata bintang (Aman diabaikan)"); 
@@ -449,7 +449,7 @@ export async function getMenuWithReviews(menuId: string) {
     return {
       menuName: menu.name,
       avgRating: Number(menu.avgRating) || 0, 
-      reviewCount: menu.reviewCount || 0,
+      reviewCount: reviews.length,
       reviews: reviews.map((r: any) => ({
         id: r.id,
         name: r.user?.name || 'Pengguna',
