@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successRedirect, setSuccessRedirect] = useState("/customer/beranda");
+  const [validationErrors, setValidationErrors] = useState<{email?: string; password?: string}>({});
 
   const getRedirectByRole = (role?: string) => {
     switch (role) {
@@ -32,7 +33,12 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
+    if (validationErrors.email || validationErrors.password) {
+      setError("Mohon perbaiki kesalahan pada form sebelum masuk.");
+      return;
+    }
+
+    if (!email.trim() || !password.trim()) {
       setError("Email dan password wajib diisi.");
       return;
     }
@@ -68,6 +74,27 @@ export default function LoginPage() {
 
   const handleFacebookLogin = () => {
     signIn("facebook", { callbackUrl: "/customer/beranda" });
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEmail(val);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (val && !emailRegex.test(val)) {
+      setValidationErrors(prev => ({...prev, email: 'Format email tidak valid.'}));
+    } else {
+      setValidationErrors(prev => ({...prev, email: undefined}));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setPassword(val);
+    if (val.length > 0 && val.length < 6) {
+      setValidationErrors(prev => ({...prev, password: 'Password minimal 6 karakter.'}));
+    } else {
+      setValidationErrors(prev => ({...prev, password: undefined}));
+    }
   };
 
   return (
@@ -141,58 +168,68 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4 flex flex-col" suppressHydrationWarning>
 
             {/* Input Email */}
-            <div className="relative flex items-center">
-              <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+            <div className="relative flex flex-col">
+              <div className="relative flex items-center">
+                <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  disabled={isLoading}
+                  suppressHydrationWarning
+                  className={`w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.email ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
+                />
               </div>
-              <input
-                id="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                suppressHydrationWarning
-                className="w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border-none focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60"
-              />
+              {validationErrors.email && (
+                <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.email}</span>
+              )}
             </div>
 
             {/* Input Password */}
-            <div className="relative flex items-center">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                suppressHydrationWarning
-                className="w-full pl-6 pr-24 py-3 rounded-full bg-white/80 border-none focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-14 cursor-pointer text-black"
-                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-              >
-                {showPassword ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            <div className="relative flex flex-col">
+              <div className="relative flex items-center">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  disabled={isLoading}
+                  suppressHydrationWarning
+                  className={`w-full pl-6 pr-24 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.password ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-14 cursor-pointer text-black"
+                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                >
+                  {showPassword ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+                <div className="absolute right-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
-              <div className="absolute right-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                </div>
               </div>
+              {validationErrors.password && (
+                <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.password}</span>
+              )}
             </div>
 
             {/* Lupa Password */}

@@ -234,9 +234,36 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   };
 
   const handleReset = () => {
-    if(confirm("Yakin ingin membatalkan seluruh pesanan ini?")) {
+    if (cartItems.length === 0 && !customerName) {
       resetForm();
+      return;
     }
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3">
+          <p className="font-bold text-sm">Yakin ingin membatalkan seluruh pesanan ini?</p>
+          <div className="flex justify-end gap-2">
+            <button 
+              onClick={() => toast.dismiss(t.id)} 
+              className="px-3 py-1.5 bg-gray-100 border border-gray-300 text-black rounded-md text-xs font-bold hover:bg-gray-200"
+            >
+              Tidak
+            </button>
+            <button 
+              onClick={() => {
+                toast.dismiss(t.id);
+                resetForm();
+                toast.success("Pesanan berhasil dibatalkan");
+              }} 
+              className="px-3 py-1.5 bg-[#8b0000] text-white rounded-md text-xs font-bold hover:bg-[#6a0000]"
+            >
+              Ya, Batalkan
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity, id: 'reset-confirm' }
+    );
   };
 
   return (

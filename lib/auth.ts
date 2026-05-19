@@ -26,10 +26,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email: normalizedEmail },
+          include: { staffDetail: true },
         });
 
         if (!user || !user.password) {
-          return null;
+          throw new Error("Email atau password salah.");
+        }
+
+        // Prevent inactive staff from logging in
+        if (
+          user.role === "KASIR" &&
+          user.staffDetail?.workStatus === "non_aktif"
+        ) {
+          throw new Error("Akun Anda telah dinonaktifkan oleh owner.");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -38,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!isPasswordValid) {
-          return null;
+          throw new Error("Email atau password salah.");
         }
 
         return {
