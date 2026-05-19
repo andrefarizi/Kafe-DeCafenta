@@ -154,6 +154,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
+                suppressHydrationWarning
                 className="w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border-none focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60"
               />
             </div>
@@ -167,6 +168,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
+                suppressHydrationWarning
                 className="w-full pl-6 pr-24 py-3 rounded-full bg-white/80 border-none focus:ring-2 focus:ring-[#f4d03f] focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60"
               />
               <button
