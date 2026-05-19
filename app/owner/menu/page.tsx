@@ -34,6 +34,7 @@ export default async function ManajemenMenu() {
     rating: formatRating(menu.avgRating),
     image: menu.imageUrl || categoryFallbacks[menu.categoryName] || '/nasi goreng.png',
     category: menu.categoryName,
+    isAvailable: menu.isAvailable ?? true,
   }));
 
   return (

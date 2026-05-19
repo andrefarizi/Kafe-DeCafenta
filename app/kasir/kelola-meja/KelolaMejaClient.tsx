@@ -10,10 +10,17 @@ function RenderCard({
   onToggle,
   isPending,
 }: {
-  meja: MejaData;
+  meja: MejaData | null;
   onToggle: (id: string, currentStatus: 'Tersedia' | 'Dipakai') => void;
   isPending: boolean;
 }) {
+  if (!meja) {
+    return (
+      <div className="border border-dashed border-gray-300 rounded-xl p-3 flex items-center justify-center h-[130px] bg-gray-50 opacity-50">
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white border-[1.5px] border-[#8b0000] rounded-xl p-4 flex flex-col justify-between relative overflow-hidden h-[130px] shadow-sm">
       {/* Badge Status di Pojok Kanan Atas */}
@@ -66,13 +73,21 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
     a.tableCode.localeCompare(b.tableCode, undefined, { numeric: true })
   );
 
-  // Bagi ke group denah sesuai layout desain asli:
-  // Kiri   : 6 meja pertama  (MJ01–MJ06)
-  // Kanan Bawah: 4 meja berikutnya (MJ07–MJ10)
-  // Kanan Atas : 2 meja terakhir   (MJ11–MJ12)
-  const mejaLeft        = sorted.slice(0, 6);
-  const mejaBottomRight = sorted.slice(6, 10);
-  const mejaTopRight    = sorted.slice(10, 12);
+  const diDenah = sorted.filter((m) => m.isInLayout);
+
+  const layoutSlots = Array(12).fill(null);
+  diDenah.forEach((meja, idx) => {
+    if (meja.layoutSlot !== null && meja.layoutSlot >= 0 && meja.layoutSlot < 12) {
+      layoutSlots[meja.layoutSlot] = meja;
+    } else {
+      const empty = layoutSlots.findIndex(s => s === null);
+      if (empty !== -1) layoutSlots[empty] = meja;
+    }
+  });
+
+  const mejaLeft        = layoutSlots.slice(0, 6);
+  const mejaBottomRight = layoutSlots.slice(6, 10);
+  const mejaTopRight    = layoutSlots.slice(10, 12);
 
   // Handler: buka modal konfirmasi
   const handleToggleClick = (tableId: string, currentStatus: 'Tersedia' | 'Dipakai') => {
@@ -143,20 +158,14 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
 
             {/* Bagian Kiri (Meja 1–6) */}
             <div className="flex-[1.1] grid grid-cols-2 gap-6 pb-2">
-              {mejaLeft.length > 0 ? (
-                mejaLeft.map((meja) => (
-                  <RenderCard
-                    key={meja.id}
-                    meja={meja}
-                    onToggle={handleToggleClick}
-                    isPending={isPending}
-                  />
-                ))
-              ) : (
-                <div className="col-span-2 text-center text-gray-400 text-sm py-8">
-                  Belum ada data meja.
-                </div>
-              )}
+              {mejaLeft.map((meja, idx) => (
+                <RenderCard
+                  key={meja ? meja.id : `empty-l-${idx}`}
+                  meja={meja}
+                  onToggle={handleToggleClick}
+                  isPending={isPending}
+                />
+              ))}
             </div>
 
             {/* Bagian Kanan */}
@@ -164,9 +173,9 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
 
               {/* Kanan Atas (MJ11 & MJ12) */}
               <div className="grid grid-cols-2 gap-6 mb-20">
-                {mejaTopRight.map((meja) => (
+                {mejaTopRight.map((meja, idx) => (
                   <RenderCard
-                    key={meja.id}
+                    key={meja ? meja.id : `empty-tr-${idx}`}
                     meja={meja}
                     onToggle={handleToggleClick}
                     isPending={isPending}
@@ -176,9 +185,9 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
 
               {/* Kanan Bawah (MJ07–MJ10) */}
               <div className="grid grid-cols-2 gap-6 mt-20">
-                {mejaBottomRight.map((meja) => (
+                {mejaBottomRight.map((meja, idx) => (
                   <RenderCard
-                    key={meja.id}
+                    key={meja ? meja.id : `empty-br-${idx}`}
                     meja={meja}
                     onToggle={handleToggleClick}
                     isPending={isPending}

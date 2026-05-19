@@ -45,7 +45,12 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
   
   const layoutSlots = Array(12).fill(null);
   diDenah.forEach((meja, idx) => {
-    if (idx < 12) layoutSlots[idx] = meja;
+    if (meja.layoutSlot !== null && meja.layoutSlot >= 0 && meja.layoutSlot < 12) {
+      layoutSlots[meja.layoutSlot] = meja;
+    } else {
+      const empty = layoutSlots.findIndex(s => s === null);
+      if (empty !== -1) layoutSlots[empty] = meja;
+    }
   });
 
   const mejaLeft        = layoutSlots.slice(0, 6);

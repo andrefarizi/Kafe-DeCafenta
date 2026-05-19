@@ -156,6 +156,7 @@ model Table {
   tableCode   String      @unique @db.VarChar(20)
   status      TableStatus @default(tersedia)
   isInLayout  Boolean     @default(true)
+  layoutSlot  Int?
   createdAt   DateTime    @default(now()) @db.Timestamptz()
   orders      Order[]
 

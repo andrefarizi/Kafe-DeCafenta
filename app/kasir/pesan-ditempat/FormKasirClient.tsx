@@ -14,6 +14,7 @@ type MenuListItem = {
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
+  isAvailable?: boolean;
 };
 
 type KasirCartItem = {
@@ -395,10 +396,15 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 paginatedMenus.map((item) => (
                   <div key={item.id} className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer">
                     <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
-                      <img src={getDummyImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className="w-full h-full object-cover" />
+                      <img src={getDummyImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className={`w-full h-full object-cover ${item.isAvailable === false ? 'grayscale opacity-70' : ''}`} />
                       <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
                         <StarIcon /> {item.avgRating.toFixed(1)}
                       </div>
+                      {item.isAvailable === false && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                          <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded-full">Tidak Tersedia</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
@@ -407,8 +413,13 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                       </div>
                       <div className="mt-4">
                         <button 
+                          disabled={item.isAvailable === false}
                           onClick={() => handleOpenAddModal(item)}
-                          className="w-full bg-[#8b0000] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6b0000] transition active:scale-95"
+                          className={`w-full text-white py-2 rounded-xl text-xs font-bold transition active:scale-95 ${
+                            item.isAvailable === false
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-[#8b0000] hover:bg-[#6b0000]'
+                          }`}
                         >
                           Tambah
                         </button>

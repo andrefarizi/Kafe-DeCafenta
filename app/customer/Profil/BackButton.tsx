@@ -9,7 +9,7 @@ export default function BackButton() {
 
   return (
     <button
-      onClick={() => router.back()}
+      onClick={() => router.push('/customer/beranda')}
       className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md hover:bg-gray-50 transition-colors"
     >
       <ChevronLeft size={26} strokeWidth={3} />

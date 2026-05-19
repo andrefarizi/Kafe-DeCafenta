@@ -9,8 +9,8 @@ type OwnerMenuItem = {
   name: string;
   price: string;
   rating: string;
-  image: string;
   category: string;
+  isAvailable: boolean;
 };
 
 type MenuClientProps = {
@@ -84,11 +84,16 @@ export default function MenuClient({ items }: MenuClientProps) {
           <Link href={`/owner/menu/${item.id}`} key={item.id} className="block h-full cursor-pointer">
             <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
               <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <img src={item.image} alt={item.name} className={`w-full h-full object-cover ${!item.isAvailable ? 'grayscale opacity-70' : ''}`} />
                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
                   <Star size={12} className="text-yellow-400 fill-yellow-400" />
                   {item.rating}
                 </div>
+                {!item.isAvailable && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                    <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded-full">Tidak Tersedia</span>
+                  </div>
+                )}
               </div>
               <div className="flex-1 flex flex-col justify-between">
                 <div>

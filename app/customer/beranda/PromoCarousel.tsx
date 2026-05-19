@@ -10,6 +10,7 @@ type PromoItem = {
   price: number;
   avgRating: number;
   image: string;
+  isAvailable?: boolean;
 };
 
 type PromoCarouselProps = {
@@ -69,17 +70,30 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
             data-card="promo"
             role="button"
             tabIndex={0}
-            onClick={() => router.push(`/customer/detail_menu/${item.id}`)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
+            onClick={() => {
+              if (item.isAvailable !== false) {
                 router.push(`/customer/detail_menu/${item.id}`);
               }
             }}
-            className="min-w-[180px] bg-[#E32111] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md hover:shadow-lg transition-shadow cursor-pointer snap-start"
+            onKeyDown={(event) => {
+              if ((event.key === 'Enter' || event.key === ' ') && item.isAvailable !== false) {
+                router.push(`/customer/detail_menu/${item.id}`);
+              }
+            }}
+            className={`min-w-[180px] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md snap-start ${
+              item.isAvailable === false 
+                ? 'bg-[#A0A0A0] cursor-not-allowed opacity-80 grayscale' 
+                : 'bg-[#E32111] hover:shadow-lg transition-shadow cursor-pointer'
+            }`}
           >
             <div className="relative h-32">
               <img src={item.image} className="w-full h-full object-cover" alt={item.name} />
-              <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+              {item.isAvailable === false && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
+                  <span className="bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-full shadow-sm">TIDAK TERSEDIA</span>
+                </div>
+              )}
+              <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1 z-30">
                 <Star size={12} className="fill-yellow-400 text-yellow-400" />
                 <span className="font-bold">{Number(item.avgRating).toFixed(1)}</span>
               </div>

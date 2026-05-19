@@ -14,6 +14,7 @@ export type MejaData = {
   tableCode: string;
   status: 'Tersedia' | 'Dipakai';
   isInLayout: boolean;
+  layoutSlot: number | null;
 };
 
 // ─────────────────────────────────────────────
@@ -27,9 +28,7 @@ export type MejaData = {
 export async function getTableList(): Promise<MejaData[]> {
   noStore();
   try {
-    const tables = await prisma.table.findMany({
-      orderBy: { tableCode: 'asc' },
-    });
+    const tables = await prisma.$queryRaw<any[]>`SELECT * FROM tables ORDER BY "tableCode" ASC`;
 
     return tables.map((t) => ({
       id: t.id,
@@ -37,6 +36,7 @@ export async function getTableList(): Promise<MejaData[]> {
       tableCode: t.tableCode,
       status: t.status === 'tersedia' ? 'Tersedia' : 'Dipakai',
       isInLayout: t.isInLayout,
+      layoutSlot: t.layoutSlot,
     }));
   } catch (error) {
     console.error('getTableList error:', error);
@@ -56,6 +56,20 @@ export async function createTable(
     const session = await auth();
     if (!session?.user?.id || (session.user as { role?: string }).role !== 'OWNER') {
       return { success: false, message: 'Akses ditolak.' };
+    }
+
+    // Check if table with the same name already exists
+    const existingName = await prisma.table.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (existingName) {
+      return { success: false, message: 'Nama Meja sudah digunakan. Silakan gunakan nama lain.' };
     }
 
     const newTable = await prisma.table.create({
@@ -79,6 +93,7 @@ export async function createTable(
         tableCode: newTable.tableCode,
         status: 'Tersedia',
         isInLayout: newTable.isInLayout,
+        layoutSlot: null,
       },
     };
   } catch (error: any) {
@@ -169,7 +184,7 @@ export async function deleteTable(
  * - Semua meja lain yang tidak ada di array → isInLayout = false
  */
 export async function saveTataLetakMeja(
-  tableIdsInLayout: string[]
+  layoutMap: { id: string; slot: number }[]
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -177,17 +192,17 @@ export async function saveTataLetakMeja(
       return { success: false, message: 'Akses ditolak.' };
     }
 
-    // Set isInLayout = true untuk meja yang ada di denah
-    await prisma.table.updateMany({
-      where: { id: { in: tableIdsInLayout } },
-      data: { isInLayout: true },
-    });
+    const inLayoutIds = layoutMap.map(m => m.id);
 
-    // Set isInLayout = false untuk meja yang TIDAK ada di denah
-    await prisma.table.updateMany({
-      where: { id: { notIn: tableIdsInLayout } },
-      data: { isInLayout: false },
-    });
+    if (inLayoutIds.length > 0) {
+      await prisma.$executeRawUnsafe(`UPDATE tables SET "isInLayout" = false, "layoutSlot" = NULL WHERE id NOT IN (${inLayoutIds.map(id => `'${id}'`).join(',')})`);
+    } else {
+      await prisma.$executeRawUnsafe(`UPDATE tables SET "isInLayout" = false, "layoutSlot" = NULL`);
+    }
+
+    for (const item of layoutMap) {
+      await prisma.$executeRawUnsafe(`UPDATE tables SET "isInLayout" = true, "layoutSlot" = ${item.slot} WHERE id = '${item.id}'`);
+    }
 
     revalidatePath('/owner/meja');
     revalidatePath('/owner/meja/tata-letak');
@@ -197,6 +212,6 @@ export async function saveTataLetakMeja(
     return { success: true, message: 'Tata letak berhasil disimpan.' };
   } catch (error) {
     console.error('saveTataLetakMeja error:', error);
-    return { success: false, message: 'Gagal menyimpan tata letak. Coba lagi.' };
+    return { success: false, message: 'Error: ' + (error as Error).message };
   }
 }

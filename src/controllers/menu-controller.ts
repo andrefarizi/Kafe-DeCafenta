@@ -11,6 +11,7 @@ type MenuListItem = {
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
+  isAvailable?: boolean;
   totalOrdered?: number;
 };
 
@@ -21,6 +22,7 @@ type MenuRow = {
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
+  isAvailable?: boolean;
   totalOrdered?: number | null;
 };
 
@@ -32,6 +34,7 @@ type MenuDetail = {
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
+  isAvailable: boolean;
   reviewCount: number;
 };
 
@@ -56,6 +59,7 @@ const mapMenuRow = (menu: MenuRow): MenuListItem => ({
   avgRating: toNumber(menu.avgRating),
   imageUrl: menu.imageUrl,
   categoryName: menu.categoryName,
+  isAvailable: menu.isAvailable,
   totalOrdered: menu.totalOrdered ? toNumber(menu.totalOrdered) : 0,
 });
 
@@ -76,6 +80,7 @@ export async function getGuestMenuList(): Promise<MenuListItem[]> {
     avgRating: toNumber(menu.avgRating),
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
+    isAvailable: menu.isAvailable,
   }));
 }
 
@@ -96,6 +101,7 @@ export async function getMenuCatalog(): Promise<MenuListItem[]> {
     avgRating: toNumber(menu.avgRating),
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
+    isAvailable: menu.isAvailable,
   }));
 }
 
@@ -121,6 +127,7 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
       avgRating: toNumber(menu.avgRating),
       imageUrl: menu.imageUrl,
       categoryName: menu.category.name,
+      isAvailable: menu.isAvailable,
     }));
   }
 
@@ -145,6 +152,7 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
       avgRating: toNumber(menu.avgRating),
       imageUrl: menu.imageUrl,
       categoryName: menu.category.name,
+      isAvailable: menu.isAvailable,
       totalOrdered: toNumber(item._sum.quantity),
     });
   }
@@ -172,6 +180,7 @@ export async function getRecommendedMenus(limit = 4): Promise<MenuListItem[]> {
     avgRating: toNumber(menu.avgRating),
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
+    isAvailable: menu.isAvailable,
   }));
 }
 
@@ -182,12 +191,13 @@ export async function getPromoMenus(limit = 4): Promise<MenuListItem[]> {
            m.price,
            m."avgRating" AS "avgRating",
            m."imageUrl" AS "imageUrl",
+           m."isAvailable" AS "isAvailable",
            c.name AS "categoryName",
            COALESCE(SUM(oi.quantity), 0) AS "totalOrdered"
     FROM menus m
     JOIN categories c ON c.id = m."categoryId"
     LEFT JOIN order_items oi ON oi."menuId" = m.id
-    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", c.name
+    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", c.name
     ORDER BY "totalOrdered" DESC, m."avgRating" DESC, m.price ASC
     LIMIT ${limit}
   `);
@@ -205,6 +215,7 @@ export async function getCustomerOrderHistoryMenus(
            m.price,
            m."avgRating" AS "avgRating",
            m."imageUrl" AS "imageUrl",
+           m."isAvailable" AS "isAvailable",
            c.name AS "categoryName",
            COALESCE(SUM(oi.quantity), 0) AS "totalOrdered"
     FROM order_items oi
@@ -212,7 +223,7 @@ export async function getCustomerOrderHistoryMenus(
     JOIN menus m ON m.id = oi."menuId"
     JOIN categories c ON c.id = m."categoryId"
     WHERE o."userId" = ${userId}
-    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", c.name
+    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", c.name
     ORDER BY MAX(o."orderedAt") DESC
     LIMIT ${limit}
   `);
@@ -244,6 +255,7 @@ export async function getCustomerCartMenus(
     avgRating: toNumber(item.menu.avgRating),
     imageUrl: item.menu.imageUrl,
     categoryName: item.menu.category.name,
+    isAvailable: item.menu.isAvailable,
     totalOrdered: item.quantity, 
   }));
 }
@@ -273,6 +285,7 @@ export async function getMenuDetail(menuId: string): Promise<MenuDetail | null> 
     avgRating: toNumber(menu.avgRating),
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
+    isAvailable: menu.isAvailable,
     reviewCount: menu._count.reviews,
   };
 }
@@ -365,7 +378,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
 /* ─── OWNER: Update menu ─── */
 export async function updateMenuDetail(
   menuId: string, 
-  data: { name?: string; price?: number; description?: string; }
+  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; }
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -377,6 +390,7 @@ export async function updateMenuDetail(
         ...(data.name !== undefined && { name: data.name }),
         ...(data.price !== undefined && { price: data.price }),
         ...(data.description !== undefined && { description: data.description || null }),
+        ...(data.isAvailable !== undefined && { isAvailable: data.isAvailable }),
       },
     });
 

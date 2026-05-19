@@ -55,6 +55,7 @@ const Beranda = async () => {
     price: Number(item.price),
     avgRating: Number(item.avgRating),
     image: resolveMenuImage(item.name, item.categoryName, item.imageUrl),
+    isAvailable: item.isAvailable ?? true,
   }));
 
   return (
@@ -138,9 +139,13 @@ const Beranda = async () => {
 
             <div className="flex justify-center gap-16 relative z-10 mb-16">
                 {bestSellers.map((item) => (
-                  <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="relative">
+                  <Link 
+                    key={item.id} 
+                    href={item.isAvailable === false ? '#' : `/customer/detail_menu/${item.id}`} 
+                    className={`relative ${item.isAvailable === false ? 'cursor-not-allowed pointer-events-none' : ''}`}
+                  >
 
-                    <div className="bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10">
+                    <div className={`bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10 ${item.isAvailable === false ? 'opacity-80 grayscale' : ''}`}>
                       <div className="absolute -top-3 -right-3 z-20 w-20 h-20 flex items-center justify-center">
                         <img
                           src="/approve.png"
@@ -153,6 +158,11 @@ const Beranda = async () => {
                         className="w-full h-30 object-cover rounded-xl mb-2"
                         alt={item.name}
                       />
+                      {item.isAvailable === false && (
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-md whitespace-nowrap z-30 shadow-md">
+                          TIDAK TERSEDIA
+                        </div>
+                      )}
                       <p className="text-[14px] font-bold text-black mb-1">{item.name}</p>
                       <p className="text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
                     </div>
@@ -178,29 +188,45 @@ const Beranda = async () => {
                 const imageSrc = resolveMenuImage(item.name, item.categoryName, item.imageUrl);
 
                 return (
-                  <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                  <Link 
+                    key={item.id} 
+                    href={item.isAvailable === false ? '#' : `/customer/detail_menu/${item.id}`} 
+                    className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden ${item.isAvailable === false ? 'cursor-not-allowed pointer-events-none opacity-80 grayscale' : 'hover:shadow-md transition-shadow'}`}
+                  >
                     <div className="relative h-44">
                       <img
                         src={imageSrc}
                         className="w-full h-full object-cover"
                         alt={item.name}
                       />
-                    <div className="absolute top-2 right-2 bg-black/50 text-[11px] text-white px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                      {item.isAvailable === false && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
+                          <span className="bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-full">TIDAK TERSEDIA</span>
+                        </div>
+                      )}
+                    <div className="absolute top-2 right-2 bg-black/50 text-[11px] text-white px-1.5 py-0.5 rounded-full flex items-center gap-1 z-30">
                       <Star size={11} className="fill-yellow-400 text-yellow-400" /> {Number(item.avgRating).toFixed(1)}
                     </div>
                     </div>
                     <div className="p-4">
                       <p className="text-sm font-bold text-black">{item.name}</p>
                       <p className="text-xs text-[#8A0000] font-bold mb-3">{formatRupiah(item.price)}</p>
-                      <AddToCartButton
-                        item={{
-                          id: item.id,
-                          name: item.name,
-                          price: Number(item.price),
-                          image: imageSrc,
-                        }}
-                        className="w-full bg-[#8A0000] text-white text-[10px] font-bold py-1.5 rounded-md hover:bg-red-900 transition-colors"
-                      />
+                      {item.isAvailable !== false && (
+                        <AddToCartButton
+                          item={{
+                            id: item.id,
+                            name: item.name,
+                            price: Number(item.price),
+                            image: imageSrc,
+                          }}
+                          className="w-full bg-[#8A0000] text-white text-[10px] font-bold py-1.5 rounded-md hover:bg-red-900 transition-colors"
+                        />
+                      )}
+                      {item.isAvailable === false && (
+                        <div className="w-full bg-gray-400 text-white text-[10px] text-center font-bold py-1.5 rounded-md">
+                          HABIS
+                        </div>
+                      )}
                     </div>
                   </Link>
                 );

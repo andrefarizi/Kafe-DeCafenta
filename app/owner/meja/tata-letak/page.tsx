@@ -28,7 +28,12 @@ export default function TataLetakMejaPage() {
       
       const initialSlots = Array(12).fill(null);
       inLayout.forEach((meja, idx) => {
-        if (idx < 12) initialSlots[idx] = meja;
+        if (meja.layoutSlot !== null && meja.layoutSlot >= 0 && meja.layoutSlot < 12) {
+          initialSlots[meja.layoutSlot] = meja;
+        } else {
+          const empty = initialSlots.findIndex(s => s === null);
+          if (empty !== -1) initialSlots[empty] = meja;
+        }
       });
       
       setDiDenah(initialSlots);
@@ -135,8 +140,11 @@ export default function TataLetakMejaPage() {
   const handleSimpan = () => {
     setErrorMsg('');
     startTransition(async () => {
-      const activeIds = diDenah.filter((m): m is MejaData => m !== null).map((m) => m.id);
-      const result = await saveTataLetakMeja(activeIds);
+      const layoutMap: {id: string, slot: number}[] = [];
+      diDenah.forEach((m, idx) => {
+        if (m) layoutMap.push({ id: m.id, slot: idx });
+      });
+      const result = await saveTataLetakMeja(layoutMap);
       if (result.success) {
         setShowModal(true);
       } else {
