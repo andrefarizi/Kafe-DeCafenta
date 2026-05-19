@@ -13,6 +13,7 @@ import {
 import { getOrderDetail } from "@/src/controllers/order-controller";
 import { addMenuReview } from "@/src/controllers/menu-controller";
 import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 /* ─────────── TYPES ─────────── */
 type OrderDetail = {
@@ -375,7 +376,7 @@ function CashPageInner() {
       await loadOrder(); // <--- Refresh data diam-diam dari DB
       router.refresh(); 
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 

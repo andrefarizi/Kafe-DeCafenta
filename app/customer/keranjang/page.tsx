@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Sidebar from "../components/sidebar";
 import Topbar from "../components/topbar";
 import { Trash2, Edit, ChevronDown, ChevronUp, ShoppingBag, Loader2 } from "lucide-react";
@@ -129,7 +130,7 @@ export default function KeranjangPage() {
   const handleCreateOrder = async () => {
     if (!selectedOrderType) return;
     if (!selectedPayment) {
-      alert("Silakan pilih metode pembayaran terlebih dahulu!");
+      toast.error("Silakan pilih metode pembayaran terlebih dahulu!");
       return;
     }
     setIsCreatingOrder(true);
@@ -139,7 +140,7 @@ export default function KeranjangPage() {
       setCreatedOrderId(result.orderId || null);
       setStep("orderSuccess");
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 

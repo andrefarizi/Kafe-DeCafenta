@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { Toaster } from "react-hot-toast";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -36,6 +37,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-white">
         <Providers>{children}</Providers>
+        <Toaster position="top-center" reverseOrder={false} />
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 // --- ICONS (SVG) ---
 const TrashIcon = () => (
@@ -299,7 +300,7 @@ export default function FormPesananLengkap() {
               </button>
               <button 
                 onClick={() => {
-                  alert(`Pembayaran menggunakan ${selectedPayment} berhasil disimpan!`);
+                  toast.success(`Pembayaran menggunakan ${selectedPayment} berhasil disimpan!`);
                   togglePaymentModal();
                 }}
                 className="px-6 py-2 bg-[#8b0000] text-white rounded-lg font-bold text-sm hover:bg-[#6b0000]"

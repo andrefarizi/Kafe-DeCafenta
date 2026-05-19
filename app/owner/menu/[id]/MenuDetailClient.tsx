@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Pencil, Star, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { updateMenuDetail } from '@/src/controllers/menu-controller';
+import toast from 'react-hot-toast';
 
 const formatRupiah = (value: number) =>
   new Intl.NumberFormat('id-ID', {
@@ -48,7 +49,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     if (res.success) {
       router.refresh();
     } else {
-      alert(res.message);
+      toast.error(res.message);
     }
   };
 

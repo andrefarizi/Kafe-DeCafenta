@@ -5,6 +5,7 @@ import Sidebar from '../components/sidebar';
 import Topbar from '../components/topbar';
 import { Search, Star, Plus, Minus, X, FileText, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 // IMPORT FUNGSI BACKEND
 import { addToCart } from '@/src/controllers/cart-controller';
@@ -96,7 +97,7 @@ export default function MenuClient({ items }: MenuClientProps) {
         setIsAddModalOpen(false);
         setIsSuccessModalOpen(true);
       } else {
-        alert(result.message); // Tampilkan alert jika gagal
+        toast.error(result.message); // Tampilkan alert jika gagal
       }
     });
   };

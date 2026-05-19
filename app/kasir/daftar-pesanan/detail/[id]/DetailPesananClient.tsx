@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { 
   ChevronLeft, 
   ClipboardList, 
@@ -183,7 +184,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
       setShowConfirmModal(false);
       setShowSuccessModal(true);
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 
@@ -197,7 +198,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
       setShowStatusConfirmModal(false); // Tutup popup setelah sukses
       router.refresh(); // Segarkan data UI
     } else {
-      alert(result.message);
+      toast.error(result.message);
     }
   };
 

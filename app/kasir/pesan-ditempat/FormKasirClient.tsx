@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useTransition } from 'react';
 import { createKasirOrder } from '@/src/controllers/kasir-order-controller';
 import { Plus, Minus, X, FileText, Trash2, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 // --- TYPES ---
 type MenuListItem = {
@@ -413,7 +414,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             <button 
               onClick={() => {
                 if (cartItems.length === 0) {
-                  alert("Keranjang masih kosong!");
+                  toast.error("Keranjang masih kosong!");
                   return;
                 }
                 setIsConfirmModalOpen(true);
@@ -660,7 +661,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 disabled={isPending}
                 onClick={() => {
                   if (!selectedPayment) {
-                    alert("Silakan pilih metode pembayaran terlebih dahulu!");
+                    toast.error("Silakan pilih metode pembayaran terlebih dahulu!");
                     return;
                   }
                   
@@ -686,7 +687,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                       setCreatedOrderId(result.orderId || ""); 
                       setIsOrderSuccessOpen(true);
                     } else {
-                      alert(result.message);
+                      toast.error(result.message);
                     }
 
                   });
