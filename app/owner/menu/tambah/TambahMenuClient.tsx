@@ -54,8 +54,8 @@ export default function TambahMenuClient({ categories }: Props) {
       setErrors(prev => ({ ...prev, image: 'Format tidak didukung. Gunakan PNG, JPG, atau SVG.' }));
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, image: 'Ukuran file maksimal 5 MB.' }));
+    if (file.size > 4 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, image: 'Ukuran file maksimal 4 MB (Batas Server).' }));
       return;
     }
     setErrors(prev => { const e = { ...prev }; delete e.image; return e; });
@@ -91,11 +91,16 @@ export default function TambahMenuClient({ categories }: Props) {
     if (imageFile) fd.append('image', imageFile);
 
     startTransition(async () => {
-      const result = await createMenu(fd);
-      if (result.success) {
-        setShowModal(true);
-      } else {
-        setServerError(result.message);
+      try {
+        const result = await createMenu(fd);
+        if (result.success) {
+          setShowModal(true);
+        } else {
+          setServerError(result.message);
+        }
+      } catch (err: any) {
+        console.error("Server Action Error:", err);
+        setServerError(`Gagal mengirim data ke server: ${err.message || 'Unknown error'}. (Catatan: Jika Anda mengunggah gambar, pastikan ukuran file tidak terlalu besar, maksimal ~4MB untuk server Vercel).`);
       }
     });
   };
@@ -132,7 +137,7 @@ export default function TambahMenuClient({ categories }: Props) {
           <div>
             <label className="block text-lg font-extrabold text-black mb-1">
               Gambar Menu
-              <span className="text-gray-400 text-sm font-normal ml-2">(Opsional, maks 5 MB)</span>
+              <span className="text-gray-400 text-sm font-normal ml-2">(Opsional, maks 4 MB)</span>
             </label>
             <p className="text-xs text-gray-500 mb-3">Format yang didukung: PNG, JPG, SVG, WEBP</p>
 
@@ -159,7 +164,7 @@ export default function TambahMenuClient({ categories }: Props) {
                 <>
                   <ImagePlus size={36} className="text-gray-400 mb-3" />
                   <h3 className="text-base font-extrabold text-black mb-1 text-center">Tarik gambar ke sini atau klik untuk memilih</h3>
-                  <p className="text-xs text-gray-400 text-center">PNG, JPG, SVG, WEBP hingga 5 MB</p>
+                  <p className="text-xs text-gray-400 text-center">PNG, JPG, SVG, WEBP hingga 4 MB</p>
                 </>
               )}
             </div>
