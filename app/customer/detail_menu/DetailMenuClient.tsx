@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { addToCart } from '@/src/controllers/cart-controller';
 // IMPORT FUNGSI BARUNYA DISINI:
 import { addMenuReview } from '@/src/controllers/menu-controller'; 
+import toast from 'react-hot-toast';
 
 type MenuDetailProps = {
   id: string;
@@ -99,7 +100,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
         setIsModalOpen(false);
         setIsSuccessOpen(true);
       } else {
-        alert(result.message); 
+        toast.error(result.message); 
       }
     });
   };

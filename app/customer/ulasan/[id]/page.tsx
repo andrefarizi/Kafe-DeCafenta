@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { getMenuWithReviews } from '@/src/controllers/menu-controller';
+import toast from 'react-hot-toast';
 
 // Type data untuk ulasan
 type ReviewData = {
@@ -79,7 +80,7 @@ export default function ReviewPage() {
       
       if (data) {
         if ('error' in data) {
-          alert(`EROR DATABASE: ${data.error}`);
+          toast.error(`EROR DATABASE: ${data.error}`);
         } else {
           setMenuInfo({
             name: data.menuName,

@@ -4,6 +4,7 @@ import React, { useState, useTransition } from 'react';
 import { Plus, Minus, X, FileText, Loader2 } from 'lucide-react';
 import { addToCart } from '@/src/controllers/cart-controller';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 type AddToCartItem = {
   id: string; 
@@ -50,7 +51,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
         setIsAddModalOpen(false);
         setIsSuccessOpen(true); // Popup berhasil muncul dengan aman!
       } else {
-        alert(result.message);
+        toast.error(result.message);
       }
     });
   };
