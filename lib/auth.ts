@@ -1,9 +1,17 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+
+class CustomAuthError extends CredentialsSignin {
+  code: string;
+  constructor(code: string) {
+    super();
+    this.code = code;
+  }
+}
 
 const nextAuth = NextAuth({
   // Tidak menggunakan PrismaAdapter karena @auth/prisma-adapter

@@ -200,7 +200,7 @@ export default function PesananPage() {
         <div className="hidden md:block w-px bg-gray-500/40 my-12"></div>
 
         {/* Kolom Kanan: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center relative">
+        <div className="w-full md:w-1/2 p-8 pt-24 md:p-14 flex flex-col justify-center relative">
 
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-6">

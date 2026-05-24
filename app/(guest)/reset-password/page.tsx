@@ -80,7 +80,7 @@ function ResetPasswordForm() {
         </div>
 
         {/* Kolom Kanan: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center relative bg-[#EBE4E2] z-10">
+        <div className="w-full md:w-1/2 p-8 pt-24 md:p-14 flex flex-col justify-center relative bg-[#EBE4E2] z-10">
           
           {/* Logo & Header */}
           <div className="flex flex-col items-center mb-6">

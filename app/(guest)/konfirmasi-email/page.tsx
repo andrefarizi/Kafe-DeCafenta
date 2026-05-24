@@ -43,7 +43,7 @@ export default function ForgotPassword() {
         </Link>
 
         {/* Kolom Kiri: Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center items-center">
+        <div className="w-full md:w-1/2 p-8 pt-24 md:p-14 flex flex-col justify-center items-center">
           <div className="w-full max-w-sm mt-8">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-6">

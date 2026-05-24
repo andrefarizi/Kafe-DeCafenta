@@ -249,6 +249,7 @@ export default function FormPesananLengkap() {
                 ))}
               </div>
             </div>
+          </div>
 
             {/* Payment Method Selection */}
             <div className="mb-8">
