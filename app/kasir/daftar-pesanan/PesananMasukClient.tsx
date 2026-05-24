@@ -121,14 +121,14 @@ export default function PesananMasukClient({
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-4 mb-8">
+      <div className="flex overflow-x-auto gap-4 mb-8 pb-2 w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id; 
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
+              className={`flex-shrink-0 whitespace-nowrap flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
                 isActive 
                   ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white' 
                   : 'bg-white border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50'
@@ -146,15 +146,15 @@ export default function PesananMasukClient({
       </div>
 
       {/* Table Section */}
-      <div className="flex-1 w-full mb-4">
-        <div className="overflow-x-auto">
+      <div className="flex-1 w-full bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
+        <div className="overflow-x-auto pb-4">
           <table className="w-full min-w-[800px] border-collapse">
             <thead>
               <tr className="bg-[#e9b7b7fb] text-left">
-                <th className="py-4 px-4 rounded-l-lg font-bold text-black w-1/3 text-sm">Nama Pelanggan</th>
-                <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm">Jumlah Pesanan</th>
-                <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm">Harga</th>
-                <th className="py-4 px-4 rounded-r-lg font-bold text-black text-center w-auto text-sm">Status</th>
+                <th className="py-4 px-4 rounded-l-lg font-bold text-black w-1/3 text-sm whitespace-nowrap">Nama Pelanggan</th>
+                <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm whitespace-nowrap">Jumlah Pesanan</th>
+                <th className="py-4 px-4 font-bold text-black text-center w-1/5 text-sm whitespace-nowrap">Harga</th>
+                <th className="py-4 px-4 rounded-r-lg font-bold text-black text-center w-auto text-sm whitespace-nowrap">Status</th>
               </tr>
             </thead>
             <tbody>

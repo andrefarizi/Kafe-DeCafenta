@@ -99,6 +99,8 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
       if (result.success) {
         setIsModalOpen(false);
         setIsSuccessOpen(true);
+        // Trigger event untuk memperbarui badge keranjang
+        window.dispatchEvent(new Event("cart-updated"));
       } else {
         toast.error(result.message); 
       }

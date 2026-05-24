@@ -5,7 +5,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const nextAuth = NextAuth({
   // Tidak menggunakan PrismaAdapter karena @auth/prisma-adapter
   // belum mendukung Prisma v7. Session disimpan via JWT (cookie).
 
@@ -30,7 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (!user || !user.password) {
-          throw new Error("Email atau password salah.");
+          throw new CustomAuthError("InvalidCredentials");
         }
 
         // Prevent inactive staff from logging in
@@ -38,7 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.role === "KASIR" &&
           user.staffDetail?.workStatus === "non_aktif"
         ) {
-          throw new Error("Akun Anda telah dinonaktifkan oleh owner.");
+          throw new CustomAuthError("InactiveAccount");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -47,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!isPasswordValid) {
-          throw new Error("Email atau password salah.");
+          throw new CustomAuthError("InvalidCredentials");
         }
 
         return {
@@ -152,3 +152,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   secret: process.env.AUTH_SECRET,
 });
+
+export const handlers = nextAuth.handlers;
+export const signIn = nextAuth.signIn;
+export const signOut = nextAuth.signOut;
+export const auth = nextAuth.auth;

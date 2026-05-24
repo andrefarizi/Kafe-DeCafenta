@@ -51,7 +51,7 @@ export default function FormPesananLengkap() {
   const togglePaymentModal = () => setIsPaymentModalOpen(!isPaymentModalOpen);
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans pb-10">
+    <div className="min-h-screen bg-white text-black font-sans pb-24 md:pb-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
         
         {/* Header Section */}
@@ -102,7 +102,9 @@ export default function FormPesananLengkap() {
             <h2 className="text-lg font-black mb-2">Daftar Pesanan</h2>
             <div className="border-t-2 border-black w-full mb-4"></div>
 
-            {/* Table Header */}
+            {/* Table Header + Rows — scrollable on mobile */}
+            <div className="overflow-x-auto">
+            <div className="min-w-[420px]">
             <div className="grid grid-cols-12 pb-3 border-b border-black text-xs font-bold">
               <div className="col-span-1 text-center">No</div>
               <div className="col-span-4">Produk</div>
@@ -140,6 +142,8 @@ export default function FormPesananLengkap() {
                 </div>
               </div>
             ))}
+            </div>
+            </div>
 
             {/* Subtotal & Total */}
             <div className="mt-4 space-y-2">
@@ -228,7 +232,8 @@ export default function FormPesananLengkap() {
 
             {/* Order Summary Table */}
             <div className="mb-6">
-              <div className="bg-[#fce4e4] rounded-t-lg grid grid-cols-12 py-2 px-3 text-sm font-bold">
+            <div className="overflow-x-auto">
+              <div className="bg-[#fce4e4] rounded-t-lg grid grid-cols-12 py-2 px-3 text-sm font-bold min-w-[320px]">
                 <div className="col-span-6">Produk</div>
                 <div className="col-span-2 text-center">Jumlah</div>
                 <div className="col-span-4 text-right">Harga</div>

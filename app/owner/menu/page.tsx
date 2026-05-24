@@ -38,7 +38,7 @@ export default async function ManajemenMenu() {
   }));
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-7xl mx-auto pb-24 md:pb-8">
       
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">

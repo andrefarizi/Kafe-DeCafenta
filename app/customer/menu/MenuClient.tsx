@@ -96,6 +96,8 @@ export default function MenuClient({ items }: MenuClientProps) {
       if (result.success) {
         setIsAddModalOpen(false);
         setIsSuccessModalOpen(true);
+        // Trigger event untuk memperbarui badge keranjang
+        window.dispatchEvent(new Event("cart-updated"));
       } else {
         toast.error(result.message); // Tampilkan alert jika gagal
       }
@@ -149,7 +151,7 @@ export default function MenuClient({ items }: MenuClientProps) {
           <Topbar />
         </div>
 
-        <div className="p-6 lg:p-8 pt-4">
+        <div className="p-6 lg:p-8 pt-4 pb-24 md:pb-8">
           <h1 className="text-2xl font-extrabold text-black tracking-tight mb-6">Menu De Cafenta</h1>
 
           <div className="relative mb-6">

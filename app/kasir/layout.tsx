@@ -30,7 +30,7 @@ export default async function KasirLayout({ children }: { children: React.ReactN
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <TopBar />
-        <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">
+        <main className="flex-1 bg-gray-50 p-4 md:p-8 overflow-y-auto pb-20 md:pb-8">
           {children}
         </main>
       </div>

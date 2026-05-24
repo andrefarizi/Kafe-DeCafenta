@@ -68,7 +68,7 @@ export default async function DetailMenu({ params }: PageProps) {
   const averageRating = Number.isFinite(menu.avgRating) ? menu.avgRating.toFixed(1) : '0.0';
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto pb-24 md:pb-8">
       <div className="flex items-center mb-8">
         <Link href="/owner/menu" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
           <ChevronLeft size={20} className="text-[#8B1A1A]" />

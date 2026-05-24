@@ -63,7 +63,7 @@ export default async function DashboardOwner(props: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-white p-8 font-sans text-gray-900">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 pb-24 md:pb-8">
       
       {/* Breadcrumb */}
       <div className="flex items-center space-x-2 text-red-700 font-medium mb-8">
@@ -116,29 +116,31 @@ export default async function DashboardOwner(props: Props) {
             <FilterMonthDropdown />
           </div>
 
-          {/* Chart Wrapper */}
-          <div className="flex w-full mt-4">
-            {/* Labels Column */}
-            <div className="w-20 shrink-0 flex flex-col space-y-4 py-4">
-              {menuTerfavorit.map((menu, index) => (
-                <div key={`label-${index}`} className="h-10 flex items-center">
-                  <span className="text-sm font-medium text-black">{menu.name}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Bars Column */}
-            <div className="flex-1 border-l-[4px] border-black flex flex-col space-y-4 py-4">
-              {menuTerfavorit.map((menu, index) => (
-                <div key={`bar-${index}`} className="h-10 flex items-center">
-                  <div 
-                    className="bg-[#FFC700] h-full rounded-r-md flex items-center justify-end px-4"
-                    style={{ width: menu.width }}
-                  >
-                    <span className="text-white font-bold text-sm">{menu.porsi} Porsi</span>
+          {/* Chart Wrapper with Horizontal Scroll for Mobile */}
+          <div className="w-full mt-4 overflow-x-auto pb-4">
+            <div className="flex min-w-[500px]">
+              {/* Labels Column */}
+              <div className="w-20 shrink-0 flex flex-col space-y-4 py-4">
+                {menuTerfavorit.map((menu, index) => (
+                  <div key={`label-${index}`} className="h-10 flex items-center">
+                    <span className="text-sm font-medium text-black">{menu.name}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Bars Column */}
+              <div className="flex-1 border-l-[4px] border-black flex flex-col space-y-4 py-4">
+                {menuTerfavorit.map((menu, index) => (
+                  <div key={`bar-${index}`} className="h-10 flex items-center">
+                    <div 
+                      className="bg-[#FFC700] h-full rounded-r-md flex items-center justify-end px-4"
+                      style={{ width: menu.width }}
+                    >
+                      <span className="text-white font-bold text-sm whitespace-nowrap">{menu.porsi} Porsi</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

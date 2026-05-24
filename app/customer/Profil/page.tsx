@@ -44,18 +44,18 @@ export default async function ProfilPage() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-[48px] pt-[30px]">
+      <main className="flex-1 px-4 sm:px-8 md:px-12 pt-6 md:pt-8 pb-28 md:pb-8">
         {/* HEADER */}
         <div className="flex items-center gap-5">
           <BackButton />
 
-          <h1 className="text-[40px] font-semibold text-black">Profil</h1>
+          <h1 className="text-2xl md:text-[40px] font-semibold text-black">Profil</h1>
         </div>
 
         {/* CARD */}
-        <section className="mx-auto mt-[42px] w-[720px] rounded-[30px] bg-[#f5e2d9]/80 pb-[40px] shadow-md">
+        <section className="mx-auto mt-6 md:mt-[42px] w-full max-w-[720px] rounded-[30px] bg-[#f5e2d9]/80 pb-8 md:pb-[40px] shadow-md">
           <div className="flex flex-col items-center pt-[50px]">
-            
+
             {/* FOTO */}
             <div className="flex h-[180px] w-[180px] items-center justify-center rounded-full border-[3px] border-[#9b0000] bg-white">
               <div className="h-[155px] w-[155px] overflow-hidden rounded-full flex items-center justify-center bg-gray-200">
@@ -76,7 +76,7 @@ export default async function ProfilPage() {
             </div>
 
             {/* FORM */}
-            <div className="mt-[22px] flex flex-col gap-[16px]">
+            <div className="mt-[22px] flex flex-col gap-[16px] w-full px-4 md:px-8 max-w-[640px]">
               <InfoField
                 icon={<User size={22} color="white" fill="white" />}
                 title="Nama"
@@ -115,8 +115,8 @@ function InfoField({
   value: string | null;
 }) {
   return (
-    <div className="flex h-[52px] w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white">
-      
+    <div className="flex h-[52px] w-full items-center rounded-full border-[1.5px] border-[#ffc400] bg-white">
+
       {/* ICON */}
       <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#ffc400]">
         {icon}
@@ -125,7 +125,7 @@ function InfoField({
       {/* TEXT */}
       <div className="ml-[10px] leading-tight">
         <div className="text-[14px] font-semibold text-black">
-          {title} 
+          {title}
         </div>
         <div className="mt-[3px] text-[12px] font-normal text-[#555]">
           {value}

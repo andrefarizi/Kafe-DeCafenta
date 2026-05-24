@@ -65,31 +65,31 @@ const Beranda = async () => {
       <main className="flex-1 flex flex-col h-screen overflow-hidden text-left">
         <Topbar />
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-8 pb-24 md:pb-8">
 
           {/* Banner Selamat Datang */}
-          <div className="relative w-full bg-[#DE2014] rounded-[1.5rem] p-10 flex justify-between items-center text-white overflow-hidden shadow-xl min-h-[240px]">
+          <div className="relative w-full bg-[#DE2014] rounded-[1.5rem] p-6 md:p-10 flex justify-between items-center text-white overflow-hidden shadow-xl min-h-[160px] md:min-h-[240px]">
             <div className="z-10 space-y-3">
               <div className="flex items-center gap-2.5">
                 <img src="/Group 2 1.png" alt="De Cafenta" className="h-10 w-auto object-contain" />
                 <span className="text-xs font-black tracking-[0.15em] text-white uppercase">DE CAFENTA</span>
               </div>
 
-              <h1 className="text-3xl font-extrabold leading-tight tracking-tight">
+              <h1 className="text-xl md:text-3xl font-extrabold leading-tight tracking-tight">
                 Selamat Datang Pelanggan<br />
                 <span className="text-[#FFD700] drop-shadow-sm">DE CAFENTA</span> Tersayang
               </h1>
 
-              <p className="text-sm font-medium opacity-90 max-w-sm">
+              <p className="text-xs md:text-sm font-medium opacity-90 max-w-sm">
                 Mulailah harimu dengan secangkir kopi hari ini
               </p>
             </div>
 
-            <div className="z-10 pr-4">
+            <div className="z-10 pr-2 md:pr-4">
               <img
                 src="/IconKopi.png"
                 alt="Coffee"
-                className="h-48 w-auto drop-shadow-[0_15px_15px_rgba(0,0,0,0.3)]"
+                className="h-28 md:h-48 w-auto drop-shadow-[0_15px_15px_rgba(0,0,0,0.3)]"
               />
             </div>
 
@@ -100,10 +100,10 @@ const Beranda = async () => {
 
           {/* Heading Section */}
           <div className="text-center my-6">
-            <h1 className="text-4xl font-black text-[#8A0000]">
+            <h1 className="text-2xl md:text-4xl font-black text-[#8A0000]">
               Halo <span className="text-[#FFCC00]">DE CAFENTA MANIA</span>
             </h1>
-            <p className="text-2xl text-[#8A0000] font-bold">Pilihlah Menu Terbaik Anda</p>
+            <p className="text-lg md:text-2xl text-[#8A0000] font-bold">Pilihlah Menu Terbaik Anda</p>
           </div>
 
           {/* Promo Spesial Section */}
@@ -134,19 +134,19 @@ const Beranda = async () => {
                 className="w-full h-full object-left-bottom object-contain"
               />
             </div>
-            <h3 className="text-[33px] text-[#8A0000] font-black text-lg uppercase tracking-tight">BEST SELLER</h3>
-            <p className="text-[20px] text-gray-600 mb-6">Menu yang paling populer untuk anda</p>
+            <h3 className="text-2xl md:text-[33px] text-[#8A0000] font-black uppercase tracking-tight">BEST SELLER</h3>
+            <p className="text-base md:text-[20px] text-gray-600 mb-6">Menu yang paling populer untuk anda</p>
 
-            <div className="flex justify-center gap-16 relative z-10 mb-16">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-16 relative z-10 mb-16">
                 {bestSellers.map((item) => (
                   <Link 
                     key={item.id} 
                     href={item.isAvailable === false ? '#' : `/customer/detail_menu/${item.id}`} 
-                    className={`relative ${item.isAvailable === false ? 'cursor-not-allowed pointer-events-none' : ''}`}
+                    className={`relative w-[45%] md:w-auto ${item.isAvailable === false ? 'cursor-not-allowed pointer-events-none' : ''}`}
                   >
 
-                    <div className={`bg-white rounded-2xl p-4 shadow-md w-50 h-50 relative z-10 ${item.isAvailable === false ? 'opacity-80 grayscale' : ''}`}>
-                      <div className="absolute -top-3 -right-3 z-20 w-20 h-20 flex items-center justify-center">
+                    <div className={`bg-white rounded-2xl p-3 md:p-4 shadow-md w-full md:w-50 h-auto md:h-50 relative z-10 ${item.isAvailable === false ? 'opacity-80 grayscale' : ''}`}>
+                      <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 z-20 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center">
                         <img
                           src="/approve.png"
                           alt="Best Seller Icon"
@@ -155,19 +155,19 @@ const Beranda = async () => {
                       </div>
                       <img
                         src={resolveMenuImage(item.name, item.categoryName, item.imageUrl)}
-                        className="w-full h-30 object-cover rounded-xl mb-2"
+                        className="w-full h-24 md:h-30 object-cover rounded-xl mb-2"
                         alt={item.name}
                       />
                       {item.isAvailable === false && (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-md whitespace-nowrap z-30 shadow-md">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white px-2 py-1 md:px-3 text-[9px] md:text-[11px] font-black rounded-md whitespace-nowrap z-30 shadow-md">
                           TIDAK TERSEDIA
                         </div>
                       )}
-                      <p className="text-[14px] font-bold text-black mb-1">{item.name}</p>
-                      <p className="text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
+                      <p className="text-[12px] md:text-[14px] font-bold text-black mb-1 line-clamp-1">{item.name}</p>
+                      <p className="text-[11px] md:text-xs font-bold text-[#8A0000]">{formatRupiah(item.price)}</p>
                     </div>
 
-                    <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[120%] h-auto z-0 pointer-events-none">
+                    <div className="hidden md:block absolute -bottom-12 left-1/2 -translate-x-1/2 w-[120%] h-auto z-0 pointer-events-none">
                       <img
                         src="/Group 42.png"
                         alt="Plate Decoration"
@@ -183,7 +183,7 @@ const Beranda = async () => {
           {/* Rekomendasi Menu */}
           <section className="mt-8">
             <h3 className="text-[20px] font-bold text-black mb-4">Rekomendasi Menu</h3>
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
               {rekomendedMenus.map((item) => {
                 const imageSrc = resolveMenuImage(item.name, item.categoryName, item.imageUrl);
 
@@ -245,13 +245,13 @@ const Beranda = async () => {
             {keranjangMenus.length === 0 ? (
               <p className="text-sm font-bold text-gray-600">Anda belum memesan menu apapun.</p>
             ) : (
-              <div className="grid grid-cols-5 gap-4">
+              <div className="flex overflow-x-auto gap-3 md:gap-4 pb-4 md:grid md:grid-cols-5 scrollbar-hide">
                 {keranjangMenus.map((item) => {
                   const imageSrc = resolveMenuImage(item.name, item.categoryName, item.imageUrl);
 
                   return (
-                    <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="relative h-32">
+                    <Link key={item.id} href={`/customer/detail_menu/${item.id}`} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow min-w-[140px] md:min-w-0">
+                      <div className="relative h-28 md:h-32">
                         <img
                           src={imageSrc}
                           className="w-full h-full object-cover"

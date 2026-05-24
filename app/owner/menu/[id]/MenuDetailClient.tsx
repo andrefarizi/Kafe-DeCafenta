@@ -28,11 +28,13 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState<'name' | 'price' | 'description' | null>(null);
   const [editValue, setEditValue] = useState<string>('');
+  const [editError, setEditError] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleEdit = (field: 'name' | 'price' | 'description', currentValue: string | number | null) => {
     setIsEditing(field);
     setEditValue(currentValue?.toString() || '');
+    setEditError('');
   };
 
   const handleSave = async () => {
@@ -91,33 +93,58 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
           </h3>
           
           {isEditing === 'description' ? (
-            <textarea
-              className="w-full border-2 border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#8B1A1A] font-medium"
-              rows={4}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              placeholder="Masukkan deskripsi..."
-            />
+              <textarea
+                className={`w-full border-2 rounded-xl p-3 focus:outline-none font-medium ${editError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+                rows={4}
+                value={editValue}
+                onChange={(e) => {
+                  setEditValue(e.target.value);
+                  setEditError(e.target.value.length > 300 ? 'Deskripsi maksimal 300 karakter.' : '');
+                }}
+                placeholder="Masukkan deskripsi..."
+              />
           ) : isEditing === 'price' ? (
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">Rp</span>
-              <input
-                type="number"
-                className="w-full border-2 border-gray-300 rounded-xl p-3 pl-12 focus:outline-none focus:border-[#8B1A1A] font-medium"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                placeholder="0"
-              />
+                <input
+                  type="text"
+                  className={`w-full border-2 rounded-xl p-3 pl-12 focus:outline-none font-medium ${editError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+                  value={editValue}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    if (Number(raw) <= 0) {
+                      setEditError('Harga harus lebih dari 0.');
+                    } else if (Number(raw) > 10000000) {
+                      setEditError('Harga maksimal 10.000.000.');
+                    } else {
+                      setEditError('');
+                    }
+                    setEditValue(raw);
+                  }}
+                  placeholder="0"
+                />
             </div>
           ) : (
-            <input
-              type="text"
-              className="w-full border-2 border-gray-300 rounded-xl p-3 focus:outline-none focus:border-[#8B1A1A] font-medium"
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              placeholder="Nama Menu"
-            />
+              <input
+                type="text"
+                className={`w-full border-2 rounded-xl p-3 focus:outline-none font-medium ${editError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+                value={editValue}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!/^[a-zA-Z0-9àáâãäåæçèéêëìíîïðñòóôõöùúûüýÿĀāĂăĄąĆćĊċČčĎďĒēĔĕĖėĘęĚěĞğĠġĢģĤĥĪīĬĭĮįİıĶķĹĺĻļĽľŁłŃńŅņŇňŌōŎŏŐőŔŕŖŗŘřŚśŞşŠšŢţŤťŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽž \-]*$/.test(val)) {
+                    setEditError('Nama tidak boleh mengandung simbol khusus.');
+                    const filtered = val.replace(/[^a-zA-Z0-9àáâãäåæçèéêëìíîïðñòóôõöùúûüýÿ \-]/g, '');
+                    setEditValue(filtered);
+                  } else {
+                    setEditError('');
+                    setEditValue(val);
+                  }
+                }}
+                placeholder="Nama Menu"
+              />
           )}
+
+          {editError && <p className="text-red-500 text-xs mt-2 font-bold">{editError}</p>}
 
           <div className="flex justify-end space-x-3 mt-6">
             <button
@@ -129,8 +156,8 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
             </button>
             <button
               onClick={handleSave}
-              disabled={isSaving}
-              className="px-5 py-2.5 rounded-xl font-bold text-white bg-[#8B1A1A] hover:bg-red-900 transition-colors flex items-center space-x-2"
+              disabled={isSaving || !!editError || !editValue.trim()}
+              className="px-5 py-2.5 rounded-xl font-bold text-white bg-[#8B1A1A] hover:bg-red-900 transition-colors flex items-center space-x-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <><Loader2 size={16} className="animate-spin" /> <span>Menyimpan</span></>
@@ -148,33 +175,24 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     <>
       <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 mb-8 bg-white shadow-sm relative">
         <div className="flex flex-col md:flex-row gap-8 mb-8">
-          <div className="relative w-full md:w-1/2 aspect-square max-w-sm flex items-center justify-center mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border border-gray-200 shadow-sm group">
+          <div className="relative w-full md:w-1/2 aspect-[4/3] md:max-w-md flex items-center justify-center mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border-2 border-gray-100 shadow-sm group">
             <img
               src={menu.imageUrl}
               alt={menu.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            {/* 
-              Catatan: Edit Gambar seringkali melibatkan upload file kompleks, 
-              untuk sekarang tombol ini akan kita buat untuk visual UI atau 
-              nanti diintegrasikan dengan fitur upload terpisah.
-            */}
-            {/* <button className="absolute bottom-4 right-4 flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-4 py-2 rounded-xl transition-colors shadow-sm">
-              <Pencil size={14} fill="currentColor" className="text-white" />
-              <span className="text-xs font-bold">Edit Gambar</span>
-            </button> */}
           </div>
 
           <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="relative group cursor-pointer inline-block w-fit" onClick={() => handleEdit('name', menu.name)}>
-                <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1">
-                  <Pencil size={12} strokeWidth={3} />
-                  <span className="text-[11px] font-extrabold">Edit Nama</span>
-                </button>
-                <h2 className="text-3xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors">{menu.name}</h2>
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+              <div className="flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors flex items-center gap-3">
+                  {menu.name}
+                  <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">Klik pada nama untuk mengedit</p>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-row md:flex-col gap-2 shrink-0">
                 <button
                   disabled={isSaving}
                   onClick={handleTogglePromo}
@@ -200,40 +218,32 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
               </div>
             </div>
 
-            <div className="mb-10 relative group cursor-pointer inline-block w-fit" onClick={() => handleEdit('price', menu.price)}>
-              <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-1">
-                <Pencil size={12} strokeWidth={3} />
-                <span className="text-[11px] font-extrabold">Edit Harga</span>
-              </button>
-              <p className="text-5xl font-black text-black group-hover:text-[#8B1A1A] transition-colors">{formatRupiah(menu.price)}</p>
+            <div className="mb-8 group cursor-pointer" onClick={() => handleEdit('price', menu.price)}>
+              <p className="text-4xl md:text-5xl font-black text-[#8B1A1A] group-hover:text-red-900 transition-colors flex items-center gap-3">
+                {formatRupiah(menu.price)}
+                <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Klik pada harga untuk mengedit</p>
             </div>
 
-            <div className="bg-[#8B1A1A] rounded-3xl p-2.5 w-60 shadow-sm mt-auto">
-              <div className="bg-white text-[#8B1A1A] text-center font-extrabold text-lg py-2 rounded-2xl mb-2">
-                Rating
-              </div>
-              <div className="flex justify-center items-center space-x-3 pb-1 pt-1">
-                <span className="text-white font-black text-2xl">{menu.avgRating}</span>
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={18} fill="#FFC700" className="text-[#FFC700]" />
-                  ))}
-                </div>
+            <div className="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 mb-auto self-start">
+              <span className="text-gray-700 font-extrabold text-lg">Rating</span>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="flex items-center gap-1.5">
+                <Star size={20} fill="#FFC700" className="text-[#FFC700]" />
+                <span className="text-black font-black text-xl">{menu.avgRating}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-6 group cursor-pointer" onClick={() => handleEdit('description', menu.description)}>
-          <button className="flex items-center space-x-1.5 text-[#8B1A1A] hover:underline mb-2">
-            <Pencil size={12} strokeWidth={3} />
-            <span className="text-[11px] font-extrabold">Edit Deskripsi</span>
-          </button>
-          <h3 className="text-lg font-extrabold text-black mb-3">
-            Deskripsi Menu
-          </h3>
-          <p className="text-xs text-gray-700 leading-relaxed font-medium max-w-3xl group-hover:text-black transition-colors">
-            {menu.description?.trim() || 'Deskripsi menu belum tersedia. Klik untuk menambahkan deskripsi.'}
+        <div className="border-t border-gray-100 pt-6 group cursor-pointer" onClick={() => handleEdit('description', menu.description)}>
+          <div className="flex items-center gap-3 mb-3">
+            <h3 className="text-xl font-extrabold text-black">Deskripsi Menu</h3>
+            <Pencil size={18} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
+          </div>
+          <p className="text-sm md:text-base text-gray-600 leading-relaxed font-medium group-hover:text-black transition-colors">
+            {menu.description?.trim() || 'Deskripsi menu belum tersedia. Klik area ini untuk menambahkan deskripsi.'}
           </p>
         </div>
       </div>

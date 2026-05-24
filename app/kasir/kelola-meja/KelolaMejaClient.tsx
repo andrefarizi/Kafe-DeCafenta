@@ -128,18 +128,18 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-black font-sans p-6 pb-16">
+    <div className="min-h-screen bg-[#f8fafc] text-black font-sans p-4 md:p-6 pb-24 md:pb-16">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-black mb-8">Manajemen Meja</h1>
+        <h1 className="text-2xl md:text-3xl font-black mb-6 md:mb-8">Manajemen Meja</h1>
 
         {/* Master Container dengan Garis Merah (Dinding Luar) */}
         <div className="border-[3px] border-[#8b0000] rounded-2xl relative bg-white mt-4 pb-16 pt-8 px-8">
 
-          {/* Garis Pemisah Vertikal dari atas */}
-          <div className="absolute top-0 left-[52%] w-[3px] bg-[#8b0000] h-[42%]"></div>
+          {/* Garis Pemisah Vertikal dari atas (hanya desktop) */}
+          <div className="hidden md:block absolute top-0 left-[52%] w-[3px] bg-[#8b0000] h-[42%]"></div>
 
-          {/* Garis Pemisah Horizontal dari kanan */}
-          <div className="absolute top-[42%] right-0 h-[4px] bg-[#8b0000] w-[35%]"></div>
+          {/* Garis Pemisah Horizontal dari kanan (hanya desktop) */}
+          <div className="hidden md:block absolute top-[42%] right-0 h-[4px] bg-[#8b0000] w-[35%]"></div>
 
           {/* --- LABEL DENAH --- */}
           <div className="absolute top-0 left-0 bg-[#ffc107] text-[15px] font-black px-10 py-3 rounded-tl-[13px] rounded-br-2xl z-10">
@@ -154,10 +154,10 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
           )}
 
           {/* Container Denah Ruangan */}
-          <div className="flex flex-col md:flex-row gap-16 relative mt-12 z-10">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-16 relative mt-12 z-10">
 
             {/* Bagian Kiri (Meja 1–6) */}
-            <div className="flex-[1.1] grid grid-cols-2 gap-6 pb-2">
+            <div className="flex-[1.1] grid grid-cols-2 gap-4 md:gap-6 pb-2">
               {mejaLeft.map((meja, idx) => (
                 <RenderCard
                   key={meja ? meja.id : `empty-l-${idx}`}
@@ -169,10 +169,10 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
             </div>
 
             {/* Bagian Kanan */}
-            <div className="flex-1 flex flex-col pb-2">
+            <div className="flex-1 flex flex-col pb-2 border-t-[3px] border-[#8b0000] md:border-none pt-6 md:pt-0">
 
               {/* Kanan Atas (MJ11 & MJ12) */}
-              <div className="grid grid-cols-2 gap-6 mb-20">
+              <div className="grid grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-20">
                 {mejaTopRight.map((meja, idx) => (
                   <RenderCard
                     key={meja ? meja.id : `empty-tr-${idx}`}
@@ -184,7 +184,7 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
               </div>
 
               {/* Kanan Bawah (MJ07–MJ10) */}
-              <div className="grid grid-cols-2 gap-6 mt-20">
+              <div className="grid grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-20">
                 {mejaBottomRight.map((meja, idx) => (
                   <RenderCard
                     key={meja ? meja.id : `empty-br-${idx}`}

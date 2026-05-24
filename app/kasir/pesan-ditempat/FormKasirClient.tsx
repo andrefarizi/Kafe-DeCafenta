@@ -89,6 +89,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   // State Form & Keranjang Lokal Kasir
   const [cartItems, setCartItems] = useState<KasirCartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
+  const [nameError, setNameError] = useState("");
   const [orderType, setOrderType] = useState("dine_in_kasir");
   
   // State Kode Pesanan Langsung di UI
@@ -267,7 +268,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
   };
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans pb-10">
+    <div className="min-h-screen bg-white text-black font-sans pb-10 md:pb-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
         
         {/* Header Section */}
@@ -297,10 +298,19 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               <input 
                 type="text" 
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/[^a-zA-Z\s']/.test(val)) {
+                    setNameError('Nama pelanggan hanya boleh berisi huruf.');
+                  } else {
+                    setNameError('');
+                  }
+                  setCustomerName(val);
+                }}
                 placeholder="contoh: Andre Ganteng" 
-                className="w-full bg-white border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#8b0000] placeholder-gray-400"
+                className={`w-full bg-white border rounded-md p-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#8b0000] placeholder-gray-400 ${nameError ? 'border-red-500' : 'border-gray-300'}`}
               />
+              {nameError && <p className="text-red-500 text-xs font-bold mt-1">{nameError}</p>}
             </div>
 
             <div>
@@ -326,7 +336,8 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             <h2 className="text-xl font-black mb-2">Daftar Pesanan</h2>
             <div className="border-t-[1.5px] border-black w-full mb-4"></div>
 
-            <div className="grid grid-cols-12 pb-3 text-[13px] font-bold">
+            {/* Header Tabel - Desktop Only */}
+            <div className="hidden md:grid grid-cols-12 pb-3 text-[13px] font-bold">
               <div className="col-span-1 text-center">No</div>
               <div className="col-span-4 pl-2">Produk</div>
               <div className="col-span-3 text-center">Harga</div>
@@ -340,37 +351,73 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               </div>
             ) : (
               cartItems.map((item, index) => (
-                <div key={item.menuId} className="grid grid-cols-12 py-4 items-center">
-                  <div className="col-span-1 text-center text-sm font-bold">{index + 1}</div>
-                  <div className="col-span-4 flex gap-4 items-center">
+                <div key={item.menuId}>
+                  {/* Desktop Row */}
+                  <div className="hidden md:grid grid-cols-12 py-4 items-center border-b border-gray-100">
+                    <div className="col-span-1 text-center text-sm font-bold">{index + 1}</div>
+                    <div className="col-span-4 flex gap-4 items-center">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <p className="font-bold text-[15px] leading-tight line-clamp-1">{item.name}</p>
+                        <p className="text-[10px] text-gray-500 mb-1.5 mt-0.5 line-clamp-1">Catatan : {item.note || "-"}</p>
+                        <button 
+                          onClick={() => {
+                            setEditingMenuId(item.menuId);
+                            setEditNoteText(item.note);
+                            setIsEditNoteOpen(true);
+                          }}
+                          className="bg-[#ffc107] text-black text-[9px] px-3 py-1.5 rounded-full font-bold flex items-center hover:bg-[#e0a800] transition"
+                        >
+                          <EditIcon /> Ubah Catatan
+                        </button>
+                      </div>
+                    </div>
+                    <div className="col-span-3 text-center text-xs font-bold">{formatPrice(item.price)}</div>
+                    <div className="col-span-2 flex justify-center items-center gap-3">
+                      <button onClick={() => handleUpdateQty(item.menuId, 1)} className="w-5 h-5 bg-[#8b0000] text-white rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-[#6b0000] active:scale-90">+</button>
+                      <span className="font-bold text-[13px]">{item.qty}</span>
+                      <button onClick={() => handleUpdateQty(item.menuId, -1)} className="w-5 h-5 bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-gray-50 active:scale-90">-</button>
+                    </div>
+                    <div className="col-span-2 flex justify-center">
+                      <button onClick={() => openDeleteModal(item.menuId, item.name)} className="bg-[#fce8e8] text-[#dc2626] px-3 py-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
+                        <TrashIcon /> Hapus
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mobile Card */}
+                  <div className="md:hidden flex items-start gap-3 py-4 border-b border-gray-100">
+                    <span className="text-xs font-bold text-gray-400 shrink-0 w-5 pt-1">{index + 1}</span>
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex flex-col items-start">
-                      <p className="font-bold text-[15px] leading-tight line-clamp-1">{item.name}</p>
-                      <p className="text-[10px] text-gray-500 mb-1.5 mt-0.5 line-clamp-1">Catatan : {item.note || "-"}</p>
-                      <button 
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm leading-tight line-clamp-1">{item.name}</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5 mb-1.5 line-clamp-1">Catatan: {item.note || "-"}</p>
+                      <button
                         onClick={() => {
                           setEditingMenuId(item.menuId);
                           setEditNoteText(item.note);
                           setIsEditNoteOpen(true);
                         }}
-                        className="bg-[#ffc107] text-black text-[9px] px-3 py-1.5 rounded-full font-bold flex items-center hover:bg-[#e0a800] transition"
+                        className="bg-[#ffc107] text-black text-[9px] px-2.5 py-1 rounded-full font-bold flex items-center hover:bg-[#e0a800] transition mb-2"
                       >
                         <EditIcon /> Ubah Catatan
                       </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[#8b0000] flex-1">{formatPrice(item.price)}</span>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleUpdateQty(item.menuId, 1)} className="w-6 h-6 bg-[#8b0000] text-white rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-[#6b0000] active:scale-90">+</button>
+                          <span className="font-bold text-sm w-4 text-center">{item.qty}</span>
+                          <button onClick={() => handleUpdateQty(item.menuId, -1)} className="w-6 h-6 bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-gray-50 active:scale-90">-</button>
+                        </div>
+                        <button onClick={() => openDeleteModal(item.menuId, item.name)} className="bg-[#fce8e8] text-[#dc2626] p-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
+                          <TrashIcon />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-span-3 text-center text-xs font-bold">{formatPrice(item.price)}</div>
-                  <div className="col-span-2 flex justify-center items-center gap-3">
-                    <button onClick={() => handleUpdateQty(item.menuId, 1)} className="w-5 h-5 bg-[#8b0000] text-white rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-[#6b0000] active:scale-90">+</button>
-                    <span className="font-bold text-[13px]">{item.qty}</span>
-                    <button onClick={() => handleUpdateQty(item.menuId, -1)} className="w-5 h-5 bg-white border-[1.5px] border-[#8b0000] text-[#8b0000] rounded-[4px] flex items-center justify-center text-xs font-bold hover:bg-gray-50 active:scale-90">-</button>
-                  </div>
-                  <div className="col-span-2 flex justify-center">
-                    <button onClick={() => openDeleteModal(item.menuId, item.name)} className="bg-[#fce8e8] text-[#dc2626] px-3 py-1.5 rounded-md flex items-center text-[10px] font-bold hover:bg-[#fbd5d5] transition active:scale-90">
-                      <TrashIcon /> Hapus
-                    </button>
                   </div>
                 </div>
               ))
@@ -498,6 +545,14 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               onClick={() => {
                 if (cartItems.length === 0) {
                   toast.error("Keranjang masih kosong!");
+                  return;
+                }
+                if (nameError) {
+                  toast.error("Perbaiki kesalahan pada Nama Pelanggan sebelum melanjutkan!");
+                  return;
+                }
+                if (!customerName.trim()) {
+                  toast.error("Nama Pelanggan wajib diisi!");
                   return;
                 }
                 setIsConfirmModalOpen(true);

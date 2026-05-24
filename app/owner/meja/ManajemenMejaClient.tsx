@@ -414,8 +414,16 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
                 type="text"
                 placeholder="Misal: Meja 1"
                 value={newMejaName}
-                onChange={(e) => setNewMejaName(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg p-2 text-sm focus:border-[#8B1A1A] outline-none"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/[^a-zA-Z0-9\s]/.test(val)) {
+                    setErrorMsg('Nama Meja hanya boleh berisi huruf dan angka.');
+                  } else {
+                    if (errorMsg.includes('Nama Meja')) setErrorMsg('');
+                  }
+                  setNewMejaName(val);
+                }}
+                className={`w-full border-2 rounded-lg p-2 text-sm outline-none ${errorMsg.includes('Nama Meja') ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
               />
             </div>
             
@@ -425,8 +433,16 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
                 type="text"
                 placeholder="Misal: TBL-01"
                 value={newMejaCode}
-                onChange={(e) => setNewMejaCode(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg p-2 text-sm focus:border-[#8B1A1A] outline-none"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/[^a-zA-Z0-9\-]/.test(val)) {
+                    setErrorMsg('Kode Meja hanya boleh berisi huruf, angka, dan tanda hubung (-).');
+                  } else {
+                    if (errorMsg.includes('Kode Meja')) setErrorMsg('');
+                  }
+                  setNewMejaCode(val);
+                }}
+                className={`w-full border-2 rounded-lg p-2 text-sm outline-none ${errorMsg.includes('Kode Meja') ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
               />
             </div>
 

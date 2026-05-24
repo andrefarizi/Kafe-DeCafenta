@@ -108,7 +108,7 @@ export default function PesananPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full pb-24 md:pb-8">
           
           <h1 className="text-3xl font-extrabold mb-6 text-black">
             Pesanan Saya
@@ -127,7 +127,7 @@ export default function PesananPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex overflow-x-auto gap-4 mb-8 pb-2 w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {[
               { key: "semua",       label: "Semua",       img: "/group 135.png" },
               { key: "masuk",       label: "Masuk",       img: "/Food Icon Illustrations Kit (1).png" },
@@ -140,7 +140,7 @@ export default function PesananPage() {
                 <button
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
-                  className={`flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
+                  className={`flex-shrink-0 whitespace-nowrap flex items-center space-x-2 px-6 py-2.5 rounded-full border-2 text-sm font-extrabold transition-colors shadow-sm ${
                     isActive 
                       ? 'bg-[#8B1A1A] border-[#8B1A1A] text-white' 
                       : 'bg-white border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50'

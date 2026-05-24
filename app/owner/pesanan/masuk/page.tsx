@@ -65,7 +65,7 @@ export default function PesananMasuk() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto pb-24 md:pb-8">
       
       {/* Page Title */}
       <h1 className="text-3xl font-extrabold mb-6 text-black">Pesanan Masuk</h1>

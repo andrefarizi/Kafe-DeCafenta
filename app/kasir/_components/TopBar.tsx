@@ -19,7 +19,13 @@ export default function TopBar() {
   };
 
   return (
-    <header className="w-full bg-[#f4d03f] flex items-center justify-end px-6 py-3 shrink-0">
+    <header className="w-full bg-[#f4d03f] flex items-center justify-between md:justify-end px-4 md:px-6 py-3 shrink-0">
+      {/* Placeholder kiri di desktop (agar avatar tetap kanan), di mobile beri space untuk hamburger */}
+      <div className="md:hidden w-10 h-10" aria-hidden="true" />
+
+      {/* Judul Halaman di Mobile (tengah) */}
+      <span className="md:hidden text-[#8b1c1c] font-bold text-sm tracking-wide">DE CAFENTA — Kasir</span>
+
       {/* Avatar + Dropdown Wrapper */}
       <div className="relative">
         {/* Avatar Button */}
@@ -59,8 +65,6 @@ export default function TopBar() {
               Kasir
             </span>
           </div>
-
-
 
           {/* Logout button */}
           <button

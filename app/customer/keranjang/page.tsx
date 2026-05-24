@@ -102,6 +102,7 @@ export default function KeranjangPage() {
     if (!result.success) {
       setItems(items.map((i) => (i.id === cartId ? { ...i, qty: currentQty } : i)));
     }
+    window.dispatchEvent(new Event("cart-updated"));
   };
 
   const handleDeleteConfirm = async () => {
@@ -110,6 +111,7 @@ export default function KeranjangPage() {
     const result = await deleteCartItem(deleteItemId);
     if (result.success) {
       setItems(items.filter((i) => i.id !== deleteItemId));
+      window.dispatchEvent(new Event("cart-updated"));
     }
     setIsDeleting(false);
     setDeleteItemId(null);
@@ -139,6 +141,7 @@ export default function KeranjangPage() {
     if (result.success) {
       setCreatedOrderId(result.orderId || null);
       setStep("orderSuccess");
+      window.dispatchEvent(new Event("cart-updated"));
     } else {
       toast.error(result.message);
     }
@@ -152,11 +155,12 @@ export default function KeranjangPage() {
           <Topbar />
         </div>
 
-        <div className="p-6 lg:p-12 pb-24">
-          <h1 className="text-[32px] font-extrabold text-black mb-12">Keranjang</h1>
+        <div className="p-4 md:p-6 lg:p-12 pb-28 md:pb-24">
+          <h1 className="text-2xl md:text-[32px] font-extrabold text-black mb-6 md:mb-12">Keranjang</h1>
 
-          <div className="bg-transparent mb-12">
-            <div className="grid grid-cols-12 gap-4 text-black font-extrabold text-lg mb-8 pb-2 items-center">
+          <div className="bg-transparent mb-8 md:mb-12">
+            {/* Header tabel - sembunyikan di mobile, ganti dengan card layout */}
+            <div className="hidden md:grid grid-cols-12 gap-4 text-black font-extrabold text-lg mb-8 pb-2 items-center">
               <div className="col-span-1 text-center">No</div>
               <div className="col-span-5 pl-4">Produk</div>
               <div className="col-span-2 text-center">Harga</div>
@@ -178,7 +182,8 @@ export default function KeranjangPage() {
                 </div>
               ) : (
                 items.map((item, index) => (
-                  <div key={item.id} className="grid grid-cols-12 gap-4 items-center py-2 h-[100px]">
+                  /* Desktop: grid layout */
+                  <div key={item.id} className="hidden md:grid grid-cols-12 gap-4 items-center py-2 h-[100px]">
                     <div className="col-span-1 text-center text-black font-bold text-[15px]">{index + 1}</div>
                     <div className="col-span-5 flex items-center gap-6">
                       <div className="w-[85px] h-[85px] rounded-[18px] overflow-hidden shrink-0 shadow-sm">
@@ -219,15 +224,59 @@ export default function KeranjangPage() {
             </div>
           </div>
 
+          {/* Mobile Cart Cards */}
           {!isLoading && items.length > 0 && (
-            <div className="mt-12 flex flex-col items-end pt-8 mr-6">
-              <div className="flex items-center gap-[40px] mb-8">
-                <span className="text-[18px] font-extrabold text-[#8B0000]">Total yang harus dibayarkan :</span>
-                <span className="text-[18px] font-extrabold text-[#8B0000]">{formatPrice(totalPrice)}</span>
+            <div className="md:hidden space-y-4 mb-8">
+              {items.map((item, index) => (
+                <div key={`mob-${item.id}`} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xs font-bold text-gray-400 mt-1">{index + 1}</span>
+                    <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                      <img src={resolveMenuImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-extrabold text-black text-[15px] leading-tight">{item.name}</h3>
+                      <p className="text-xs font-bold text-[#8B0000] mt-0.5">{formatPrice(item.price)}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">Catatan: {item.note || "-"}</p>
+                      <button
+                        onClick={() => { setEditingItemId(item.id); setEditNoteText(item.note); setStep("editNote"); }}
+                        className="flex items-center gap-1 bg-[#FFC107] text-black text-[10px] font-extrabold py-1 px-3 rounded-full mt-1.5"
+                      >
+                        <Edit size={10} strokeWidth={2.5} /> Ubah Catatan
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, 1)} className="flex items-center justify-center w-7 h-7 bg-[#8B0000] rounded-md">
+                        <span className="text-white font-bold text-lg leading-none">+</span>
+                      </button>
+                      <span className="font-extrabold text-black text-[15px] w-5 text-center">{item.qty}</span>
+                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, -1)} disabled={item.qty <= 1} className={`flex items-center justify-center w-7 h-7 border-[1.5px] border-[#8B0000] rounded-md ${item.qty <= 1 ? 'opacity-50' : ''}`}>
+                        <span className="text-[#8B0000] font-bold text-lg leading-none">-</span>
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => { setDeleteItemId(item.id); setDeleteItemName(item.name); setStep("deleteConfirm"); }}
+                      className="flex items-center gap-1.5 bg-[#FEE2E2] text-[#8B0000] font-bold py-1.5 px-3 rounded-lg text-[11px]"
+                    >
+                      <Trash2 size={14} strokeWidth={2} /> Hapus
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && items.length > 0 && (
+            <div className="mt-6 md:mt-12 flex flex-col items-stretch md:items-end pt-4 md:pt-8 md:mr-6 gap-3 pb-20">
+              <div className="flex items-center justify-between md:gap-[40px] bg-red-50 md:bg-transparent rounded-xl p-3 md:p-0">
+                <span className="text-sm md:text-[18px] font-extrabold text-[#8B0000]">Total yang harus dibayarkan :</span>
+                <span className="text-sm md:text-[18px] font-extrabold text-[#8B0000]">{formatPrice(totalPrice)}</span>
               </div>
               <button
                 onClick={() => { setSelectedOrderType(""); setStep("orderType"); }}
-                className="w-[380px] bg-[#8B0000] hover:bg-[#6A0000] text-white font-bold py-4 rounded-xl transition-colors shadow-md text-[14px]"
+                className="w-full md:w-[380px] bg-[#8B0000] hover:bg-[#6A0000] text-white font-bold py-4 rounded-xl transition-colors shadow-md text-[14px]"
               >
                 Buat Pesanan
               </button>

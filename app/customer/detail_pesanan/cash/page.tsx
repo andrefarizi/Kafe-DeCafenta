@@ -451,7 +451,13 @@ function CashPageInner() {
               <div className="flex justify-between items-center mb-8">
                 <h3 className="text-[15px] font-extrabold text-[#8B1A1A]">Status Pesanan</h3>
                 <button
-                  onClick={loadOrder}
+                  onClick={async () => {
+                    const toastId = toast.loading("Memuat status pesanan terbaru...", { position: 'top-center' });
+                    await loadOrder();
+                    router.refresh();
+                    toast.dismiss(toastId);
+                    toast.success("Status pesanan diperbarui", { position: 'top-center' });
+                  }}
                   className="flex items-center gap-1.5 bg-[#8B1A1A] text-white text-[11px] font-bold px-3 py-1.5 rounded-md hover:bg-red-900 transition-colors shadow-sm"
                 >
                   <RotateCcw size={12} /> Refresh Status

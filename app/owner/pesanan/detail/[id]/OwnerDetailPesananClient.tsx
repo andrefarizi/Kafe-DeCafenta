@@ -170,13 +170,23 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
 
   const handleCancelOrder = async () => {
     setIsDeleting(true);
-    const result = await hapusPesananKasir(order.id);
-    setIsDeleting(false);
-    if (result.success) {
-      setShowConfirmModal(false);
-      setShowSuccessModal(true);
-    } else {
-      toast.error(result.message);
+    try {
+      const res = await fetch('/api/pesanan/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: order.id })
+      });
+      const result = await res.json();
+      setIsDeleting(false);
+      if (result.success) {
+        setShowConfirmModal(false);
+        setShowSuccessModal(true);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (e) {
+      setIsDeleting(false);
+      toast.error('Gagal menghubungi server.');
     }
   };
 
@@ -439,7 +449,6 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
               onClick={() => {
                 setShowSuccessModal(false);
                 router.push('/owner/pesanan');
-                router.refresh();
               }}
               className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
             >

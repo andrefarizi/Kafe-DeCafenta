@@ -49,8 +49,8 @@ export default function PesananPage() {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    if (/[^a-zA-Z0-9\s]/.test(val)) {
-      setValidationErrors(prev => ({...prev, name: 'Nama tidak boleh mengandung simbol khusus (&, %, dll).'}));
+    if (/[^a-zA-Z\s']/.test(val)) {
+      setValidationErrors(prev => ({...prev, name: 'Nama hanya boleh berisi huruf.'}));
     } else {
       setValidationErrors(prev => ({...prev, name: undefined}));
     }
@@ -323,21 +323,21 @@ export default function PesananPage() {
           </div>
 
           {/* Social Login Buttons */}
-          <div className="flex flex-wrap md:flex-nowrap justify-between gap-2 md:gap-3 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between gap-3 mb-6">
             <button 
               type="button"
               onClick={handleGoogleLogin}
-              className="group flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
+              className="group flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
               <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14 1 (1).png" alt="Google" className="h-5 object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert" />
-              <span className="text-sm font-bold text-black hidden sm:block transition-colors duration-300 group-hover:text-white">Google</span>
+              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Google</span>
             </button>
 
             <button 
               type="button"
               onClick={handleFacebookLogin}
-              className="group flex-1 min-w-[100px] flex items-center justify-center gap-2 py-2 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
+              className="group flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300">
              <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain transition-all duration-300" />
-              <span className="text-sm font-bold text-black hidden sm:block transition-colors duration-300 group-hover:text-white">Facebook</span>
+              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Facebook</span>
             </button>
           </div>
 

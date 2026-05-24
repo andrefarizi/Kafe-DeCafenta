@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   Mail,
   Phone,
-  SquarePen,
   User,
   Check,
   X,
@@ -37,6 +36,7 @@ export default function EditProfilPage() {
 
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{name?: string; phone?: string}>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -89,8 +89,11 @@ export default function EditProfilPage() {
     }
   };
 
-  /* ── Simpan Profil ── */
   const handleSave = async () => {
+    if (validationErrors.name || validationErrors.phone) {
+      showToast("error", "Mohon perbaiki kesalahan pada form sebelum menyimpan.");
+      return;
+    }
     if (!editName.trim()) {
       showToast("error", "Nama tidak boleh kosong");
       return;
@@ -138,18 +141,18 @@ export default function EditProfilPage() {
         </div>
       )}
 
-      <main className="flex-1 px-[48px] pt-[30px]">
+      <main className="flex-1 px-4 md:px-[48px] pt-6 md:pt-[30px] w-full max-w-full overflow-x-hidden">
         {/* HEADER */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 md:gap-5">
           <Link href="/customer/Profil" className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md">
             <ChevronLeft size={26} strokeWidth={3} />
           </Link>
-          <h1 className="text-[40px] font-semibold text-black">Edit Profil</h1>
+          <h1 className="text-2xl md:text-[40px] font-semibold text-black">Edit Profil</h1>
         </div>
 
         {/* CARD */}
-        <section className="mx-auto mt-[42px] w-[720px] rounded-[30px] bg-[#f5e2d9]/80 pb-[40px] shadow-md">
-          <div className="flex flex-col items-center pt-[50px]">
+        <section className="mx-auto mt-6 md:mt-[42px] w-full max-w-[720px] rounded-3xl md:rounded-[30px] bg-[#f5e2d9]/80 pb-8 md:pb-[40px] shadow-md px-4 md:px-0">
+          <div className="flex flex-col items-center pt-8 md:pt-[50px]">
 
             {/* FOTO */}
             <div className="relative">
@@ -184,33 +187,43 @@ export default function EditProfilPage() {
               disabled={isUploading}
               className="mt-[10px] flex items-center gap-2 text-[16px] font-medium text-[#9b0000] hover:underline disabled:opacity-60"
             >
-              <span>Ganti Foto Profil</span>
-              <SquarePen size={18} />
+      
             </button>
             <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
 
             {/* FORM */}
-            <div className="mt-[22px] flex flex-col gap-[16px]">
+            <div className="mt-[22px] flex flex-col gap-[16px] w-full items-center">
 
               {/* Nama */}
-              <div className="flex h-[52px] w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white overflow-hidden">
-                <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#ffc400]">
-                  <User size={22} color="white" fill="white" />
+              <div className="w-full max-w-[600px] flex flex-col">
+                <div className={`flex h-[52px] w-full items-center rounded-full border-[1.5px] bg-white overflow-hidden ${validationErrors.name ? 'border-red-500' : 'border-[#ffc400]'}`}>
+                  <div className={`flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full ${validationErrors.name ? 'bg-red-500' : 'bg-[#ffc400]'}`}>
+                    <User size={22} color="white" fill="white" />
+                  </div>
+                  <div className="ml-[10px] leading-tight flex-1 pr-4">
+                    <div className="text-[14px] font-semibold text-black">Nama</div>
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/[^a-zA-Z\s']/.test(val)) {
+                          setValidationErrors(prev => ({...prev, name: 'Nama hanya boleh huruf.'}));
+                        } else {
+                          setValidationErrors(prev => ({...prev, name: undefined}));
+                        }
+                        setEditName(val);
+                      }}
+                      className={`mt-[2px] text-[12px] w-full bg-transparent text-[#333] outline-none border-b ${validationErrors.name ? 'border-red-500' : 'border-[#ffc400]'}`}
+                      placeholder="Masukkan nama"
+                    />
+                  </div>
                 </div>
-                <div className="ml-[10px] leading-tight flex-1 pr-4">
-                  <div className="text-[14px] font-semibold text-black">Nama</div>
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="mt-[2px] text-[12px] w-full bg-transparent text-[#333] outline-none border-b border-[#ffc400]"
-                    placeholder="Masukkan nama"
-                  />
-                </div>
+                {validationErrors.name && <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.name}</span>}
               </div>
 
               {/* Email (read-only) */}
-              <div className="flex h-[52px] w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white overflow-hidden">
+              <div className="flex h-[52px] w-full max-w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white overflow-hidden">
                 <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#ffc400]">
                   <Mail size={22} color="white" />
                 </div>
@@ -221,20 +234,33 @@ export default function EditProfilPage() {
               </div>
 
               {/* Nomor HP */}
-              <div className="flex h-[52px] w-[600px] items-center rounded-full border-[1.5px] border-[#ffc400] bg-white overflow-hidden">
-                <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full bg-[#ffc400]">
-                  <Phone size={22} color="white" fill="white" />
+              <div className="w-full max-w-[600px] flex flex-col">
+                <div className={`flex h-[52px] w-full items-center rounded-full border-[1.5px] bg-white overflow-hidden ${validationErrors.phone ? 'border-red-500' : 'border-[#ffc400]'}`}>
+                  <div className={`flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full ${validationErrors.phone ? 'bg-red-500' : 'bg-[#ffc400]'}`}>
+                    <Phone size={22} color="white" fill="white" />
+                  </div>
+                  <div className="ml-[10px] leading-tight flex-1 pr-4">
+                    <div className="text-[14px] font-semibold text-black">Nomor Handphone</div>
+                    <input
+                      type="tel"
+                      value={editPhone}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/[^0-9]/.test(val)) {
+                          setValidationErrors(prev => ({...prev, phone: 'Nomor Handphone hanya boleh angka.'}));
+                        } else if (val.length > 0 && (val.length < 10 || val.length > 13)) {
+                          setValidationErrors(prev => ({...prev, phone: 'Panjang nomor harus 10-13 digit.'}));
+                        } else {
+                          setValidationErrors(prev => ({...prev, phone: undefined}));
+                        }
+                        setEditPhone(val);
+                      }}
+                      className={`mt-[2px] text-[12px] w-full bg-transparent text-[#333] outline-none border-b ${validationErrors.phone ? 'border-red-500' : 'border-[#ffc400]'}`}
+                      placeholder="Contoh: 081234567890"
+                    />
+                  </div>
                 </div>
-                <div className="ml-[10px] leading-tight flex-1 pr-4">
-                  <div className="text-[14px] font-semibold text-black">Nomor Handphone</div>
-                  <input
-                    type="tel"
-                    value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
-                    className="mt-[2px] text-[12px] w-full bg-transparent text-[#333] outline-none border-b border-[#ffc400]"
-                    placeholder="Contoh: 081234567890"
-                  />
-                </div>
+                {validationErrors.phone && <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.phone}</span>}
               </div>
             </div>
 

@@ -19,7 +19,7 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
         <TopBar />
 
         {/* Halaman konten */}
-        <main className="flex-1 bg-gray-50 overflow-y-auto p-8">
+        <main className="flex-1 bg-gray-50 overflow-y-auto p-4 md:p-8 pb-20 md:pb-8">
           {children}
         </main>
       </div>

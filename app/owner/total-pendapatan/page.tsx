@@ -31,7 +31,7 @@ export default async function DetailPendapatan(props: Props) {
   const selectedDate = 1;
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 pb-24 md:pb-8">
       
       {/* Header Section */}
       <div className="flex items-start mb-8">

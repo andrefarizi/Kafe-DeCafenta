@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { checkKasirStatus } from "./actions";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successRedirect, setSuccessRedirect] = useState("/customer/beranda");
-  const [validationErrors, setValidationErrors] = useState<{email?: string; password?: string}>({});
+  const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({});
 
   const getRedirectByRole = (role?: string) => {
     switch (role) {
@@ -46,6 +47,14 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      // Pre-check for inactive Kasir account before hitting NextAuth
+      const statusCheck = await checkKasirStatus(email);
+      if (statusCheck.isInactive) {
+        setError("Akun staff Anda telah dinonaktifkan. Silakan hubungi owner.");
+        setIsLoading(false);
+        return;
+      }
+
       const result = await signIn("credentials", {
         email,
         password,
@@ -81,9 +90,9 @@ export default function LoginPage() {
     setEmail(val);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (val && !emailRegex.test(val)) {
-      setValidationErrors(prev => ({...prev, email: 'Format email tidak valid.'}));
+      setValidationErrors(prev => ({ ...prev, email: 'Format email tidak valid.' }));
     } else {
-      setValidationErrors(prev => ({...prev, email: undefined}));
+      setValidationErrors(prev => ({ ...prev, email: undefined }));
     }
   };
 
@@ -91,9 +100,9 @@ export default function LoginPage() {
     const val = e.target.value;
     setPassword(val);
     if (val.length > 0 && val.length < 6) {
-      setValidationErrors(prev => ({...prev, password: 'Password minimal 6 karakter.'}));
+      setValidationErrors(prev => ({ ...prev, password: 'Password minimal 6 karakter.' }));
     } else {
-      setValidationErrors(prev => ({...prev, password: undefined}));
+      setValidationErrors(prev => ({ ...prev, password: undefined }));
     }
   };
 
@@ -123,7 +132,7 @@ export default function LoginPage() {
         </div>
       )}
 
-  *
+      *
 
       {/* Ornamen Desain Figma */}
       <img
@@ -149,151 +158,151 @@ export default function LoginPage() {
         <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center items-center">
           <div className="w-full max-w-sm">
             {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <img src="/Group%202%201.png" alt="Logo D" className="h-8 object-contain" />
-            <span className="text-sm font-bold text-[#6b1d1d] tracking-widest mt-1">DE CAFENTA</span>
-          </div>
-
-          {/* Judul */}
-          <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-10 drop-shadow-sm text-center">MASUK</h1>
-
-          {/* Pesan Error */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-xl text-sm text-center">
-              {error}
+            <div className="flex items-center justify-center gap-2 mb-8">
+              <img src="/Group%202%201.png" alt="Logo D" className="h-8 object-contain" />
+              <span className="text-sm font-bold text-[#6b1d1d] tracking-widest mt-1">DE CAFENTA</span>
             </div>
-          )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 flex flex-col" suppressHydrationWarning>
+            {/* Judul */}
+            <h1 className="text-4xl font-extrabold text-[#6b1d1d] mb-10 drop-shadow-sm text-center">MASUK</h1>
 
-            {/* Input Email */}
-            <div className="relative flex flex-col">
-              <div className="relative flex items-center">
-                <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  disabled={isLoading}
-                  suppressHydrationWarning
-                  className={`w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.email ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
-                />
+            {/* Pesan Error */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-xl text-sm text-center">
+                {error}
               </div>
-              {validationErrors.email && (
-                <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.email}</span>
-              )}
-            </div>
+            )}
 
-            {/* Input Password */}
-            <div className="relative flex flex-col">
-              <div className="relative flex items-center">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  disabled={isLoading}
-                  suppressHydrationWarning
-                  className={`w-full pl-6 pr-24 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.password ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-14 cursor-pointer text-black"
-                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                >
-                  {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4 flex flex-col" suppressHydrationWarning>
+
+              {/* Input Email */}
+              <div className="relative flex flex-col">
+                <div className="relative flex items-center">
+                  <div className="absolute left-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center z-10 shadow-sm">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-                <div className="absolute right-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    disabled={isLoading}
+                    suppressHydrationWarning
+                    className={`w-full pl-14 pr-4 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.email ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
+                  />
                 </div>
+                {validationErrors.email && (
+                  <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.email}</span>
+                )}
               </div>
-              {validationErrors.password && (
-                <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.password}</span>
-              )}
+
+              {/* Input Password */}
+              <div className="relative flex flex-col">
+                <div className="relative flex items-center">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    disabled={isLoading}
+                    suppressHydrationWarning
+                    className={`w-full pl-6 pr-24 py-3 rounded-full bg-white/80 border focus:outline-none text-gray-700 placeholder-gray-400 shadow-inner disabled:opacity-60 transition-colors ${validationErrors.password ? 'border-red-500 focus:ring-2 focus:ring-red-400' : 'border-transparent focus:ring-2 focus:ring-[#f4d03f]'}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-14 cursor-pointer text-black"
+                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    )}
+                  </button>
+                  <div className="absolute right-0 w-12 h-12 bg-[#f4d03f] rounded-full flex items-center justify-center shadow-sm">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+                {validationErrors.password && (
+                  <span className="text-red-500 text-xs font-bold mt-1 ml-4">{validationErrors.password}</span>
+                )}
+              </div>
+
+              {/* Lupa Password */}
+              <div className="text-right mt-2">
+                <Link href="/konfirmasi-email" className="text-sm font-medium text-[#8b1c1c] hover:underline">
+                  Lupa Password?
+                </Link>
+              </div>
+
+              {/* Tombol Masuk */}
+              <button
+                id="btn-login"
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3.5 bg-[#6b1d1d] hover:bg-[#8b1c1c] transition-colors text-white font-semibold rounded-full shadow-md mt-4 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Masuk...
+                  </>
+                ) : "Masuk"}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center my-8">
+              <div className="flex-grow border-t border-gray-400/50"></div>
+              <span className="mx-4 text-xs font-bold text-gray-600">ATAU</span>
+              <div className="flex-grow border-t border-gray-400/50"></div>
             </div>
 
-            {/* Lupa Password */}
-            <div className="text-right mt-2">
-              <Link href="/konfirmasi-email" className="text-sm font-medium text-[#8b1c1c] hover:underline">
-                Lupa Password?
+            {/* Social Login */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3 mb-8">
+              <button
+                id="btn-login-google"
+                type="button"
+                onClick={handleGoogleLogin}
+                className="group flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
+              >
+                <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14%201%20(1).png" alt="Google" className="w-5 h-5 object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert" />
+                <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Google</span>
+              </button>
+              <button
+                id="btn-login-facebook"
+                type="button"
+                onClick={handleFacebookLogin}
+                className="group flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
+              >
+                <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain transition-all duration-300" />
+                <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Facebook</span>
+              </button>
+            </div>
+
+            {/* Link Daftar */}
+            <p className="text-center text-sm font-medium text-gray-700">
+              Belum punya akun?{" "}
+              <Link href="/daftar" className="text-[#8b1c1c] hover:underline font-bold">
+                Daftar Sekarang
               </Link>
-            </div>
-
-            {/* Tombol Masuk */}
-            <button
-              id="btn-login"
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3.5 bg-[#6b1d1d] hover:bg-[#8b1c1c] transition-colors text-white font-semibold rounded-full shadow-md mt-4 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Masuk...
-                </>
-              ) : "Masuk"}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center my-8">
-            <div className="flex-grow border-t border-gray-400/50"></div>
-            <span className="mx-4 text-xs font-bold text-gray-600">ATAU</span>
-            <div className="flex-grow border-t border-gray-400/50"></div>
-          </div>
-
-          {/* Social Login */}
-          <div className="flex justify-between gap-3 mb-8">
-            <button
-              id="btn-login-google"
-              type="button"
-              onClick={handleGoogleLogin}
-              className="group flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
-            >
-              <img src="/google-logo-png-google-icon-logo-png-transparent-svg-vector-bie-supply-14%201%20(1).png" alt="Google" className="w-5 h-5 object-contain transition-all duration-300 group-hover:brightness-0 group-hover:invert" />
-              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Google</span>
-            </button>
-            <button
-              id="btn-login-facebook"
-              type="button"
-              onClick={handleFacebookLogin}
-              className="group flex-1 flex items-center justify-center gap-2 py-2.5 bg-white rounded-xl shadow-sm hover:bg-[#8b1c1c] transition-all duration-300"
-            >
-              <img src="/image-removebg-preview%20(1)%201.png" alt="Facebook" className="w-5 h-5 object-contain transition-all duration-300" />
-              <span className="text-sm font-bold text-black transition-colors duration-300 group-hover:text-white">Facebook</span>
-            </button>
-          </div>
-
-          {/* Link Daftar */}
-          <p className="text-center text-sm font-medium text-gray-700">
-            Belum punya akun?{" "}
-            <Link href="/daftar" className="text-[#8b1c1c] hover:underline font-bold">
-              Daftar Sekarang
-            </Link>
-          </p>
+            </p>
           </div>
         </div>
 

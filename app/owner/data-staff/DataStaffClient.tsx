@@ -441,8 +441,13 @@ export default function DataStaffClient({
                   required
                   value={newKasir.nama}
                   onChange={(e) => {
-                    setNewKasir({ ...newKasir, nama: e.target.value });
-                    if (formErrors.nama) setFormErrors(prev => ({ ...prev, nama: '' }));
+                    const val = e.target.value;
+                    if (/[^a-zA-Z\s']/.test(val)) {
+                      setFormErrors(prev => ({ ...prev, nama: 'Nama hanya boleh berisi huruf.' }));
+                    } else {
+                      setFormErrors(prev => ({ ...prev, nama: '' }));
+                    }
+                    setNewKasir({ ...newKasir, nama: val });
                   }}
                   className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
                     formErrors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
@@ -474,8 +479,13 @@ export default function DataStaffClient({
                   type="text"
                   value={newKasir.telepon}
                   onChange={(e) => {
-                    setNewKasir({ ...newKasir, telepon: e.target.value });
-                    if (formErrors.telepon) setFormErrors(prev => ({ ...prev, telepon: '' }));
+                    const val = e.target.value;
+                    if (/[^0-9]/.test(val)) {
+                      setFormErrors(prev => ({ ...prev, telepon: 'Nomor telepon hanya boleh angka.' }));
+                    } else {
+                      setFormErrors(prev => ({ ...prev, telepon: '' }));
+                    }
+                    setNewKasir({ ...newKasir, telepon: val });
                   }}
                   className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
                     formErrors.telepon ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'

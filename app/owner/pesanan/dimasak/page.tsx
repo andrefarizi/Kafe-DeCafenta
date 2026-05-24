@@ -54,7 +54,7 @@ export default function PesananDimasakFiltered() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-6xl mx-auto pb-24 md:pb-8">
       
       <h1 className="text-3xl font-extrabold mb-6 text-black">Pesanan Dimasak</h1>
 

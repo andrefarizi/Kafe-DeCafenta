@@ -39,7 +39,7 @@ export default async function DashboardKasir() {
     await getKasirDashboardData();
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans pb-10">
+    <div className="min-h-screen bg-white text-black font-sans pb-24 md:pb-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
 
         {/* Header Navigation */}

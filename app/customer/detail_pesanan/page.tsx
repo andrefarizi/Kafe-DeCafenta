@@ -20,7 +20,7 @@ const DetailPesanan = () => {
           <Topbar />
         </div>
 
-        <div className="p-5 w-full overflow-y-auto">
+        <div className="p-4 md:p-5 w-full overflow-y-auto pb-28 md:pb-10">
           {/* Header Section */}
           <div className="flex justify-between items-start mb-4 w-full">
             <div className="flex items-center gap-3">

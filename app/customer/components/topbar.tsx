@@ -19,7 +19,13 @@ const Topbar = () => {
   };
 
   return (
-    <header className="h-14 bg-[#FFCC00] flex items-center justify-end px-8 w-full">
+    <header className="h-14 bg-[#FFCC00] flex items-center justify-between md:justify-end px-4 md:px-8 w-full shrink-0">
+      {/* Logo / Brand di Mobile */}
+      <div className="md:hidden flex items-center gap-2">
+        <img src="/Group 2 1.png" alt="Logo" className="h-7 w-auto object-contain" />
+        <span className="font-extrabold text-[#8A0000] text-sm tracking-widest">DE CAFENTA</span>
+      </div>
+
       {/* Avatar + Dropdown Wrapper */}
       <div className="relative">
         {/* Avatar Button */}
