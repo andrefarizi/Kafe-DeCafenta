@@ -84,16 +84,16 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
   const currentIdx = STEPS.findIndex(s => s.key === currentStatus);
 
   const icons = [
-    <ClipboardList key="0" size={26} className="text-white" strokeWidth={2.5} />,
-    <CookingPot    key="1" size={26} className="text-white" strokeWidth={2.5} />,
-    <Package       key="2" size={26} className="text-white" strokeWidth={2.5} />,
-    <Check         key="3" size={36} className="text-white" strokeWidth={2.5} />,
+    <ClipboardList key="0" className="text-white w-5 h-5 md:w-[26px] md:h-[26px]" strokeWidth={2.5} />,
+    <CookingPot    key="1" className="text-white w-5 h-5 md:w-[26px] md:h-[26px]" strokeWidth={2.5} />,
+    <Package       key="2" className="text-white w-5 h-5 md:w-[26px] md:h-[26px]" strokeWidth={2.5} />,
+    <Check         key="3" className="text-white w-6 h-6 md:w-[36px] md:h-[36px]" strokeWidth={2.5} />,
   ];
 
   return (
-    <div className="relative flex justify-between px-2 md:px-8 mb-8 z-0 w-full">
+    <div className="relative flex justify-between px-0 md:px-8 mb-4 md:mb-8 z-0 w-full">
       {/* Garis Abu-Abu Background */}
-      <div className="absolute left-[12.5%] right-[12.5%] top-[34px] -translate-y-1/2 h-2.5 bg-gray-300 z-[-1] rounded-full"></div>
+      <div className="absolute left-[12.5%] right-[12.5%] top-[20px] md:top-[34px] -translate-y-1/2 h-1.5 md:h-2.5 bg-gray-300 z-[-1] rounded-full"></div>
 
       {/* Garis Segmen Warna Gradien + Shimmer */}
       {SEGMENT_GRADIENTS.map((seg, i) => {
@@ -106,19 +106,14 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
         return (
           <div
             key={`seg-${i}`}
+            className="absolute left-0 top-[20px] md:top-[34px] -translate-y-1/2 h-1.5 md:h-[10px] rounded-full overflow-hidden"
             style={{
-              position: "absolute",
-              top: "34px",
               left: `${12.5 + (i * 25)}%`, 
               width: "25%", 
-              height: "10px",
-              transform: "translateY(-50%)",
               background: isActive 
                 ? `${STEPS[i].color}40` // Transparan untuk base shimmer saat aktif
                 : `linear-gradient(to right, ${seg.from}, ${seg.to})`,
               zIndex: isActive ? 3 : 2,
-              borderRadius: 9999,
-              overflow: "hidden"
             }}
           >
             {/* Animasi Shimmer berjalan untuk garis yang sedang aktif */}
@@ -134,8 +129,8 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
         const color = active ? step.color : "#D1D5DB";
 
         return (
-          <div key={step.key} className="flex flex-col items-center w-1/4 z-10">
-            <div style={{ position: "relative", width: 68, height: 68 }}>
+          <div key={step.key} className="flex flex-col items-center w-1/4 z-10 px-0.5">
+            <div className="relative w-[40px] h-[40px] md:w-[68px] md:h-[68px]">
               
               {/* Outer ring pulse */}
               {isCurrent && (
@@ -149,7 +144,7 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
 
               {/* Base Circle */}
               <div
-                className="w-full h-full rounded-full border-[4px] bg-white p-[3px] flex items-center justify-center transition-colors duration-500 relative z-10"
+                className="w-full h-full rounded-full border-[3px] md:border-[4px] bg-white p-[2px] md:p-[3px] flex items-center justify-center transition-colors duration-500 relative z-10"
                 style={{ borderColor: color }}
               >
                 <div
@@ -162,7 +157,7 @@ function StatusTracker({ currentStatus }: { currentStatus: string }) {
             </div>
 
             <span 
-              className="text-sm md:text-base font-extrabold mt-3 text-center whitespace-nowrap transition-colors duration-500"
+              className="text-[10px] md:text-base font-extrabold mt-1 md:mt-3 text-center md:whitespace-nowrap transition-colors duration-500 leading-[1.1] max-w-[60px] md:max-w-none"
               style={{ color: active ? "#000" : "#9CA3AF" }}
             >
               {step.label}

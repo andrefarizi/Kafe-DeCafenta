@@ -6,11 +6,11 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-black font-sans overflow-x-hidden selection:bg-[#f4d03f] selection:text-black scroll-smooth">
       
       {/* ================= NAVBAR ================= */}
-      <nav className="flex items-center justify-between px-8 py-5 bg-white shadow-sm fixed top-0 w-full z-50">
-        <div className="flex items-center gap-1">
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-white shadow-sm fixed top-0 w-full z-50">
+        <div className="flex items-center gap-1 shrink-0">
           {/* Placeholder Icon D Navbar */}
-          <img src="/Group 2 1.png" alt="Icon" className="w-10 h-10  object-contain" />
-          <span className="text-sm font-extrabold text-[#c8100e] tracking-widest mt-3">DE CAFENTA</span>
+          <img src="/Group 2 1.png" alt="Icon" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+          <span className="text-[10px] md:text-sm font-extrabold text-[#c8100e] tracking-widest mt-2 md:mt-3 hidden sm:block">DE CAFENTA</span>
         </div>
         
         <div className="hidden md:flex items-center gap-10 text-sm font-bold">
@@ -19,11 +19,11 @@ export default function LandingPage() {
           <a href="#footer" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="px-8 py-2.5 bg-[#8b1c1c] text-white text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link href="/login" className="px-5 md:px-8 py-2 md:py-2.5 bg-[#8b1c1c] text-white text-xs md:text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors">
             Masuk
           </Link>
-          <Link href="/daftar" className="px-8 py-2.5 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors">
+          <Link href="/daftar" className="px-5 md:px-8 py-2 md:py-2.5 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-xs md:text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors">
             Daftar
           </Link>
         </div>

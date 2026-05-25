@@ -312,25 +312,25 @@ export default function KeranjangPage() {
         {/* ===== MODAL: PILIH TIPE PESANAN ===== */}
         {step === "orderType" && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[32px] w-full max-w-[800px] p-10 pt-14 shadow-2xl">
-              <h2 className="text-[38px] font-extrabold text-black mb-12 tracking-tight text-center leading-snug">Pilih Tipe Pesanan Anda</h2>
-              <div className="flex flex-col md:flex-row gap-8 mb-14 justify-center px-4">
-                <div onClick={() => setSelectedOrderType("dine_in")} className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${selectedOrderType === "dine_in" ? "bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]" : "bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60"}`}>
-                  <div className="relative w-28 h-28 mb-8 flex items-center justify-center">
-                    <img src="/makanditempat.png" alt="Makan Ditempat" />
+            <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] md:rounded-[32px] w-full max-w-[800px] p-6 md:p-10 pt-8 md:pt-14 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl md:text-[38px] font-extrabold text-black mb-6 md:mb-12 tracking-tight text-center leading-snug">Pilih Tipe Pesanan Anda</h2>
+              <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-8 md:mb-14 justify-center px-0 md:px-4">
+                <div onClick={() => setSelectedOrderType("dine_in")} className={`flex-1 flex flex-col items-center justify-start p-6 md:p-10 rounded-[20px] md:rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[220px] md:min-h-[300px] ${selectedOrderType === "dine_in" ? "bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]" : "bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60"}`}>
+                  <div className="relative w-20 h-20 md:w-28 md:h-28 mb-4 md:mb-8 flex items-center justify-center">
+                    <img src="/makanditempat.png" alt="Makan Ditempat" className="object-contain w-full h-full" />
                   </div>
-                  <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Makan Di tempat</h3>
-                  <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">Rasakan Makanan nikmat anda langsung di DE CAFENTA</p>
+                  <h3 className="text-xl md:text-[26px] font-extrabold text-[#8B0000] mb-2 md:mb-4 text-center">Makan Di tempat</h3>
+                  <p className="text-black font-medium text-sm md:text-[15px] text-center px-2 md:px-4 leading-relaxed">Rasakan Makanan nikmat anda langsung di DE CAFENTA</p>
                 </div>
-                <div onClick={() => setSelectedOrderType("takeaway")} className={`flex-1 flex flex-col items-center justify-start p-10 rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[300px] ${selectedOrderType === "takeaway" ? "bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]" : "bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60"}`}>
-                  <div className="relative w-28 h-28 mb-8 flex items-center justify-center">
-                    <img src="/bawapulang.png" alt="Bawa Pulang" />
+                <div onClick={() => setSelectedOrderType("takeaway")} className={`flex-1 flex flex-col items-center justify-start p-6 md:p-10 rounded-[20px] md:rounded-[32px] border-[2px] cursor-pointer transition-all min-h-[220px] md:min-h-[300px] ${selectedOrderType === "takeaway" ? "bg-[#FFE2E2] border-[#8B0000] shadow-[0_0_0_4px_rgba(139,0,0,0.6)]" : "bg-[#FFE2E2]/60 border-[#FFBDBD] hover:border-[#8B0000]/60"}`}>
+                  <div className="relative w-20 h-20 md:w-28 md:h-28 mb-4 md:mb-8 flex items-center justify-center">
+                    <img src="/bawapulang.png" alt="Bawa Pulang" className="object-contain w-full h-full" />
                   </div>
-                  <h3 className="text-[26px] font-extrabold text-[#8B0000] mb-4 text-center">Bawa Pulang</h3>
-                  <p className="text-black font-medium text-[15px] text-center px-4 leading-relaxed">Bawa Pulang menu terbaik DE CAFENTA untuk di bawa pulang</p>
+                  <h3 className="text-xl md:text-[26px] font-extrabold text-[#8B0000] mb-2 md:mb-4 text-center">Bawa Pulang</h3>
+                  <p className="text-black font-medium text-sm md:text-[15px] text-center px-2 md:px-4 leading-relaxed">Bawa Pulang menu terbaik DE CAFENTA untuk di bawa pulang</p>
                 </div>
               </div>
-              <div className="flex justify-center gap-6 px-10">
+              <div className="flex flex-col-reverse sm:flex-row justify-center gap-3 sm:gap-6 px-0 md:px-10">
                 <button onClick={() => setStep("")} className="w-full sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
                 <button
                   onClick={() => { if (selectedOrderType) setStep("detail"); }}
