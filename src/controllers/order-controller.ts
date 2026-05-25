@@ -222,6 +222,7 @@ export async function getOrderDetail(orderId: string) {
         subtotal: Number(item.subtotal),
         notes: item.customNotes || '',
         isReviewed: item.isReviewed || false, 
+        imageUrl: item.menu.imageUrl || null,
       })),
     };
   } catch (error) {

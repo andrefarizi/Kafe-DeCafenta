@@ -30,6 +30,7 @@ type OrderDetail = {
     subtotal: number; 
     notes: string;
     isReviewed: boolean; 
+    imageUrl?: string | null;
   }[];
 }
 type PaymentMethod = "cash" | "gopay" | "dana" | "bank_va";
@@ -642,7 +643,7 @@ function CashPageInner() {
               {/* Produk Info */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-5">
                 <div className="w-[100px] h-[90px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
-                  <img src={getFallbackImg(reviewItem.category)} alt={reviewItem.name} className="w-full h-full object-cover" />
+                  <img src={resolveMenuImage(reviewItem.name, reviewItem.category, reviewItem.imageUrl)} alt={reviewItem.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="w-full sm:flex-1 flex flex-col justify-center min-w-0">
                   <h4 className="font-extrabold text-black text-[15px] mb-1 leading-tight">{reviewItem.name}</h4>
@@ -732,11 +733,23 @@ function CashPageInner() {
   );
 }
 
-/* Fallback gambar ringan global untuk dipakai ProductRowItem */
-const getFallbackImg = (cat: string) => {
-  if (cat === 'Minuman') return '/Rectangle 43 (1).png';
-  return '/Rectangle 43.png';
+/* Helper resolver gambar seperti di keranjang */
+function getDummyImage(name: string) {
+  const n = name.toLowerCase();
+  if (n.includes("kentang") || n.includes("snack")) return "/kentang.png";
+  if (n.includes("teh") || n.includes("jus") || n.includes("minuman") || n.includes("es")) return "/IconKopi.png";
+  return "/burger.png";
 }
+
+const categoryFallbacks: Record<string, string> = {
+  Nasi: "/nasi goreng.png",
+  Mie: "/bakso.png",
+  Snack: "/kentang goreng.png",
+  Minuman: "/jus semangka.png",
+};
+
+const resolveMenuImage = (name: string, categoryName: string, imageUrl?: string | null) =>
+  imageUrl || categoryFallbacks[categoryName] || getDummyImage(name);
 
 /* ═══════════════════════════════════
    KOMPONEN BARIS PRODUK
@@ -746,7 +759,7 @@ function ProductRowItem({ item, isCompleted, isReviewed, onOpenReview }: { item:
     <tr key={item.id} className="border-b-[1.5px] border-gray-100 hover:bg-gray-50 transition-colors">
       <td className="py-4 flex items-center space-x-4">
         <img 
-          src={getFallbackImg(item.category)} 
+          src={resolveMenuImage(item.name, item.category, item.imageUrl)} 
           alt={item.name} 
           className="w-14 h-14 rounded-xl object-cover shadow-sm border border-gray-100 shrink-0"
         />
