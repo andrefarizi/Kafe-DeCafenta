@@ -422,18 +422,18 @@ function CashPageInner() {
             </div>
 
             {/* ── Order Info Card ── */}
-            <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 flex justify-between items-center mb-6 bg-white shadow-sm">
-              <div>
+            <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 bg-white shadow-sm">
+              <div className="flex-1 min-w-0">
                 <p className="text-[11px] text-gray-500 font-medium mb-1">Kode Pesanan</p>
-                <p className="text-xl md:text-[22px] font-black text-[#8B1A1A]">#{order.orderCode}</p>
+                <p className="text-lg md:text-[22px] font-black text-[#8B1A1A] break-all">#{order.orderCode}</p>
                 <p className="text-[#8B1A1A] font-bold text-[12px] mt-1">
                   {new Date(order.orderedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
-              <div className="text-right flex flex-col items-end">
+              <div className="text-left sm:text-right flex flex-col items-start sm:items-end shrink-0 mt-1 sm:mt-0">
                 <p className="text-[11px] text-gray-500 font-medium mb-1.5">Status</p>
                 <span 
-                  className="text-[11px] px-4 py-1.5 rounded-md font-black uppercase text-white shadow-sm"
+                  className="text-[11px] px-4 py-1.5 rounded-md font-black uppercase text-white shadow-sm whitespace-nowrap text-center"
                   style={{ backgroundColor: STEPS.find(s => s.key === order.status)?.color || "#333" }}
                 >
                   {order.status.replace(/_/g, " ")}

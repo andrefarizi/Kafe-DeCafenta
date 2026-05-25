@@ -422,11 +422,11 @@ export default function KeranjangPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-5">
-                <button onClick={() => setStep("orderType")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">Batal</button>
+                <button onClick={() => setStep("")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">Batal</button>
                 <button
                   onClick={handleCreateOrder} 
                   disabled={isCreatingOrder} 
-                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center gap-2"
+                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   {isCreatingOrder ? (
                     <><Loader2 size={16} className="animate-spin" /> Memproses...</>
@@ -456,7 +456,7 @@ export default function KeranjangPage() {
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button onClick={() => setStep("detail")} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
+                <button onClick={() => setStep("")} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
                 <button
                   disabled={isPending}
                   onClick={handleSaveNote}

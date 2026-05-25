@@ -60,7 +60,7 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
       <button
         type="button"
         onClick={() => handleScroll(-1)}
-        className="absolute left-0 -translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center"
+        className="hidden md:flex absolute left-0 -translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md items-center justify-center"
       >
         <ChevronLeft size={28} strokeWidth={2} />
       </button>
@@ -135,7 +135,7 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
       <button
         type="button"
         onClick={() => handleScroll(1)}
-        className="absolute right-0 translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md flex items-center justify-center"
+        className="hidden md:flex absolute right-0 translate-x-1/2 z-30 bg-[#8A0000] text-white rounded-full p-2 hover:bg-red-900 transition-all shadow-md items-center justify-center"
       >
         <ChevronRight size={28} strokeWidth={2} />
       </button>

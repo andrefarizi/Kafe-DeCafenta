@@ -114,19 +114,19 @@ export default function MenuClient({ items }: MenuClientProps) {
           router.push(`/customer/detail_menu/${item.id}`);
         }
       }}
-      className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer"
     >
-      <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
+      <div className="relative w-full h-44">
         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
         <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold">
           <Star size={12} className="fill-yellow-400 text-yellow-400" />
           {item.rating}
         </div>
       </div>
-      <div className="w-full sm:flex-1 flex flex-col justify-between">
+      <div className="p-4 w-full sm:flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="font-bold text-black text-md mb-1">{item.name}</h3>
-          <p className="text-sm text-black font-medium">{item.price}</p>
+          <h3 className="font-bold text-black text-sm mb-1">{item.name}</h3>
+          <p className="text-xs font-bold text-[#8B0000]">{item.price}</p>
         </div>
         <button
           type="button"
@@ -134,7 +134,7 @@ export default function MenuClient({ items }: MenuClientProps) {
             event.stopPropagation();
             handleOpenAddModal(item);
           }}
-          className="w-full bg-[#8B0000] text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-colors mt-4"
+          className="w-full bg-[#8B0000] text-white py-1.5 rounded-md text-[10px] font-bold hover:bg-[#6A0000] transition-colors mt-3"
         >
           Tambah
         </button>
@@ -167,15 +167,15 @@ export default function MenuClient({ items }: MenuClientProps) {
             />
           </div>
 
-          <div className="flex flex-wrap gap-5 mb-8">
+          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x flex-nowrap mb-8">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-8 py-2.5 rounded-full text-lg font-bold border-2 transition-all ${
+                className={`whitespace-nowrap snap-start px-8 py-2 rounded-full text-sm font-bold border-2 transition-all shrink-0 ${
                   activeCategory === category
                     ? 'bg-[#8B0000] border-[#8B0000] text-white'
-                    : 'bg-white border-[#8B0000] text-black hover:bg-gray-50'
+                    : 'bg-white border-[#8B0000] text-[#8B0000] hover:bg-red-50'
                 }`}
               >
                 {category}

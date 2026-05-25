@@ -468,8 +468,8 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 <div className="col-span-full py-10 text-center text-gray-500 font-bold">Menu tidak ditemukan.</div>
               ) : (
                 paginatedMenus.map((item) => (
-                  <div key={item.id} className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
+                  <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="relative w-full h-44">
                       <img src={getDummyImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className={`w-full h-full object-cover ${item.isAvailable === false ? 'grayscale opacity-70' : ''}`} />
                       <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
                         <StarIcon /> {item.avgRating.toFixed(1)}
@@ -480,16 +480,16 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                         </div>
                       )}
                     </div>
-                    <div className="w-full sm:flex-1 flex flex-col justify-between">
+                    <div className="p-4 w-full sm:flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="font-bold text-black text-md mb-1 line-clamp-1" title={item.name}>{item.name}</h3>
-                        <p className="text-sm text-black font-medium">{formatPrice(item.price)}</p>
+                        <h3 className="font-bold text-black text-sm mb-1 line-clamp-1" title={item.name}>{item.name}</h3>
+                        <p className="text-xs font-bold text-[#8b0000]">{formatPrice(item.price)}</p>
                       </div>
-                      <div className="mt-4">
+                      <div className="mt-3">
                         <button 
                           disabled={item.isAvailable === false}
                           onClick={() => handleOpenAddModal(item)}
-                          className={`w-full text-white py-2 rounded-xl text-xs font-bold transition active:scale-95 ${
+                          className={`w-full text-white py-1.5 rounded-md text-[10px] font-bold transition active:scale-95 ${
                             item.isAvailable === false
                               ? 'bg-gray-400 cursor-not-allowed'
                               : 'bg-[#8b0000] hover:bg-[#6b0000]'

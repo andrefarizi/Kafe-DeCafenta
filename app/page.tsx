@@ -13,7 +13,7 @@ export default function LandingPage() {
           <span className="text-[10px] md:text-sm font-extrabold text-[#c8100e] tracking-widest mt-2 md:mt-3 hidden sm:block">DE CAFENTA</span>
         </div>
         
-        <div className="hidden md:flex items-center gap-10 text-sm font-bold">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-10 text-[10px] sm:text-xs md:text-sm font-bold">
           <Link href="/" className="text-[#8b1c1c]">Home</Link>
           <Link href="/menu" className="text-black hover:text-[#8b1c1c] transition-colors">Menu</Link>
           <a href="#footer" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
@@ -192,6 +192,7 @@ export default function LandingPage() {
                   type="text" 
                   placeholder="decafenta@gmail.com" 
                   disabled
+                  suppressHydrationWarning
                   className="w-full pl-[70px] pr-6 py-[14px] rounded-full bg-white border-none focus:ring-4 focus:ring-[#f4d03f]/50 focus:outline-none text-black font-semibold shadow-inner text-base"
                 />
               </div>

@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import MenuSection, { GuestMenuItem } from './MenuSection';
 
 type MenuClientProps = {
@@ -14,7 +15,6 @@ const categories = ['Semua Menu', 'Nasi', 'Mie', 'Snack', 'Minuman'];
 export default function MenuClient({ items, errorMessage }: MenuClientProps) {
   const [activeCategory, setActiveCategory] = useState('Semua Menu');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoginPromptOpen, setIsLoginPromptOpen] = useState(false);
 
   const filteredItems = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -29,44 +29,32 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
 
   const hasItems = filteredItems.length > 0;
 
+  const router = useRouter();
+
   const handleAddClick = () => {
-    setIsLoginPromptOpen(true);
+    router.push('/login');
   };
 
   return (
     <div className="min-h-screen bg-[#fafafa] font-sans overflow-x-hidden flex flex-col scroll-smooth">
       {/* ================= NAVBAR ================= */}
-      <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-sm fixed top-0 w-full z-50">
-        <div className="flex items-center gap-2">
-          <img src="/Group 2 1.png" alt="Logo D" className="h-8 object-contain" />
-          <span className="text-xs font-bold text-[#8b1c1c] tracking-widest mt-1">
-            DE CAFENTA
-          </span>
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-white shadow-sm fixed top-0 w-full z-50">
+        <div className="flex items-center gap-1 shrink-0">
+          <img src="/Group 2 1.png" alt="Icon" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+          <span className="text-[10px] md:text-sm font-extrabold text-[#c8100e] tracking-widest mt-2 md:mt-3 hidden sm:block">DE CAFENTA</span>
+        </div>
+        
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-10 text-[10px] sm:text-xs md:text-sm font-bold">
+          <Link href="/" className="text-black hover:text-[#8b1c1c] transition-colors">Home</Link>
+          <Link href="/menu" className="text-[#8b1c1c]">Menu</Link>
+          <a href="#footer" className="text-black hover:text-[#8b1c1c] transition-colors">Kontak</a>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-800">
-          <Link href="/" className="hover:text-[#8b1c1c] transition-colors">
-            Home
-          </Link>
-          <a href="#" className="text-[#8b1c1c]">
-            Menu
-          </a>
-          <a href="#footer" className="hover:text-[#8b1c1c] transition-colors">
-            Kontak
-          </a>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="px-6 py-2 bg-[#8b1c1c] text-white text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors"
-          >
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link href="/login" className="px-5 md:px-8 py-2 md:py-2.5 bg-[#8b1c1c] text-white text-xs md:text-sm font-bold rounded-full hover:bg-[#6b1d1d] transition-colors">
             Masuk
           </Link>
-          <Link
-            href="/daftar"
-            className="px-6 py-2 bg-transparent border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors"
-          >
+          <Link href="/daftar" className="px-5 md:px-8 py-2 md:py-2.5 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-xs md:text-sm font-bold rounded-full hover:bg-[#8b1c1c] hover:text-white transition-colors">
             Daftar
           </Link>
         </div>
@@ -103,12 +91,12 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
         </div>
 
         {/* Filter Kategori */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x flex-nowrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-8 py-2 rounded-full text-sm font-bold border-2 transition-colors ${
+              className={`whitespace-nowrap snap-start px-8 py-2 rounded-full text-sm font-bold border-2 transition-colors shrink-0 ${
                 activeCategory === cat
                   ? 'bg-[#8b1c1c] border-[#8b1c1c] text-white'
                   : 'bg-transparent border-[#8b1c1c] text-[#8b1c1c] hover:bg-red-50'
@@ -210,40 +198,7 @@ export default function MenuClient({ items, errorMessage }: MenuClientProps) {
         </footer>
       </div>
 
-      {isLoginPromptOpen && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setIsLoginPromptOpen(false)}
-          ></div>
-          <div className="relative bg-white border-2 border-[#8b1c1c] rounded-[28px] w-full max-w-[520px] p-8 text-center shadow-2xl">
-            <div className="mx-auto mb-6 w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
-              <img src="/Login dulu.png" alt="Login diperlukan" className="w-full h-full object-contain" />
-            </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-black mb-2">
-              Ups, kamu belum login nih
-            </h2>
-            <p className="text-sm sm:text-base font-medium text-gray-600 mb-8">
-              Yuk login dulu dan nikmati menu favoritmu di De Cafenta
-            </p>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/login"
-                className="w-full py-3 bg-[#8b1c1c] text-white text-sm font-bold rounded-xl hover:bg-[#6b1d1d] transition-colors"
-              >
-                Masuk
-              </Link>
-              <button
-                type="button"
-                onClick={() => setIsLoginPromptOpen(false)}
-                className="w-full py-3 bg-white border-2 border-[#8b1c1c] text-[#8b1c1c] text-sm font-bold rounded-xl hover:bg-red-50 transition-colors"
-              >
-                Kembali
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

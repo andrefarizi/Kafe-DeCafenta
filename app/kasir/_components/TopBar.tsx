@@ -20,11 +20,11 @@ export default function TopBar() {
 
   return (
     <header className="w-full bg-[#f4d03f] flex items-center justify-between md:justify-end px-4 md:px-6 py-3 shrink-0">
-      {/* Placeholder kiri di desktop (agar avatar tetap kanan), di mobile beri space untuk hamburger */}
-      <div className="md:hidden w-10 h-10" aria-hidden="true" />
-
-      {/* Judul Halaman di Mobile (tengah) */}
-      <span className="md:hidden text-[#8b1c1c] font-bold text-sm tracking-wide">DE CAFENTA — Kasir</span>
+      {/* Logo / Brand di Mobile */}
+      <div className="md:hidden flex items-center gap-2">
+        <img src="/Group 2 1.png" alt="Logo" className="h-7 w-auto object-contain" />
+        <span className="font-extrabold text-[#8A0000] text-sm tracking-widest">DE CAFENTA</span>
+      </div>
 
       {/* Avatar + Dropdown Wrapper */}
       <div className="relative">

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 // POST /api/user/avatar — upload foto profil
 // Body: FormData dengan field "file" (image)
@@ -41,27 +40,32 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Buat direktori avatars jika belum ada
-  const uploadDir = path.join(process.cwd(), "public", "avatars");
-  await mkdir(uploadDir, { recursive: true });
+  try {
+    // Nama file unik berdasarkan userId + timestamp
+    const ext = file.type.split("/")[1].replace("jpeg", "jpg");
+    const fileName = `avatars/${session.user.id}-${Date.now()}.${ext}`;
 
-  // Nama file unik berdasarkan userId + timestamp
-  const ext = file.type.split("/")[1].replace("jpeg", "jpg");
-  const fileName = `${session.user.id}-${Date.now()}.${ext}`;
-  const filePath = path.join(uploadDir, fileName);
+    // Tulis file ke Vercel Blob
+    const blob = await put(fileName, file, {
+      access: 'public',
+      // Jika butuh token manual: token: process.env.BLOB_READ_WRITE_TOKEN
+    });
 
-  // Tulis file ke disk
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filePath, buffer);
+    const imageUrl = blob.url;
 
-  const imageUrl = `/avatars/${fileName}`;
+    // Update user.image di database
+    const updated = await prisma.user.update({
+      where: { id: session.user.id },
+      data: { image: imageUrl },
+      select: { id: true, image: true },
+    });
 
-  // Update user.image di database
-  const updated = await prisma.user.update({
-    where: { id: session.user.id },
-    data: { image: imageUrl },
-    select: { id: true, image: true },
-  });
-
-  return NextResponse.json({ imageUrl: updated.image });
+    return NextResponse.json({ imageUrl: updated.image });
+  } catch (error: any) {
+    console.error("Avatar upload error:", error);
+    return NextResponse.json(
+      { error: "Gagal mengunggah foto profil. Silakan coba lagi." },
+      { status: 500 }
+    );
+  }
 }

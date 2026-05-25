@@ -120,7 +120,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
           <Topbar />
         </div>
 
-        <div className="p-6 lg:p-8">
+        <div className="p-6 lg:p-8 pb-32 md:pb-8">
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="flex items-center gap-4">
               <button

@@ -366,16 +366,15 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
     // Simpan gambar jika ada
     let imageUrl: string | null = null;
     if (imageFile && imageFile.size > 0) {
-      const { writeFile, mkdir } = await import('fs/promises');
-      const { join }             = await import('path');
-      const bytes  = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const uploadDir = join(process.cwd(), 'public', 'uploads', 'menus');
-      await mkdir(uploadDir, { recursive: true });
+      const { put } = await import('@vercel/blob');
       const ext      = (imageFile.name.split('.').pop() ?? 'jpg').toLowerCase();
-      const fileName = `menu-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      await writeFile(join(uploadDir, fileName), buffer);
-      imageUrl = `/uploads/menus/${fileName}`;
+      const fileName = `menus/menu-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      
+      const blob = await put(fileName, imageFile, {
+        access: 'public',
+      });
+      
+      imageUrl = blob.url;
     }
 
     await prisma.menu.create({
