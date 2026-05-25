@@ -298,12 +298,6 @@ export default function TataLetakMejaPage() {
 
       {/* ── SECTION 3: ACTION BUTTONS ── */}
       <div className="flex flex-col sm:flex-row justify-end items-center gap-4 border-t border-gray-300 pt-6">
-        <Link
-          href="/owner/meja"
-          className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center"
-        >
-          Batalkan
-        </Link>
         <button
           onClick={handleSimpan}
           disabled={isPending}
@@ -311,6 +305,12 @@ export default function TataLetakMejaPage() {
         >
           {isPending ? 'Menyimpan...' : 'Simpan'}
         </button>
+        <Link
+          href="/owner/meja"
+          className="w-full sm:w-48 bg-white border border-[#8B1A1A] text-[#8B1A1A] hover:bg-red-50 font-extrabold text-sm py-3 rounded-lg transition-colors shadow-sm text-center"
+        >
+          Batalkan
+        </Link>
       </div>
 
       {/* ══ MODAL TATA KELOLA BERHASIL ══ */}

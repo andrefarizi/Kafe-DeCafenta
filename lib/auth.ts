@@ -88,7 +88,13 @@ const nextAuth = NextAuth({
 
   callbacks: {
     // Tambahkan data user ke JWT token saat login
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // Allow session update for name and image
+      if (trigger === "update" && session) {
+        if (session.name) token.name = session.name;
+        if (session.image) token.picture = session.image;
+      }
+
       if (user) {
         token.id = user.id;
         token.role = (user as { id?: string; role?: string }).role;

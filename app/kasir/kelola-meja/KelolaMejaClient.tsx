@@ -217,16 +217,16 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
-                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                  className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
-                >
-                  Batal
-                </button>
-                <button
                   onClick={handleConfirmToggle}
                   className="w-full sm:flex-1 bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
                 >
                   Ya, Ubah
+                </button>
+                <button
+                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                  className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+                >
+                  Batal
                 </button>
               </div>
             </div>

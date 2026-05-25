@@ -26,7 +26,7 @@ type ProfileData = {
 };
 
 export default function EditProfilPage() {
-  const { status } = useSession();
+  const { status, update } = useSession();
   const router = useRouter();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -80,6 +80,7 @@ export default function EditProfilPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Gagal upload");
       setProfile((prev) => prev ? { ...prev, image: json.imageUrl } : prev);
+      await update({ image: json.imageUrl });
       showToast("success", "Foto profil berhasil diperbarui!");
     } catch (err: unknown) {
       showToast("error", err instanceof Error ? err.message : "Gagal upload foto");
@@ -107,8 +108,12 @@ export default function EditProfilPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Gagal menyimpan");
+      await update({ name: editName });
       showToast("success", "Profil berhasil diperbarui!");
-      setTimeout(() => router.push("/customer/Profil"), 1500);
+      setTimeout(() => {
+        router.refresh();
+        router.push("/customer/Profil");
+      }, 1500);
     } catch (err: unknown) {
       showToast("error", err instanceof Error ? err.message : "Terjadi kesalahan");
     } finally {

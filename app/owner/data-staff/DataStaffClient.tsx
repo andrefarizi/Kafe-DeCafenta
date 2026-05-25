@@ -415,16 +415,16 @@ export default function DataStaffClient({
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
-                onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
-              >
-                Batal
-              </button>
-              <button
                 onClick={handleConfirmToggle}
                 className="w-full sm:flex-1 bg-[#8B1A1A] text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-900 transition shadow-lg"
               >
                 Ya, Lanjutkan
+              </button>
+              <button
+                onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+              >
+                Batal
               </button>
             </div>
           </div>
@@ -520,6 +520,14 @@ export default function DataStaffClient({
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                 <button
+                  type="submit"
+                  disabled={isAdding}
+                  className="w-full sm:flex-1 flex items-center justify-center gap-2 bg-[#8B1A1A] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-900 transition shadow-md disabled:opacity-70"
+                >
+                  {isAdding ? <Loader2 size={16} className="animate-spin" /> : null}
+                  Simpan Kasir
+                </button>
+                <button
                   type="button"
                   onClick={() => {
                     setAddModalOpen(false);
@@ -529,14 +537,6 @@ export default function DataStaffClient({
                   disabled={isAdding}
                 >
                   Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isAdding}
-                  className="w-full sm:flex-1 flex items-center justify-center gap-2 bg-[#8B1A1A] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-900 transition shadow-md disabled:opacity-70"
-                >
-                  {isAdding ? <Loader2 size={16} className="animate-spin" /> : null}
-                  Simpan Kasir
                 </button>
               </div>
             </form>

@@ -298,11 +298,11 @@ export default function KeranjangPage() {
                 Apakah kamu yakin ingin menghapus <span className="font-extrabold text-black">{deleteItemName}</span> dari keranjang?
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button onClick={() => { setStep(""); setDeleteItemId(null); }} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">
-                  Batal
-                </button>
                 <button onClick={handleDeleteConfirm} disabled={isDeleting} className="w-full sm:flex-1 bg-[#8B0000] text-white py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center justify-center gap-2">
                   {isDeleting ? <><Loader2 size={16} className="animate-spin" /> Menghapus...</> : "Ya, Hapus"}
+                </button>
+                <button onClick={() => { setStep(""); setDeleteItemId(null); }} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">
+                  Batal
                 </button>
               </div>
             </div>
@@ -331,7 +331,6 @@ export default function KeranjangPage() {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 px-0 md:px-10">
-                <button onClick={() => setStep("")} className="w-full sm:w-auto sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
                 <button
                   onClick={() => { if (selectedOrderType) setStep("detail"); }}
                   disabled={!selectedOrderType}
@@ -339,6 +338,7 @@ export default function KeranjangPage() {
                 >
                   Lanjutkan
                 </button>
+                <button onClick={() => setStep("")} className="w-full sm:w-auto sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
               </div>
             </div>
           </div>
@@ -422,7 +422,6 @@ export default function KeranjangPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-5">
-                <button onClick={() => setStep("")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">Batal</button>
                 <button
                   onClick={handleCreateOrder} 
                   disabled={isCreatingOrder} 
@@ -434,6 +433,7 @@ export default function KeranjangPage() {
                     "Lanjutkan"
                   )}
                 </button>
+                <button onClick={() => setStep("")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">Batal</button>
               </div>
             </div>
           </div>
@@ -456,7 +456,6 @@ export default function KeranjangPage() {
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button onClick={() => setStep("")} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
                 <button
                   disabled={isPending}
                   onClick={handleSaveNote}
@@ -464,6 +463,7 @@ export default function KeranjangPage() {
                 >
                   {isPending ? <><Loader2 size={20} className="animate-spin" /> Menyimpan...</> : "Simpan Perubahan"}
                 </button>
+                <button onClick={() => setStep("")} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors">Batal</button>
               </div>
             </div>
           </div>

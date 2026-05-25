@@ -646,16 +646,16 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button 
-                onClick={() => { setIsDeleteModalOpen(false); setDeleteItemId(null); }} 
-                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button 
                 onClick={handleConfirmDelete} 
                 className="w-full sm:flex-1 bg-[#8B0000] text-white py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
               >
                 Ya, Hapus
+              </button>
+              <button 
+                onClick={() => { setIsDeleteModalOpen(false); setDeleteItemId(null); }} 
+                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
+              >
+                Batal
               </button>
             </div>
           </div>
@@ -674,12 +674,6 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               placeholder="Contoh: Tanpa bawang, pedas sedang..."
             />
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <button 
-                onClick={() => setIsEditNoteOpen(false)}
-                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors"
-              >
-                Batalkan
-              </button>
               <button
                 disabled={isPending}
                 onClick={saveNote}
@@ -690,6 +684,12 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 ) : (
                   "Simpan Perubahan"
                 )}
+              </button>
+              <button 
+                onClick={() => setIsEditNoteOpen(false)}
+                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors"
+              >
+                Batalkan
               </button>
             </div>
           </div>
@@ -790,49 +790,45 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
 
             <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-5">
               <button 
-                onClick={() => setIsConfirmModalOpen(false)}
-                className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
-              >
-                Batal
-              </button>
-              <button 
                 disabled={isPending}
                 onClick={() => {
                   if (!selectedPayment) {
-                    toast.error("Silakan pilih metode pembayaran terlebih dahulu!");
+                    toast.error("Silakan pilih metode pembayaran!");
                     return;
                   }
-                  
                   startTransition(async () => {
                     const payload = {
-                      orderCode: orderCode,
-                      customerName: customerName,
-                      orderType: orderType,
+                      orderCode,
+                      customerName,
+                      orderType,
                       paymentMethod: selectedPayment,
                       items: cartItems.map(item => ({
                         menuId: item.menuId,
                         qty: item.qty,
                         price: item.price,
-                        note: item.note,
+                        note: item.note
                       }))
                     };
-
-                    const result = await createKasirOrder(payload);
-
-                    if (result.success) {
+                    const res = await createKasirOrder(payload);
+                    if (res.success) {
+                      setCreatedOrderId(res.orderId || "");
                       setIsConfirmModalOpen(false);
-                      // Simpan ID pesanan yang didapat dari backend ke dalam state
-                      setCreatedOrderId(result.orderId || ""); 
                       setIsOrderSuccessOpen(true);
+                      resetForm();
                     } else {
-                      toast.error(result.message);
+                      toast.error(res.message);
                     }
-
                   });
                 }}
-                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                {isPending ? <><Loader2 className="animate-spin" size={18} /> Memproses...</> : "Lanjutkan"}
+                {isPending ? <><Loader2 size={16} className="animate-spin" /> Memproses...</> : "Konfirmasi & Proses"}
+              </button>
+              <button 
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
+              >
+                Batal
               </button>
             </div>
           </div>

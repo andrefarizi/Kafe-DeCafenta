@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'platform-lookaside.fbsbx.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'aonkwnvg7i4sqbvd.public.blob.vercel-storage.com',
       }
     ],
   },

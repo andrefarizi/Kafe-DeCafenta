@@ -172,14 +172,24 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
   // --- FUNGSI EKSEKUSI HAPUS PESANAN ---
   const handleCancelOrder = async () => {
     setIsDeleting(true);
-    const result = await hapusPesananKasir(order.id);
-    setIsDeleting(false);
+    try {
+      const res = await fetch('/api/pesanan/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: order.id })
+      });
+      const result = await res.json();
+      setIsDeleting(false);
 
-    if (result.success) {
-      setShowConfirmModal(false);
-      setShowSuccessModal(true);
-    } else {
-      toast.error(result.message);
+      if (result.success) {
+        setShowConfirmModal(false);
+        setShowSuccessModal(true);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (e) {
+      setIsDeleting(false);
+      toast.error('Gagal menghubungi server.');
     }
   };
 
@@ -446,8 +456,7 @@ export default function DetailPesananClient({ order }: { order: OrderDetailData 
             <button 
               onClick={() => {
                 setShowSuccessModal(false);
-                router.push('/kasir/daftar-pesanan/');
-                router.refresh();
+                router.push('/kasir/daftar-pesanan');
               }}
               className="w-full bg-[#8B1A1A] border border-[#8B1A1A] hover:bg-red-900 text-white font-extrabold text-sm py-3.5 rounded-xl transition-colors shadow-sm"
             >
