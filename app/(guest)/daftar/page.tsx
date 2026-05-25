@@ -71,8 +71,8 @@ export default function PesananPage() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setPassword(val);
-    if (val.length > 0 && val.length < 6) {
-      setValidationErrors(prev => ({...prev, password: 'Password minimal 6 karakter.'}));
+    if (val.length > 0 && val.length < 8) {
+      setValidationErrors(prev => ({...prev, password: 'Password minimal 8 karakter.'}));
     } else {
       setValidationErrors(prev => ({...prev, password: undefined}));
     }

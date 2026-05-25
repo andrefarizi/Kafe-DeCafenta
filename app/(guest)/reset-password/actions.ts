@@ -17,8 +17,8 @@ export async function resetPasswordAction(prevState: any, formData: FormData) {
     return { success: false, message: 'Password tidak cocok' };
   }
 
-  if (password.length < 6) {
-    return { success: false, message: 'Password minimal 6 karakter' };
+  if (password.length < 8) {
+    return { success: false, message: 'Password minimal 8 karakter' };
   }
 
   try {
