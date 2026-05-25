@@ -6,7 +6,7 @@ export default function ModalSuksesTambahMeja() {
     <div className="min-h-screen bg-gray-900/40 flex items-center justify-center p-4 font-sans">
       
       {/* Modal Card Container */}
-      <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+      <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
         
         {/* Illustration */}
         <div className="w-28 h-28 md:w-32 md:h-32 mb-6 flex items-center justify-center">

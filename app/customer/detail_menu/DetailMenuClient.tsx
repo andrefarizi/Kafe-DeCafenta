@@ -115,7 +115,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
       <Sidebar activeMenu="menu" />
 
-      <main className="flex-1 flex flex-col min-h-screen relative">
+      <main className="w-full sm:flex-1 flex flex-col min-h-screen relative">
         <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
           <Topbar />
         </div>
@@ -137,7 +137,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                 <img src={menu.image} alt={menu.name} className="w-full h-full object-cover" />
               </div>
 
-              <div className="flex-1 flex flex-col justify-between py-1">
+              <div className="w-full sm:flex-1 flex flex-col justify-between py-1">
                 <div>
                   <h2 className="text-2xl font-bold text-black mb-1 leading-tight break-all">{menu.name}</h2>
                   <p className="text-2xl font-bold text-[#8B0000] mb-5">{formatRupiah(menu.price)}</p>
@@ -239,7 +239,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
         {isModalOpen && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setIsModalOpen(false)}></div>
-            <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
+            <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[20px] md:rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-5 md:p-6 animate-in fade-in zoom-in duration-200">
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="absolute -top-2 -right-2 bg-[#8B0000] text-white rounded-full p-1.5 shadow-lg hover:bg-red-700 transition-colors z-10"
@@ -252,11 +252,11 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                 <span className="text-xl font-bold text-[#8B0000]">{formatRupiah(menu.price)}</span>
               </div>
 
-              <div className="flex gap-4 mb-5">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-5">
                 <div className="w-[110px] h-[100px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
                   <img src={menu.image} alt={menu.name} className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="w-full sm:flex-1 flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5 mb-1">
                     <FileText size={14} className="text-black" />
                     <span className="font-bold text-black text-xs">Catatan (opsional)</span>
@@ -353,7 +353,7 @@ const MiniReview = ({ name, date, text, rating, img }: { name: string; date: str
     <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-gray-50 shadow-sm">
       <img src={img} alt={name} className="w-full h-full object-cover" />
     </div>
-    <div className="flex-1 min-w-0">
+    <div className="w-full sm:flex-1 min-w-0">
       <div className="flex items-center justify-between mb-0.5">
         <h4 className="font-bold text-black text-xs truncate mr-2">{name}</h4>
         <div className="bg-[#8B0000] text-white px-1.5 py-0.5 rounded-lg flex items-center gap-1 shrink-0">

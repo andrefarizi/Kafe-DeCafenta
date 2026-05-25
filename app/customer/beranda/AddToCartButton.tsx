@@ -72,7 +72,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
           }}
         >
           <div
-            className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200"
+            className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[20px] md:rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-5 md:p-6 animate-in fade-in zoom-in duration-200"
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -94,11 +94,11 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
               <span className="text-xl font-bold text-[#8B0000]">{formatRupiah(item.price)}</span>
             </div>
 
-            <div className="flex gap-4 mb-5">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-5">
               <div className="w-[110px] h-[100px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="w-full sm:flex-1 flex flex-col min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <FileText size={14} className="text-black" />
                   <span className="font-bold text-black text-xs">Catatan (opsional)</span>
@@ -185,7 +185,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
               </div>
             </div>
 
-            <h2 className="text-[36px] font-extrabold text-black mb-4 tracking-tight">Menu Sukses ditambahkan!</h2>
+            <h2 className="text-3xl md:text-[36px] font-extrabold text-black mb-4 tracking-tight">Menu Sukses ditambahkan!</h2>
 
             <p className="text-black font-medium text-[16px] leading-relaxed mb-12 px-6">
               Selamat menu kamu telah berhasil ditambahkan<br />
@@ -201,7 +201,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
                   setIsSuccessOpen(false);
                   router.push('/customer/keranjang');
                 }}
-                className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
+                className="w-full bg-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
               >
                 Periksa Keranjang
               </button>
@@ -213,7 +213,7 @@ export default function AddToCartButton({ item, className = '', label = 'Tambah'
                   setIsSuccessOpen(false);
                   router.refresh();
                 }}
-                className="w-full bg-white border-[2.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
+                className="w-full bg-white border-[2.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-red-50 transition-colors"
               >
                 Lanjut Memesan
               </button>

@@ -368,7 +368,7 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
       ========================================= */}
       {showStatusConfirmModal && (
         <div className="fixed inset-0 z-[100] bg-gray-900/40 flex items-center justify-center p-4 font-sans backdrop-blur-sm">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
             <div className="w-20 h-20 bg-[#FFC700] rounded-full flex items-center justify-center mb-6 shadow-sm">
               <span className="text-white text-[40px] font-black leading-none mt-1">?</span>
             </div>
@@ -404,7 +404,7 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
       ========================================= */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-[100] bg-gray-900/40 flex items-center justify-center p-4 font-sans backdrop-blur-sm">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
             <div className="w-20 h-20 bg-[#FF4C4C] rounded-full flex items-center justify-center mb-6 shadow-sm">
               <span className="text-white text-[40px] font-black leading-none mt-1">!</span>
             </div>
@@ -436,7 +436,7 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
       ========================================= */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-[100] bg-gray-900/40 flex items-center justify-center p-4 font-sans backdrop-blur-sm">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
             <div className="relative flex items-center justify-center w-24 h-24 mb-6">
               <div className="absolute w-16 h-16 bg-[#B6EBA5] rounded-xl z-0"></div>
               <div className="absolute w-16 h-16 bg-[#B6EBA5] rounded-xl rotate-45 z-0"></div>

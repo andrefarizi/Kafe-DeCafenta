@@ -12,7 +12,7 @@ const InvoicePage = () => {
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
       <Sidebar activeMenu="pesanan" />
 
-      <main className="flex-1 flex flex-col min-h-screen relative">
+      <main className="w-full sm:flex-1 flex flex-col min-h-screen relative">
 
         <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
           <Topbar />

@@ -137,7 +137,7 @@ function PageBtn({
         wide
           ? 'w-[155px] text-[15px]'
           : small
-          ? 'w-[48px] text-[22px]'
+          ? 'w-[48px] text-xl md:text-[22px]'
           : 'w-[48px] text-[15px]'
       }
       ${

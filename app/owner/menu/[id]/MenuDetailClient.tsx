@@ -185,7 +185,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
 
           <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-              <div className="flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
+              <div className="w-full sm:flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
                 <h2 className="text-3xl md:text-4xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors flex items-center gap-3">
                   {menu.name}
                   <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />

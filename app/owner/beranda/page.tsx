@@ -129,7 +129,7 @@ export default async function DashboardOwner(props: Props) {
               </div>
 
               {/* Bars Column */}
-              <div className="flex-1 border-l-[4px] border-black flex flex-col space-y-4 py-4">
+              <div className="w-full sm:flex-1 border-l-[4px] border-black flex flex-col space-y-4 py-4">
                 {menuTerfavorit.map((menu, index) => (
                   <div key={`bar-${index}`} className="h-10 flex items-center">
                     <div 

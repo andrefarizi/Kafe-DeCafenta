@@ -83,7 +83,7 @@ const Sidebar = ({ activeMenu }: { activeMenu?: string }) => {
           <span className="font-bold tracking-wider uppercase">De Cafenta</span>
         </div>
 
-        <nav className="flex-1 mt-4">
+        <nav className="w-full sm:flex-1 mt-4">
           {navItems.map((item) => (
             <NavItem
               key={item.key}

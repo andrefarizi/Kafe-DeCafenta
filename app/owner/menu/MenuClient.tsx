@@ -55,7 +55,7 @@ export default function MenuClient({ items }: MenuClientProps) {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Contoh : Nasi Goreng"
-            className="flex-1 px-4 py-2 text-sm focus:outline-none placeholder-gray-500 font-medium bg-transparent"
+            className="w-full sm:flex-1 px-4 py-2 text-sm focus:outline-none placeholder-gray-500 font-medium bg-transparent"
           />
         </div>
 
@@ -96,7 +96,7 @@ export default function MenuClient({ items }: MenuClientProps) {
                   </div>
                 )}
               </div>
-              <div className="flex-1 flex flex-col justify-between">
+              <div className="w-full sm:flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="font-bold text-black text-md mb-1 line-clamp-1">{item.name}</h3>
                   <p className="text-sm text-black font-medium">{item.price}</p>

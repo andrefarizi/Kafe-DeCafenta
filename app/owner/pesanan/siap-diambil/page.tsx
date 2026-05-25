@@ -64,7 +64,7 @@ export default function PesananSiapDiambilFiltered() {
         <input
           type="text"
           placeholder="Contoh : #DCF001"
-          className="flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium"
+          className="w-full sm:flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium"
         />
       </div>
 

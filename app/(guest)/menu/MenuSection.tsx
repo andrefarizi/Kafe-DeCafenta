@@ -40,7 +40,7 @@ export default function MenuSection({ title, items, onAdd }: MenuSectionProps) {
                   </div>
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="w-full sm:flex-1 flex flex-col justify-between">
                   <div>
                     <h3 className="font-bold text-black text-md mb-1">{item.name}</h3>
                     <p className="text-sm text-black font-medium">{item.price}</p>

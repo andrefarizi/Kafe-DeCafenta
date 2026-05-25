@@ -44,7 +44,7 @@ export default async function ProfilPage() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-4 sm:px-8 md:px-12 pt-6 md:pt-8 pb-28 md:pb-8">
+      <main className="w-full sm:flex-1 px-4 sm:px-8 md:px-12 pt-6 md:pt-8 pb-28 md:pb-8">
         {/* HEADER */}
         <div className="flex items-center gap-5">
           <BackButton />

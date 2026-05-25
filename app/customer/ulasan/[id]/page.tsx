@@ -100,7 +100,7 @@ export default function ReviewPage() {
     return (
       <div className="flex min-h-screen bg-[#F8F9FA]">
         <Sidebar activeMenu="menu" />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="w-full sm:flex-1 flex items-center justify-center">
           <Loader2 className="animate-spin w-10 h-10 text-[#8B0000]" />
         </main>
       </div>
@@ -111,7 +111,7 @@ export default function ReviewPage() {
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
       <Sidebar activeMenu='menu' />
 
-      <div className="flex-1 flex flex-col min-h-screen relative">
+      <div className="w-full sm:flex-1 flex flex-col min-h-screen relative">
         
         <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
           <Topbar />
@@ -147,11 +147,11 @@ export default function ReviewPage() {
             ) : (
               <div className="space-y-3 mb-8">
                 {currentReviews.map((review) => (
-                  <div key={review.id} className="bg-[#FFF0F0] border border-pink-50 rounded-2xl p-4 flex gap-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={review.id} className="bg-[#FFF0F0] border border-pink-50 rounded-2xl p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 shadow-sm hover:shadow-md transition-shadow">
                     <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-white bg-gray-200">
                         <img src={review.img} alt={review.name} className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="w-full sm:flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-0.5">
                         <div>
                           <h3 className="font-bold text-black text-[15px]">{review.name}</h3>

@@ -169,7 +169,7 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
             </div>
 
             {/* Bagian Kanan */}
-            <div className="flex-1 flex flex-col pb-2 border-t-[3px] border-[#8b0000] md:border-none pt-6 md:pt-0">
+            <div className="w-full sm:flex-1 flex flex-col pb-2 border-t-[3px] border-[#8b0000] md:border-none pt-6 md:pt-0">
 
               {/* Kanan Atas (MJ11 & MJ12) */}
               <div className="grid grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-20">
@@ -215,16 +215,16 @@ export default function KelolaMejaClient({ tables }: { tables: MejaData[] }) {
               <p className="text-gray-600 mb-6 text-sm">
                 Apakah Anda yakin ingin mengubah status <strong>{confirmModal.tableName}</strong> menjadi <strong>{confirmModal.currentStatus === 'Tersedia' ? 'Dipakai' : 'Tersedia'}</strong>?
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                  className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+                  className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleConfirmToggle}
-                  className="flex-1 bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
+                  className="w-full sm:flex-1 bg-[#8B0000] text-white py-3 rounded-2xl font-bold text-sm hover:bg-[#6A0000] transition shadow-lg"
                 >
                   Ya, Ubah
                 </button>

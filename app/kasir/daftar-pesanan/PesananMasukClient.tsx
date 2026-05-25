@@ -116,7 +116,7 @@ export default function PesananMasukClient({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Cari Kode (Contoh: #DCF001) atau Nama..."
-          className="flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium"
+          className="w-full sm:flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium"
         />
       </div>
 
@@ -146,7 +146,7 @@ export default function PesananMasukClient({
       </div>
 
       {/* Table Section */}
-      <div className="flex-1 w-full bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
+      <div className="w-full sm:flex-1 w-full bg-white p-4 md:p-8 rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
         <div className="overflow-x-auto pb-4">
           <table className="w-full min-w-[800px] border-collapse">
             <thead>

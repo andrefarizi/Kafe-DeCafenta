@@ -337,7 +337,7 @@ export default function TambahMenuClient({ categories }: Props) {
       {/* ── Modal Berhasil ── */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-sm p-8 flex flex-col items-center text-center shadow-2xl">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-sm p-6 md:p-8 flex flex-col items-center text-center shadow-2xl">
             <CheckCircle2 size={64} className="text-green-500 mx-auto mb-3" strokeWidth={1.5} />
             <img src="/Group (6).png" alt="Sukses" className="w-20 h-20 object-contain mb-4" />
             <h2 className="text-2xl font-extrabold text-black leading-tight mb-2">

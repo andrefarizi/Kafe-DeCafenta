@@ -62,10 +62,10 @@ const Beranda = async () => {
     <div className="flex min-h-screen bg-white font-sans text-gray-800">
       <Sidebar activeMenu='beranda' />
 
-      <main className="flex-1 flex flex-col h-screen overflow-hidden text-left">
+      <main className="w-full sm:flex-1 flex flex-col h-screen overflow-hidden text-left">
         <Topbar />
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-8 pb-24 md:pb-8">
+        <div className="w-full sm:flex-1 overflow-y-auto p-4 md:p-5 space-y-8 pb-24 md:pb-8">
 
           {/* Banner Selamat Datang */}
           <div className="relative w-full bg-[#DE2014] rounded-[1.5rem] p-6 md:p-10 flex justify-between items-center text-white overflow-hidden shadow-xl min-h-[160px] md:min-h-[240px]">

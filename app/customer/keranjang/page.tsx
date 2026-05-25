@@ -150,13 +150,13 @@ export default function KeranjangPage() {
   return (
     <div className="flex min-h-screen bg-[#F8F9FA] font-sans">
       <Sidebar activeMenu="keranjang" />
-      <main className="flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
+      <main className="w-full sm:flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
         <div className="sticky top-0 z-[40] w-full bg-[#F8F9FA]">
           <Topbar />
         </div>
 
         <div className="p-4 md:p-6 lg:p-12 pb-28 md:pb-24">
-          <h1 className="text-2xl md:text-[32px] font-extrabold text-black mb-6 md:mb-12">Keranjang</h1>
+          <h1 className="text-2xl md:text-2xl md:text-[32px] font-extrabold text-black mb-6 md:mb-12">Keranjang</h1>
 
           <div className="bg-transparent mb-8 md:mb-12">
             {/* Header tabel - sembunyikan di mobile, ganti dengan card layout */}
@@ -234,7 +234,7 @@ export default function KeranjangPage() {
                     <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
                       <img src={resolveMenuImage(item.name, item.categoryName, item.imageUrl)} alt={item.name} className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="w-full sm:flex-1 min-w-0">
                       <h3 className="font-extrabold text-black text-[15px] leading-tight">{item.name}</h3>
                       <p className="text-xs font-bold text-[#8B0000] mt-0.5">{formatPrice(item.price)}</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">Catatan: {item.note || "-"}</p>
@@ -287,21 +287,21 @@ export default function KeranjangPage() {
         {/* ===== MODAL: KONFIRMASI HAPUS ===== */}
         {step === "deleteConfirm" && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-white border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[420px] p-8 shadow-2xl text-center">
+            <div className="bg-white border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[420px] p-5 md:p-8 shadow-2xl text-center">
               <div className="flex justify-center mb-4">
                 <div className="w-16 h-16 bg-[#FEE2E2] rounded-full flex items-center justify-center">
                   <Trash2 size={32} className="text-[#8B0000]" />
                 </div>
               </div>
-              <h2 className="text-[22px] font-extrabold text-black mb-2">Hapus Item?</h2>
+              <h2 className="text-xl md:text-[22px] font-extrabold text-black mb-2">Hapus Item?</h2>
               <p className="text-gray-600 font-medium text-[14px] mb-8">
                 Apakah kamu yakin ingin menghapus <span className="font-extrabold text-black">{deleteItemName}</span> dari keranjang?
               </p>
-              <div className="flex gap-4">
-                <button onClick={() => { setStep(""); setDeleteItemId(null); }} className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 rounded-[10px] font-bold text-[15px] hover:bg-red-50 transition-colors">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <button onClick={() => { setStep(""); setDeleteItemId(null); }} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">
                   Batal
                 </button>
-                <button onClick={handleDeleteConfirm} disabled={isDeleting} className="flex-1 bg-[#8B0000] text-white py-3 rounded-[10px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center justify-center gap-2">
+                <button onClick={handleDeleteConfirm} disabled={isDeleting} className="w-full sm:flex-1 bg-[#8B0000] text-white py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center justify-center gap-2">
                   {isDeleting ? <><Loader2 size={16} className="animate-spin" /> Menghapus...</> : "Ya, Hapus"}
                 </button>
               </div>
@@ -331,11 +331,11 @@ export default function KeranjangPage() {
                 </div>
               </div>
               <div className="flex justify-center gap-6 px-10">
-                <button onClick={() => setStep("")} className="flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
+                <button onClick={() => setStep("")} className="w-full sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
                 <button
                   onClick={() => { if (selectedOrderType) setStep("detail"); }}
                   disabled={!selectedOrderType}
-                  className="flex-1 bg-[#8B0000] border-[2px] border-[#8B0000] text-white py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-[#6A0000] transition-colors disabled:opacity-50"
+                  className="w-full sm:flex-1 bg-[#8B0000] border-[2px] border-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-[#6A0000] transition-colors disabled:opacity-50"
                 >
                   Lanjutkan
                 </button>
@@ -347,8 +347,8 @@ export default function KeranjangPage() {
         {/* ===== MODAL: RINCIAN PESANAN ===== */}
         {step === "detail" && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
-              <h2 className="text-[32px] font-extrabold text-black mb-8 tracking-tight">Rincian Pesanan</h2>
+            <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-6 md:p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+              <h2 className="text-2xl md:text-[32px] font-extrabold text-black mb-8 tracking-tight">Rincian Pesanan</h2>
               <div className="mb-8">
                 <div className="grid grid-cols-12 bg-[#FFD1D1] py-3.5 px-6 rounded-xl mb-4">
                   <div className="col-span-6 font-extrabold text-black text-[16px]">Produk</div>
@@ -413,20 +413,20 @@ export default function KeranjangPage() {
               <div className="border-t-[1.5px] border-black mb-10 pt-4 flex justify-between items-end px-2">
                 <div className="flex flex-col gap-0.5">
                   <div className="text-black font-bold text-[16px]">Total Menu</div>
-                  <div className="text-black font-extrabold text-[22px]">{items.length} Menu</div>
+                  <div className="text-black font-extrabold text-xl md:text-[22px]">{items.length} Menu</div>
                 </div>
                 <div className="flex flex-col gap-0.5 text-right">
                   <div className="text-black font-bold text-[16px]">Total Harga</div>
-                  <div className="text-[#8B0000] font-extrabold text-[22px]">{formatPrice(totalPrice)}</div>
+                  <div className="text-[#8B0000] font-extrabold text-xl md:text-[22px]">{formatPrice(totalPrice)}</div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-5">
-                <button onClick={() => setStep("orderType")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-red-50 transition-colors">Batal</button>
+              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-5">
+                <button onClick={() => setStep("orderType")} className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors">Batal</button>
                 <button
                   onClick={handleCreateOrder} 
                   disabled={isCreatingOrder} 
-                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center gap-2"
+                  className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
                   {isCreatingOrder ? (
                     <><Loader2 size={16} className="animate-spin" /> Memproses...</>
@@ -442,7 +442,7 @@ export default function KeranjangPage() {
         {/* ===== MODAL: EDIT CATATAN ===== */}
         {step === "editNote" && (
           <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-10 shadow-2xl">
+            <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-6 md:p-10 shadow-2xl">
               <div className="flex items-center gap-4 mb-8">
                 <img src="/rincian.png" alt="" className="w-12 h-12" />
                 <h2 className="text-[38px] font-extrabold text-black tracking-tight mt-1">Edit Catatan</h2>
@@ -455,12 +455,12 @@ export default function KeranjangPage() {
                   placeholder="Jangan pedas"
                 />
               </div>
-              <div className="flex gap-4">
-                <button onClick={() => setStep("detail")} className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <button onClick={() => setStep("detail")} className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors">Batalkan</button>
                 <button
                   disabled={isPending}
                   onClick={handleSaveNote}
-                  className="flex-1 bg-[#8B0000] hover:bg-[#6A0000] text-white py-4 rounded-[14px] font-extrabold text-[18px] transition-colors shadow-md disabled:opacity-70 flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 bg-[#8B0000] hover:bg-[#6A0000] text-white py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] transition-colors shadow-md disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   {isPending ? <><Loader2 size={20} className="animate-spin" /> Menyimpan...</> : "Simpan Perubahan"}
                 </button>
@@ -472,7 +472,7 @@ export default function KeranjangPage() {
         {/* ===== MODAL: CATATAN BERHASIL DIUBAH ===== */}
         {step === "noteSuccess" && (
           <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[500px] p-12 text-center shadow-2xl">
+            <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[500px] p-6 md:p-12 text-center shadow-2xl">
               <div className="flex justify-center mb-6">
                 <div className="w-24 h-24 bg-[#DCFCE7] rounded-full flex items-center justify-center">
                   <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
@@ -481,7 +481,7 @@ export default function KeranjangPage() {
                   </svg>
                 </div>
               </div>
-              <h2 className="text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
+              <h2 className="text-2xl md:text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
               <p className="text-gray-600 font-medium text-[15px] mb-8">Catatan untuk menu pesanan anda sudah berhasil diubah</p>
               
               <button
@@ -497,13 +497,13 @@ export default function KeranjangPage() {
         {/* ===== MODAL: PESANAN BERHASIL DIBUAT ===== */}
         {step === "orderSuccess" && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-12 text-center shadow-2xl">
+            <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-6 md:p-12 text-center shadow-2xl">
               <div className="flex justify-center mb-1">
                 <div className="relative w-40 h-40 mb-8 flex items-center justify-center">
                   <img src="/pesanansukses.png" alt="Pesanan Sukses" />
                 </div>
               </div>
-              <h2 className="text-[36px] font-extrabold text-black mb-4 tracking-tight">Pesanan Berhasil dibuat!</h2>
+              <h2 className="text-3xl md:text-[36px] font-extrabold text-black mb-4 tracking-tight">Pesanan Berhasil dibuat!</h2>
               <p className="text-black font-medium text-[18px] leading-relaxed mb-12 px-6">
                 Selamat pesanan anda berhasil di buat<br />
                 silahkan lanjutkan pembayaran untuk menyelesaikan<br />
@@ -515,7 +515,7 @@ export default function KeranjangPage() {
                     setStep(""); 
                     router.push(`/customer/detail_pesanan/cash?orderId=${createdOrderId}`); 
                   }}
-                  className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
+                  className="w-full bg-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
                 >
                   Periksa Pesanan
                 </button>
@@ -525,7 +525,7 @@ export default function KeranjangPage() {
                     setItems([]); 
                     router.refresh(); 
                   }}
-                  className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
+                  className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-red-50 transition-colors"
                 >
                   Kembali
                 </button>

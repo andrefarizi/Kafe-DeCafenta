@@ -142,7 +142,7 @@ export default function UlasanOwner() {
               />
               
               {/* Content Container */}
-              <div className="flex-1 flex flex-col justify-center">
+              <div className="w-full sm:flex-1 flex flex-col justify-center">
                 
                 {/* Name, Date, and Stars Row */}
                 <div className="flex justify-between items-start w-full">

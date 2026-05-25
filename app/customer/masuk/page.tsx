@@ -160,7 +160,7 @@ function PageBtn({
         wide
           ? 'w-[155px] text-[15px] font-normal'
           : small
-          ? 'w-[48px] text-[22px] font-bold'
+          ? 'w-[48px] text-xl md:text-[22px] font-bold'
           : 'w-[48px] text-[15px] font-bold'
       } ${active ? 'bg-[#9b0000] text-white' : 'bg-white text-[#9b0000]'}`}
     >

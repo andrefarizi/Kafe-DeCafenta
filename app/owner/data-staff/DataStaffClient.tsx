@@ -403,16 +403,16 @@ export default function DataStaffClient({
             <p className="text-gray-600 mb-6 text-sm">
               Apakah Anda yakin ingin {confirmModal.currentStatus === 'Aktif' ? 'menonaktifkan' : 'mengaktifkan'} staff <strong>{confirmModal.staffName}</strong>?
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
+                className="w-full sm:flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleConfirmToggle}
-                className="flex-1 bg-[#8B1A1A] text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-900 transition shadow-lg"
+                className="w-full sm:flex-1 bg-[#8B1A1A] text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-900 transition shadow-lg"
               >
                 Ya, Lanjutkan
               </button>
@@ -513,14 +513,14 @@ export default function DataStaffClient({
               </div>
               <p className="text-xs text-gray-500 italic mt-2">Password default akan diatur ke: Kasir123!</p>
               
-              <div className="flex gap-4 mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                 <button
                   type="button"
                   onClick={() => {
                     setAddModalOpen(false);
                     setFormErrors({ nama: '', email: '', telepon: '', staffNumber: '', general: '' });
                   }}
-                  className="flex-1 bg-white border border-gray-300 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition"
+                  className="w-full sm:flex-1 bg-white border border-gray-300 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition"
                   disabled={isAdding}
                 >
                   Batal
@@ -528,7 +528,7 @@ export default function DataStaffClient({
                 <button
                   type="submit"
                   disabled={isAdding}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#8B1A1A] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-900 transition shadow-md disabled:opacity-70"
+                  className="w-full sm:flex-1 flex items-center justify-center gap-2 bg-[#8B1A1A] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-900 transition shadow-md disabled:opacity-70"
                 >
                   {isAdding ? <Loader2 size={16} className="animate-spin" /> : null}
                   Simpan Kasir

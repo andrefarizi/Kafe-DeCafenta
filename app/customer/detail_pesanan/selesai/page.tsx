@@ -16,7 +16,7 @@ const DetailPesanan = () => {
     return (
         <div className="flex min-h-screen bg-[#F8F9FA] font-sans text-gray-800">
             <Sidebar activeMenu="pesanan" />
-            <main className="flex-1 flex flex-col h-screen overflow-hidden text-left">
+            <main className="w-full sm:flex-1 flex flex-col h-screen overflow-hidden text-left">
                 <div className="flex-none">
                     <Topbar />
                 </div>

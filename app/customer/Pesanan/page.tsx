@@ -105,10 +105,10 @@ export default function PesananPage() {
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">
       <Sidebar activeMenu="pesanan" />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="w-full sm:flex-1 flex flex-col overflow-hidden">
         <Topbar />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full pb-24 md:pb-8">
+        <main className="w-full sm:flex-1 overflow-y-auto p-4 md:p-8 max-w-6xl mx-auto w-full pb-24 md:pb-8">
           
           <h1 className="text-3xl font-extrabold mb-6 text-black">
             Pesanan Saya
@@ -123,7 +123,7 @@ export default function PesananPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Contoh : #DFC001"
-              className="flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium bg-transparent"
+              className="w-full sm:flex-1 px-4 py-3 text-sm focus:outline-none placeholder-gray-500 font-medium bg-transparent"
             />
           </div>
 

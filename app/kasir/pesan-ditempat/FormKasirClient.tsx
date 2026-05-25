@@ -288,7 +288,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               <p className="text-xs font-bold mb-1">
                 Kode Pesanan
               </p>
-              <h2 className="text-[28px] font-black text-[#8b0000]">
+              <h2 className="text-2xl md:text-[28px] font-black text-[#8b0000]">
                 #{orderCode || <span className="text-gray-400 text-lg">Memuat...</span>}
               </h2>
             </div>
@@ -355,7 +355,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                   {/* Desktop Row */}
                   <div className="hidden md:grid grid-cols-12 py-4 items-center border-b border-gray-100">
                     <div className="col-span-1 text-center text-sm font-bold">{index + 1}</div>
-                    <div className="col-span-4 flex gap-4 items-center">
+                    <div className="col-span-4 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
                       <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
@@ -393,7 +393,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                     <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="w-full sm:flex-1 min-w-0">
                       <p className="font-bold text-sm leading-tight line-clamp-1">{item.name}</p>
                       <p className="text-[10px] text-gray-500 mt-0.5 mb-1.5 line-clamp-1">Catatan: {item.note || "-"}</p>
                       <button
@@ -427,7 +427,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             <div className="mt-4 pt-4 border-t-[1.5px] border-gray-200">
               <div className="flex justify-between items-center text-sm pt-3">
                 <span className="font-normal text-[13px] text-gray-700 leading-tight">Total<br/>dibayar</span>
-                <span className="text-[22px] font-black text-[#8b0000]">{formatPrice(subtotal)}</span>
+                <span className="text-xl md:text-[22px] font-black text-[#8b0000]">{formatPrice(subtotal)}</span>
               </div>
             </div>
           </div>
@@ -480,7 +480,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 flex flex-col justify-between">
+                    <div className="w-full sm:flex-1 flex flex-col justify-between">
                       <div>
                         <h3 className="font-bold text-black text-md mb-1 line-clamp-1" title={item.name}>{item.name}</h3>
                         <p className="text-sm text-black font-medium">{formatPrice(item.price)}</p>
@@ -569,7 +569,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: TAMBAH PESANAN (MENU) ===== */}
       {isAddModalOpen && selectedItem && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-6 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-[#F8F9FA] w-full max-w-[450px] rounded-[20px] md:rounded-[30px] shadow-2xl border-2 border-[#8B0000] p-5 md:p-6 animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setIsAddModalOpen(false)}
               className="absolute -top-2 -right-2 bg-[#8B0000] text-white rounded-full p-1.5 shadow-lg hover:bg-red-700 transition-colors z-10"
@@ -582,11 +582,11 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
               <span className="text-xl font-bold text-[#8B0000]">{formatPrice(selectedItem.price)}</span>
             </div>
 
-            <div className="flex gap-4 mb-5">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-5">
               <div className="w-[110px] h-[100px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
                 <img src={getDummyImage(selectedItem.name, selectedItem.categoryName, selectedItem.imageUrl)} alt={selectedItem.name} className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="w-full sm:flex-1 flex flex-col min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <FileText size={14} className="text-black" />
                   <span className="font-bold text-black text-xs">Catatan (opsional)</span>
@@ -634,26 +634,26 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: KONFIRMASI HAPUS ===== */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[420px] p-8 shadow-2xl text-center">
+          <div className="bg-white border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[420px] p-5 md:p-8 shadow-2xl text-center">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-[#FEE2E2] rounded-full flex items-center justify-center">
                 <Trash2 size={32} className="text-[#8B0000]" />
               </div>
             </div>
-            <h2 className="text-[22px] font-extrabold text-black mb-2">Hapus Item?</h2>
+            <h2 className="text-xl md:text-[22px] font-extrabold text-black mb-2">Hapus Item?</h2>
             <p className="text-gray-600 font-medium text-[14px] mb-8">
               Apakah kamu yakin ingin menghapus <span className="font-extrabold text-black">{deleteItemName}</span> dari keranjang?
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button 
                 onClick={() => { setIsDeleteModalOpen(false); setDeleteItemId(null); }} 
-                className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 rounded-[10px] font-bold text-[15px] hover:bg-red-50 transition-colors"
+                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
               >
                 Batal
               </button>
               <button 
                 onClick={handleConfirmDelete} 
-                className="flex-1 bg-[#8B0000] text-white py-3 rounded-[10px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 bg-[#8B0000] text-white py-2 md:py-3 rounded-[10px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors flex items-center justify-center gap-2"
               >
                 Ya, Hapus
               </button>
@@ -665,25 +665,25 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: UBAH CATATAN ===== */}
       {isEditNoteOpen && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[24px] w-full max-w-[500px] p-8 shadow-2xl">
-            <h2 className="text-[24px] font-extrabold text-black tracking-tight mb-6">Ubah Catatan</h2>
+          <div className="bg-[#F8F9FA] border-[3px] border-[#8B0000] rounded-[24px] w-full max-w-[500px] p-5 md:p-8 shadow-2xl">
+            <h2 className="text-2xl md:text-[24px] font-extrabold text-black tracking-tight mb-6">Ubah Catatan</h2>
             <textarea 
               value={editNoteText}
               onChange={(e) => setEditNoteText(e.target.value)}
               className="w-full bg-white border border-gray-300 rounded-[12px] p-4 text-[15px] text-black min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#8B0000]/50 resize-none font-medium placeholder:text-gray-400 mb-6"
               placeholder="Contoh: Tanpa bawang, pedas sedang..."
             />
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button 
                 onClick={() => setIsEditNoteOpen(false)}
-                className="flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-4 rounded-[14px] font-extrabold text-[18px] hover:bg-red-50 transition-colors"
+                className="w-full sm:flex-1 border-[1.5px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-red-50 transition-colors"
               >
                 Batalkan
               </button>
               <button
                 disabled={isPending}
                 onClick={saveNote}
-                className="flex-1 bg-[#8B0000] hover:bg-[#6A0000] text-white py-4 rounded-[14px] font-extrabold text-[18px] transition-colors shadow-md disabled:opacity-70 flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 bg-[#8B0000] hover:bg-[#6A0000] text-white py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] transition-colors shadow-md disabled:opacity-70 flex items-center justify-center gap-2"
               >
                 {isPending ? (
                   <><Loader2 size={20} className="animate-spin" /> Menyimpan...</>
@@ -699,7 +699,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: CATATAN BERHASIL DIUBAH ===== */}
       {isNoteSuccessOpen && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[500px] p-12 text-center shadow-2xl">
+          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[500px] p-6 md:p-12 text-center shadow-2xl">
             <div className="flex justify-center mb-6">
               <div className="w-24 h-24 bg-[#DCFCE7] rounded-full flex items-center justify-center">
                 <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
@@ -708,7 +708,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                 </svg>
               </div>
             </div>
-            <h2 className="text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
+            <h2 className="text-2xl md:text-[28px] font-extrabold text-black mb-3">Catatan berhasil diubah!</h2>
             <p className="text-gray-600 font-medium text-[15px] mb-8">Catatan untuk menu pesanan anda sudah berhasil diubah</p>
             <button
               onClick={() => setIsNoteSuccessOpen(false)} 
@@ -723,8 +723,8 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: RINCIAN PESANAN KASIR ===== */}
       {isConfirmModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
-            <h2 className="text-[32px] font-extrabold text-black mb-8 tracking-tight">Rincian Pesanan</h2>
+          <div className="bg-[#F8F9FA] border-[2px] border-[#8B0000] rounded-[24px] w-full max-w-[650px] p-6 md:p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <h2 className="text-2xl md:text-[32px] font-extrabold text-black mb-8 tracking-tight">Rincian Pesanan</h2>
 
             <div className="mb-8">
               <div className="grid grid-cols-12 bg-[#FFD1D1] py-3.5 px-6 rounded-xl mb-4">
@@ -780,18 +780,18 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
             <div className="border-t-[1.5px] border-black mb-10 pt-4 flex justify-between items-end px-2">
               <div className="flex flex-col gap-0.5">
                 <div className="text-black font-bold text-[16px]">Total Menu</div>
-                <div className="text-black font-extrabold text-[22px]">{cartItems.length} Menu</div>
+                <div className="text-black font-extrabold text-xl md:text-[22px]">{cartItems.length} Menu</div>
               </div>
               <div className="flex flex-col gap-0.5 text-right">
                 <div className="text-black font-bold text-[16px]">Total Harga</div>
-                <div className="text-[#8B0000] font-extrabold text-[22px]">{formatPrice(subtotal)}</div>
+                <div className="text-[#8B0000] font-extrabold text-xl md:text-[22px]">{formatPrice(subtotal)}</div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-5">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-5">
               <button 
                 onClick={() => setIsConfirmModalOpen(false)}
-                className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-red-50 transition-colors"
+                className="border-[1.5px] border-[#8B0000] text-[#8B0000] px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-red-50 transition-colors"
               >
                 Batal
               </button>
@@ -830,7 +830,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
 
                   });
                 }}
-                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-8 py-2.5 rounded-[8px] font-bold text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="bg-[#8B0000] border-[1.5px] border-[#8B0000] text-white px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-[8px] font-bold text-sm md:text-[15px] hover:bg-[#6A0000] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isPending ? <><Loader2 className="animate-spin" size={18} /> Memproses...</> : "Lanjutkan"}
               </button>
@@ -842,13 +842,13 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
       {/* ===== MODAL: PESANAN BERHASIL DIBUAT ===== */}
       {isOrderSuccessOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-12 text-center shadow-2xl">
+          <div className="bg-white border-[3px] border-[#8B0000] rounded-[36px] w-full max-w-[650px] p-6 md:p-12 text-center shadow-2xl">
             <div className="flex justify-center mb-1">
               <div className="relative w-40 h-40 mb-8 flex items-center justify-center">
                 <img src="/pesanansukses.png" alt="Pesanan Sukses" />
               </div>
             </div>
-            <h2 className="text-[36px] font-extrabold text-black mb-4 tracking-tight">Pesanan Berhasil dibuat!</h2>
+            <h2 className="text-3xl md:text-[36px] font-extrabold text-black mb-4 tracking-tight">Pesanan Berhasil dibuat!</h2>
             <p className="text-black font-medium text-[18px] leading-relaxed mb-4 px-6">
               Kode Pesanan: <span className="font-extrabold text-[#8b0000]">{orderCode}</span>
             </p>
@@ -866,7 +866,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                   resetForm();
                   router.push(`/kasir/daftar-pesanan/detail/${createdOrderId}`); 
                 }}
-                className="w-full bg-[#8B0000] text-white py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
+                className="w-full bg-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-[#6A0000] transition-colors shadow-md"
               >
                 Periksa Pesanan
               </button>
@@ -876,7 +876,7 @@ export default function FormKasirClient({ initialMenus }: FormKasirClientProps) 
                   setIsOrderSuccessOpen(false);
                   resetForm();
                 }}
-                className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-4 rounded-[16px] font-extrabold text-[20px] hover:bg-red-50 transition-colors"
+                className="w-full bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[16px] font-extrabold text-lg md:text-[20px] hover:bg-red-50 transition-colors"
               >
                 Kembali & Buat Pesanan Baru
               </button>

@@ -76,7 +76,7 @@ export default function OwnerSidebar() {
         </div>
 
         {/* ── Nav ── */}
-        <nav className="flex-1 py-3 overflow-y-auto">
+        <nav className="w-full sm:flex-1 py-3 overflow-y-auto">
           <NavLinks />
         </nav>
       </aside>
@@ -124,7 +124,7 @@ export default function OwnerSidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 py-3 overflow-y-auto">
+        <nav className="w-full sm:flex-1 py-3 overflow-y-auto">
           <NavLinks />
         </nav>
       </aside>

@@ -65,7 +65,7 @@ export default function KasirSidebar() {
             DE CAFENTA
           </span>
         </div>
-        <nav className="flex-1 py-3 overflow-y-auto">
+        <nav className="w-full sm:flex-1 py-3 overflow-y-auto">
           <NavLinks />
         </nav>
       </aside>
@@ -113,7 +113,7 @@ export default function KasirSidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 py-3 overflow-y-auto">
+        <nav className="w-full sm:flex-1 py-3 overflow-y-auto">
           <NavLinks />
         </nav>
       </aside>

@@ -294,7 +294,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans"
           onClick={(e) => { if (e.target === e.currentTarget) setHapusMeja(null); }}
         >
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
 
             {/* Warning Icon */}
             <div className="w-20 h-20 bg-[#FF4C4C] rounded-full flex items-center justify-center mb-6 shadow-sm">
@@ -338,7 +338,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
       {/* ══ MODAL BERHASIL DIHAPUS ══ */}
       {modalState === 'berhasil-hapus' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
 
             <div className="w-20 h-20 mb-6 flex items-center justify-center">
               <CheckCircle2 size={72} className="text-[#22C55E]" strokeWidth={1.5} />
@@ -363,7 +363,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans"
           onClick={(e) => { if (e.target === e.currentTarget) setModalState('none'); }}
         >
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
             <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-2">
               Ubah Status Meja?
             </h2>
@@ -397,7 +397,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans"
           onClick={(e) => { if (e.target === e.currentTarget) setModalState('none'); }}
         >
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center shadow-2xl relative">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center shadow-2xl relative">
             <h2 className="text-xl md:text-2xl font-extrabold text-black leading-tight mb-4">
               Tambah Meja Baru
             </h2>
@@ -469,7 +469,7 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
       {/* ══ MODAL BERHASIL TAMBAH MEJA ══ */}
       {modalState === 'berhasil-tambah' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 font-sans">
-          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-8 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
+          <div className="bg-white border-[3px] border-[#8B1A1A] rounded-[2rem] w-full max-w-[340px] p-5 md:p-10 flex flex-col items-center justify-center text-center shadow-2xl">
             <div className="w-20 h-20 mb-6 flex items-center justify-center">
               <CheckCircle2 size={72} className="text-[#22C55E]" strokeWidth={1.5} />
             </div>

@@ -390,7 +390,7 @@ function CashPageInner() {
   if (isLoading) return (
     <div className="flex min-h-screen bg-white">
       <Sidebar activeMenu="pesanan" />
-      <main className="flex-1 flex items-center justify-center">
+      <main className="w-full sm:flex-1 flex items-center justify-center">
         <Loader2 className="animate-spin w-10 h-10 text-[#8B1A1A]" />
       </main>
     </div>
@@ -398,7 +398,7 @@ function CashPageInner() {
   if (!order) return (
     <div className="flex min-h-screen bg-white">
       <Sidebar activeMenu="pesanan" />
-      <main className="flex-1 flex items-center justify-center flex-col gap-4">
+      <main className="w-full sm:flex-1 flex items-center justify-center flex-col gap-4">
         <p className="text-gray-500 font-medium">Pesanan tidak ditemukan.</p>
         <button onClick={() => router.back()} className="bg-[#8B1A1A] text-white px-6 py-2 rounded-lg font-bold">Kembali</button>
       </main>
@@ -412,10 +412,10 @@ function CashPageInner() {
 
       <Sidebar activeMenu="pesanan" />
       
-      <main className="flex-1 flex flex-col h-screen overflow-hidden text-left relative">
+      <main className="w-full sm:flex-1 flex flex-col h-screen overflow-hidden text-left relative">
         <div className="flex-none"><Topbar /></div>
 
-        <div className="flex-1 overflow-y-auto w-full">
+        <div className="w-full sm:flex-1 overflow-y-auto w-full">
           <div className="max-w-5xl mx-auto p-5 md:p-8 pb-24">
             
             {/* ── Header ── */}
@@ -423,14 +423,14 @@ function CashPageInner() {
               <button onClick={() => router.back()} className="mr-4 p-1.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                 <ChevronLeft size={20} className="text-black" />
               </button>
-              <h1 className="text-[32px] font-extrabold text-black">Detail Pesanan</h1>
+              <h1 className="text-2xl md:text-[32px] font-extrabold text-black">Detail Pesanan</h1>
             </div>
 
             {/* ── Order Info Card ── */}
             <div className="border-[1.5px] border-[#8B1A1A] rounded-2xl p-6 flex justify-between items-center mb-6 bg-white shadow-sm">
               <div>
                 <p className="text-[11px] text-gray-500 font-medium mb-1">Kode Pesanan</p>
-                <p className="text-[22px] font-black text-[#8B1A1A]">#{order.orderCode}</p>
+                <p className="text-xl md:text-[22px] font-black text-[#8B1A1A]">#{order.orderCode}</p>
                 <p className="text-[#8B1A1A] font-bold text-[12px] mt-1">
                   {new Date(order.orderedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                 </p>
@@ -631,11 +631,11 @@ function CashPageInner() {
               </div>
 
               {/* Produk Info */}
-              <div className="flex gap-4 mb-5">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-5">
                 <div className="w-[100px] h-[90px] rounded-[15px] overflow-hidden shrink-0 shadow-sm border border-gray-100">
                   <img src={getFallbackImg(reviewItem.category)} alt={reviewItem.name} className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 flex flex-col justify-center min-w-0">
+                <div className="w-full sm:flex-1 flex flex-col justify-center min-w-0">
                   <h4 className="font-extrabold text-black text-[15px] mb-1 leading-tight">{reviewItem.name}</h4>
                   <p className="text-[11px] font-medium text-gray-500 leading-tight">Bagaimana rasa dan kualitas menu ini?</p>
                 </div>
@@ -705,7 +705,7 @@ function CashPageInner() {
                   </svg>
                 </div>
               </div>
-              <h2 className="text-[24px] font-extrabold text-black mb-3 leading-tight">Ulasan Berhasil Dikirim!</h2>
+              <h2 className="text-2xl md:text-[24px] font-extrabold text-black mb-3 leading-tight">Ulasan Berhasil Dikirim!</h2>
               <p className="text-gray-600 font-medium text-[14px] mb-8">Terima kasih telah memberikan ulasan. Penilaian Anda sangat berarti bagi kami.</p>
               
               <button

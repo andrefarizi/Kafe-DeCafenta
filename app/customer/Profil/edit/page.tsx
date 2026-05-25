@@ -120,7 +120,7 @@ export default function EditProfilPage() {
     return (
       <div className="min-h-screen flex bg-gradient-to-br from-[#fff7ec] via-[#fff3d7] to-[#ffd93d]" style={{ fontFamily: "Poppins, sans-serif" }}>
         <Sidebar />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="w-full sm:flex-1 flex items-center justify-center">
           <Loader2 size={40} className="animate-spin text-[#9b0000]" />
         </main>
       </div>
@@ -141,7 +141,7 @@ export default function EditProfilPage() {
         </div>
       )}
 
-      <main className="flex-1 px-4 md:px-[48px] pt-6 md:pt-[30px] w-full max-w-full overflow-x-hidden">
+      <main className="w-full sm:flex-1 px-4 md:px-[48px] pt-6 md:pt-[30px] w-full max-w-full overflow-x-hidden">
         {/* HEADER */}
         <div className="flex items-center gap-3 md:gap-5">
           <Link href="/customer/Profil" className="flex h-[38px] w-[38px] items-center justify-center rounded-md bg-white text-[#9b0000] shadow-md">
@@ -265,7 +265,7 @@ export default function EditProfilPage() {
             </div>
 
             {/* BUTTONS */}
-            <div className="mt-[30px] flex gap-4">
+            <div className="mt-[30px] flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 href="/customer/Profil"
                 className="h-[50px] w-[150px] rounded-[25px] border-2 border-[#9b0000] text-[#9b0000] text-[17px] font-semibold hover:bg-[#9b0000] hover:text-white transition-colors flex items-center justify-center"

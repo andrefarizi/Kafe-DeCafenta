@@ -217,11 +217,11 @@ export default function CheckoutPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
               <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-white shadow-sm">
                 <img src="/api/placeholder/200/200" alt="Kentang Goreng" className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1 flex flex-col">
+              <div className="w-full sm:flex-1 flex flex-col">
                 <label className="text-xs font-bold mb-1 flex items-center gap-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                   Catatan (opsional)
