@@ -117,17 +117,18 @@ model Category {
 }
 
 model Menu {
-  id          String      @id @default(cuid())
-  categoryId  String      
-  name        String      @db.VarChar(100)
-  description String?     @db.Text
-  price       Decimal     @db.Decimal(10, 2)
-  imageUrl    String?     @db.Text
-  isAvailable Boolean     @default(true)
-  isPromo     Boolean     @default(false)
-  avgRating   Decimal     @default(0.00) @db.Decimal(3, 2)
-  createdAt   DateTime    @default(now()) @db.Timestamptz()
-  updatedAt   DateTime    @updatedAt @db.Timestamptz()
+  id              String      @id @default(cuid())
+  categoryId      String      
+  name            String      @db.VarChar(100)
+  description     String?     @db.Text
+  price           Decimal     @db.Decimal(10, 2)
+  imageUrl        String?     @db.Text
+  isAvailable     Boolean     @default(true)
+  isPromo         Boolean     @default(false)
+  discountPercent Int         @default(0)
+  avgRating       Decimal     @default(0.00) @db.Decimal(3, 2)
+  createdAt       DateTime    @default(now()) @db.Timestamptz()
+  updatedAt       DateTime    @updatedAt @db.Timestamptz()
 
   category    Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   reviews     Review[]

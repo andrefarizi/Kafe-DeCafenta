@@ -53,6 +53,8 @@ const Beranda = async () => {
     id: item.id,
     name: item.name,
     price: Number(item.price),
+    discountedPrice: item.discountedPrice ?? Number(item.price),
+    discountPercent: item.discountPercent ?? 0,
     avgRating: Number(item.avgRating),
     image: resolveMenuImage(item.name, item.categoryName, item.imageUrl),
     isAvailable: item.isAvailable ?? true,
@@ -99,7 +101,7 @@ const Beranda = async () => {
           </div>
 
           {/* Heading Section */}
-          <div className="text-center my-6">
+          <div className="text-center my-6 relative z-10">
             <h1 className="text-2xl md:text-4xl font-black text-[#8A0000]">
               Halo <span className="text-[#FFCC00]">DE CAFENTA MANIA</span>
             </h1>
@@ -238,9 +240,6 @@ const Beranda = async () => {
           <section className="pb-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[20px] font-bold text-black">Dari Keranjang Anda</h3>
-              {keranjangMenus.length > 0 && (
-                <button className="text-[#8A0000] text-[12px]">Lihat Semua</button>
-              )}
             </div>
             {keranjangMenus.length === 0 ? (
               <p className="text-sm font-bold text-gray-600">Anda belum memesan menu apapun.</p>

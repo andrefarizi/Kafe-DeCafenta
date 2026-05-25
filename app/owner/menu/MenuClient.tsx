@@ -80,29 +80,29 @@ export default function MenuClient({ items }: MenuClientProps) {
         <p className="text-sm font-bold text-gray-600">Menu belum tersedia.</p>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-12">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 pb-12">
         {filteredItems.map((item) => (
           <Link href={`/owner/menu/${item.id}`} key={item.id} className="block h-full cursor-pointer">
-            <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
-              <div className="relative w-full h-[160px] rounded-[15px] overflow-hidden mb-3">
+            <div className="bg-white rounded-[16px] md:rounded-[20px] p-3 md:p-4 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-md transition-shadow">
+              <div className="relative w-full h-[120px] md:h-[160px] rounded-[12px] md:rounded-[15px] overflow-hidden mb-2 md:mb-3">
                 <img src={item.image} alt={item.name} className={`w-full h-full object-cover ${!item.isAvailable ? 'grayscale opacity-70' : ''}`} />
-                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center gap-1 text-[10px] font-bold z-10">
-                  <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                <div className="absolute top-1.5 right-1.5 bg-black/60 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-md flex items-center gap-1 text-[9px] md:text-[10px] font-bold z-10">
+                  <Star size={9} className="text-yellow-400 fill-yellow-400" />
                   {item.rating}
                 </div>
                 {!item.isAvailable && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
-                    <span className="bg-red-600 text-white px-3 py-1 text-xs font-bold rounded-full">Tidak Tersedia</span>
+                    <span className="bg-red-600 text-white px-2 py-0.5 text-[9px] md:text-xs font-bold rounded-full">Tidak Tersedia</span>
                   </div>
                 )}
               </div>
-              <div className="w-full sm:flex-1 flex flex-col justify-between">
+              <div className="w-full flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-bold text-black text-md mb-1 line-clamp-1">{item.name}</h3>
-                  <p className="text-sm text-black font-medium">{item.price}</p>
+                  <h3 className="font-bold text-black text-[12px] md:text-md mb-0.5 md:mb-1 line-clamp-2 leading-tight">{item.name}</h3>
+                  <p className="text-[11px] md:text-sm text-black font-medium">{item.price}</p>
                 </div>
-                <div className="mt-4">
-                  <div className="w-full bg-[#8B0000] text-center text-white py-2 rounded-xl text-xs font-bold hover:bg-[#6A0000] transition-colors">
+                <div className="mt-2 md:mt-4">
+                  <div className="w-full bg-[#8B0000] text-center text-white py-1.5 md:py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold hover:bg-[#6A0000] transition-colors">
                     Detail
                   </div>
                 </div>

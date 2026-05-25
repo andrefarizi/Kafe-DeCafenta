@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Pencil, Star, Loader2 } from 'lucide-react';
+import { Pencil, Star, Loader2, Tag, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { updateMenuDetail } from '@/src/controllers/menu-controller';
 import toast from 'react-hot-toast';
@@ -22,6 +22,7 @@ type MenuProps = {
   imageUrl: string;
   isAvailable: boolean;
   isPromo: boolean;
+  discountPercent?: number;
 };
 
 export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
@@ -30,6 +31,11 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
   const [editValue, setEditValue] = useState<string>('');
   const [editError, setEditError] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Promo modal state
+  const [showPromoModal, setShowPromoModal] = useState(false);
+  const [discountInput, setDiscountInput] = useState('');
+  const [discountError, setDiscountError] = useState('');
 
   const handleEdit = (field: 'name' | 'price' | 'description', currentValue: string | number | null) => {
     setIsEditing(field);
@@ -70,13 +76,30 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     }
   };
 
-  const handleTogglePromo = async () => {
+  const handleRemovePromo = async () => {
     setIsSaving(true);
-    const res = await updateMenuDetail(menu.id, { isPromo: !menu.isPromo });
+    const res = await updateMenuDetail(menu.id, { isPromo: false, discountPercent: 0 });
     setIsSaving(false);
-    
     if (res.success) {
-      toast.success(menu.isPromo ? 'Menu dihapus dari promo' : 'Menu ditambahkan ke promo');
+      toast.success('Menu dihapus dari promo');
+      router.refresh();
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  const handleSavePromo = async () => {
+    const pct = Number(discountInput);
+    if (!discountInput || isNaN(pct) || pct < 1 || pct > 99) {
+      setDiscountError('Masukkan persentase antara 1–99.');
+      return;
+    }
+    setIsSaving(true);
+    const res = await updateMenuDetail(menu.id, { isPromo: true, discountPercent: pct });
+    setIsSaving(false);
+    if (res.success) {
+      toast.success(`Promo ${pct}% berhasil disimpan!`);
+      setShowPromoModal(false);
       router.refresh();
     } else {
       toast.error(res.message);
@@ -171,6 +194,73 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     );
   };
 
+  const renderPromoModal = () => {
+    if (!showPromoModal) return null;
+    const previewPrice = discountInput && Number(discountInput) > 0 && Number(discountInput) <= 99
+      ? Math.round(menu.price * (1 - Number(discountInput) / 100))
+      : null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in fade-in zoom-in duration-200 relative">
+          <button onClick={() => setShowPromoModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+              <Tag size={20} className="text-yellow-600" />
+            </div>
+            <h3 className="text-xl font-extrabold text-black">Atur Promo</h3>
+          </div>
+
+          <p className="text-sm text-gray-500 mb-4 font-medium">Masukkan persentase diskon untuk <span className="font-bold text-black">{menu.name}</span></p>
+
+          <div className="relative mb-2">
+            <input
+              type="number"
+              min={1}
+              max={99}
+              value={discountInput}
+              onChange={(e) => {
+                setDiscountInput(e.target.value);
+                const v = Number(e.target.value);
+                if (!e.target.value) { setDiscountError(''); return; }
+                if (v < 1 || v > 99) setDiscountError('Persentase harus antara 1–99.');
+                else setDiscountError('');
+              }}
+              className={`w-full border-2 rounded-xl p-3 pr-10 focus:outline-none font-bold text-lg ${discountError ? 'border-red-400' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+              placeholder="Contoh: 20"
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold text-lg">%</span>
+          </div>
+          {discountError && <p className="text-red-500 text-xs mb-2 font-bold">{discountError}</p>}
+
+          {previewPrice !== null && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4">
+              <p className="text-xs text-gray-500 font-medium">Preview Harga</p>
+              <p className="text-sm font-bold text-gray-400 line-through">{formatRupiah(menu.price)}</p>
+              <p className="text-xl font-black text-[#8B1A1A]">{formatRupiah(previewPrice)}</p>
+              <p className="text-xs text-green-600 font-bold">Hemat {discountInput}% • Harga setelah diskon</p>
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button onClick={() => setShowPromoModal(false)} className="flex-1 py-2.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors" disabled={isSaving}>
+              Batal
+            </button>
+            <button
+              onClick={handleSavePromo}
+              disabled={isSaving || !!discountError || !discountInput}
+              className="flex-1 py-2.5 rounded-xl font-bold text-white bg-[#8B1A1A] hover:bg-red-900 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {isSaving ? <Loader2 size={16} className="animate-spin" /> : null}
+              Simpan Promo
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 mb-8 bg-white shadow-sm relative">
@@ -185,7 +275,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
 
           <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-              <div className="w-full sm:flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
+              <div className="w-full flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
                 <h2 className="text-3xl md:text-4xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors flex items-center gap-3">
                   {menu.name}
                   <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
@@ -193,17 +283,40 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
                 <p className="text-xs text-gray-500 mt-1">Klik pada nama untuk mengedit</p>
               </div>
               <div className="flex flex-row md:flex-col gap-2 shrink-0">
-                <button
-                  disabled={isSaving}
-                  onClick={handleTogglePromo}
-                  className={`px-4 py-2 rounded-full text-xs font-bold border-2 transition-all ${
-                    menu.isPromo 
-                      ? 'bg-yellow-100 text-yellow-700 border-yellow-500 hover:bg-yellow-200' 
-                      : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
-                  }`}
-                >
-                  {menu.isPromo ? 'Status: Sedang Promo' : 'Jadikan Promo'}
-                </button>
+                {/* Promo Button */}
+                {menu.isPromo ? (
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2 bg-yellow-100 border-2 border-yellow-500 rounded-full px-3 py-1.5">
+                      <Tag size={12} className="text-yellow-700" />
+                      <span className="text-xs font-black text-yellow-700">Promo {menu.discountPercent ?? 0}% OFF</span>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <button
+                        disabled={isSaving}
+                        onClick={() => { setDiscountInput(String(menu.discountPercent ?? '')); setDiscountError(''); setShowPromoModal(true); }}
+                        className="flex-1 px-3 py-1.5 rounded-full text-xs font-bold border-2 bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100 transition-all"
+                      >
+                        Ubah %
+                      </button>
+                      <button
+                        disabled={isSaving}
+                        onClick={handleRemovePromo}
+                        className="flex-1 px-3 py-1.5 rounded-full text-xs font-bold border-2 bg-red-50 text-red-700 border-red-300 hover:bg-red-100 transition-all"
+                      >
+                        Hapus Promo
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    disabled={isSaving}
+                    onClick={() => { setDiscountInput(''); setDiscountError(''); setShowPromoModal(true); }}
+                    className="px-4 py-2 rounded-full text-xs font-bold border-2 bg-gray-100 text-gray-700 border-gray-300 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-all flex items-center gap-1.5"
+                  >
+                    <Tag size={12} /> Jadikan Promo
+                  </button>
+                )}
+
                 <button
                   disabled={isSaving}
                   onClick={handleToggleAvailable}
@@ -223,6 +336,11 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
                 {formatRupiah(menu.price)}
                 <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
               </p>
+              {menu.isPromo && menu.discountPercent && menu.discountPercent > 0 && (
+                <p className="text-base font-bold text-green-600 mt-1">
+                  Setelah diskon: {formatRupiah(Math.round(menu.price * (1 - menu.discountPercent / 100)))}
+                </p>
+              )}
               <p className="text-xs text-gray-500 mt-1">Klik pada harga untuk mengedit</p>
             </div>
 
@@ -248,6 +366,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
         </div>
       </div>
       {renderModal()}
+      {renderPromoModal()}
     </>
   );
 }

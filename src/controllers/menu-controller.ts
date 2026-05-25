@@ -8,6 +8,8 @@ type MenuListItem = {
   id: string;
   name: string;
   price: number;
+  discountedPrice?: number;
+  discountPercent?: number;
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
@@ -19,6 +21,7 @@ type MenuRow = {
   id: string;
   name: string;
   price: number;
+  discountPercent?: number;
   avgRating: number;
   imageUrl: string | null;
   categoryName: string;
@@ -36,6 +39,7 @@ type MenuDetail = {
   categoryName: string;
   isAvailable: boolean;
   isPromo: boolean;
+  discountPercent: number;
   reviewCount: number;
 };
 
@@ -186,25 +190,38 @@ export async function getRecommendedMenus(limit = 4): Promise<MenuListItem[]> {
 }
 
 export async function getPromoMenus(limit = 4): Promise<MenuListItem[]> {
-  const rows = await prisma.$queryRaw<MenuRow[]>(Prisma.sql`
+  type PromoRow = MenuRow & { discountPercent: number };
+  const rows = await prisma.$queryRaw<PromoRow[]>(Prisma.sql`
     SELECT m.id,
            m.name,
            m.price,
            m."avgRating" AS "avgRating",
            m."imageUrl" AS "imageUrl",
            m."isAvailable" AS "isAvailable",
+           m."discountPercent" AS "discountPercent",
            c.name AS "categoryName",
            COALESCE(SUM(oi.quantity), 0) AS "totalOrdered"
     FROM menus m
     JOIN categories c ON c.id = m."categoryId"
     LEFT JOIN order_items oi ON oi."menuId" = m.id
     WHERE m."isPromo" = true
-    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", c.name
+    GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", m."discountPercent", c.name
     ORDER BY "totalOrdered" DESC, m."avgRating" DESC, m.price ASC
     LIMIT ${limit}
   `);
 
-  return rows.map(mapMenuRow);
+  return rows.map((row) => {
+    const price = toNumber(row.price);
+    const discountPercent = Number(row.discountPercent ?? 0);
+    const discountedPrice = discountPercent > 0
+      ? Math.round(price * (1 - discountPercent / 100))
+      : price;
+    return {
+      ...mapMenuRow(row),
+      discountPercent,
+      discountedPrice,
+    };
+  });
 }
 
 export async function getCustomerOrderHistoryMenus(
@@ -289,6 +306,7 @@ export async function getMenuDetail(menuId: string): Promise<MenuDetail | null> 
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
     isPromo: menu.isPromo,
+    discountPercent: menu.discountPercent ?? 0,
     reviewCount: menu._count.reviews,
   };
 }
@@ -381,7 +399,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
 /* ─── OWNER: Update menu ─── */
 export async function updateMenuDetail(
   menuId: string, 
-  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; isPromo?: boolean; }
+  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; isPromo?: boolean; discountPercent?: number; }
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -395,6 +413,7 @@ export async function updateMenuDetail(
         ...(data.description !== undefined && { description: data.description || null }),
         ...(data.isAvailable !== undefined && { isAvailable: data.isAvailable }),
         ...(data.isPromo !== undefined && { isPromo: data.isPromo }),
+        ...(data.discountPercent !== undefined && { discountPercent: data.discountPercent }),
       },
     });
 

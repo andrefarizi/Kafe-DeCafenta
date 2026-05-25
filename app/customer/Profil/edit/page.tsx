@@ -242,14 +242,17 @@ export default function EditProfilPage() {
                   <div className="ml-[10px] leading-tight flex-1 pr-4">
                     <div className="text-[14px] font-semibold text-black">Nomor Handphone</div>
                     <input
-                      type="tel"
+                      type="text"
+                      inputMode="numeric"
                       value={editPhone}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (/[^0-9]/.test(val)) {
-                          setValidationErrors(prev => ({...prev, phone: 'Nomor Handphone hanya boleh angka.'}));
-                        } else if (val.length > 0 && (val.length < 10 || val.length > 13)) {
-                          setValidationErrors(prev => ({...prev, phone: 'Panjang nomor harus 10-13 digit.'}));
+                        if (val !== '' && !/^\d+$/.test(val)) {
+                          setValidationErrors(prev => ({...prev, phone: 'Nomor Handphone hanya boleh berisi angka.'}));
+                          return;
+                        }
+                        if (val.length > 0 && (val.length < 10 || val.length > 13)) {
+                          setValidationErrors(prev => ({...prev, phone: 'Nomor Handphone harus 10–13 digit.'}));
                         } else {
                           setValidationErrors(prev => ({...prev, phone: undefined}));
                         }

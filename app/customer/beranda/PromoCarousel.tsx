@@ -8,6 +8,8 @@ type PromoItem = {
   id: string;
   name: string;
   price: number;
+  discountedPrice?: number;
+  discountPercent?: number;
   avgRating: number;
   image: string;
   isAvailable?: boolean;
@@ -64,50 +66,70 @@ export default function PromoCarousel({ items }: PromoCarouselProps) {
       </button>
 
       <div ref={trackRef} className="flex gap-6 overflow-x-auto scrollbar-hide py-2 px-8 scroll-smooth snap-x snap-mandatory">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            data-card="promo"
-            role="button"
-            tabIndex={0}
-            onClick={() => {
-              if (item.isAvailable !== false) {
-                router.push(`/customer/detail_menu/${item.id}`);
-              }
-            }}
-            onKeyDown={(event) => {
-              if ((event.key === 'Enter' || event.key === ' ') && item.isAvailable !== false) {
-                router.push(`/customer/detail_menu/${item.id}`);
-              }
-            }}
-            className={`min-w-[180px] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md snap-start ${
-              item.isAvailable === false 
-                ? 'bg-[#A0A0A0] cursor-not-allowed opacity-80 grayscale' 
-                : 'bg-[#E32111] hover:shadow-lg transition-shadow cursor-pointer'
-            }`}
-          >
-            <div className="relative h-32">
-              <img src={item.image} className="w-full h-full object-cover" alt={item.name} />
-              {item.isAvailable === false && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
-                  <span className="bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-full shadow-sm">TIDAK TERSEDIA</span>
+        {items.map((item) => {
+          const hasDiscount = (item.discountPercent ?? 0) > 0;
+          const finalPrice = hasDiscount && item.discountedPrice !== undefined
+            ? item.discountedPrice
+            : item.price;
+
+          return (
+            <div
+              key={item.id}
+              data-card="promo"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (item.isAvailable !== false) {
+                  router.push(`/customer/detail_menu/${item.id}`);
+                }
+              }}
+              onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && item.isAvailable !== false) {
+                  router.push(`/customer/detail_menu/${item.id}`);
+                }
+              }}
+              className={`min-w-[180px] rounded-2xl overflow-hidden border-2 border-[#8A0000] shadow-md snap-start relative ${
+                item.isAvailable === false 
+                  ? 'bg-[#A0A0A0] cursor-not-allowed opacity-80 grayscale' 
+                  : 'bg-[#E32111] hover:shadow-lg transition-shadow cursor-pointer'
+              }`}
+            >
+              {/* Discount Badge */}
+              {hasDiscount && item.isAvailable !== false && (
+                <div className="absolute top-2 left-2 z-20 bg-[#FFD700] text-[#8A0000] text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                  {item.discountPercent}% OFF
                 </div>
               )}
-              <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1 z-30">
-                <Star size={12} className="fill-yellow-400 text-yellow-400" />
-                <span className="font-bold">{Number(item.avgRating).toFixed(1)}</span>
+
+              <div className="relative h-32">
+                <img src={item.image} className="w-full h-full object-cover" alt={item.name} />
+                {item.isAvailable === false && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
+                    <span className="bg-red-600 text-white px-3 py-1 text-[11px] font-black rounded-full shadow-sm">TIDAK TERSEDIA</span>
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-[12px] text-white px-2 py-0.5 rounded-full flex items-center gap-1 z-30">
+                  <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                  <span className="font-bold">{Number(item.avgRating).toFixed(1)}</span>
+                </div>
+              </div>
+
+              <div className="p-3 text-white">
+                <p className="text-sm font-bold truncate mb-1">{item.name}</p>
+                {hasDiscount ? (
+                  <>
+                    <p className="text-[10px] opacity-70 line-through leading-tight">
+                      {formatRupiah(item.price)}
+                    </p>
+                    <p className="text-sm font-black text-[#FFD700] mb-1">{formatRupiah(finalPrice)}</p>
+                  </>
+                ) : (
+                  <p className="text-sm font-black mb-3">{formatRupiah(finalPrice)}</p>
+                )}
               </div>
             </div>
-
-            <div className="p-3 text-white">
-              <p className="text-sm font-bold truncate mb-1">{item.name}</p>
-              <p className="text-[10px] opacity-80 line-through leading-tight">
-                {formatRupiah(item.price + 15000)}
-              </p>
-              <p className="text-sm font-black mb-3">{formatRupiah(item.price)}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <button

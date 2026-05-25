@@ -330,12 +330,12 @@ export default function KeranjangPage() {
                   <p className="text-black font-medium text-sm md:text-[15px] text-center px-2 md:px-4 leading-relaxed">Bawa Pulang menu terbaik DE CAFENTA untuk di bawa pulang</p>
                 </div>
               </div>
-              <div className="flex flex-col-reverse sm:flex-row justify-center gap-3 sm:gap-6 px-0 md:px-10">
-                <button onClick={() => setStep("")} className="w-full sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 px-0 md:px-10">
+                <button onClick={() => setStep("")} className="w-full sm:w-auto sm:flex-1 bg-white border-[2px] border-[#8B0000] text-[#8B0000] py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-gray-50 transition-colors">Batal</button>
                 <button
                   onClick={() => { if (selectedOrderType) setStep("detail"); }}
                   disabled={!selectedOrderType}
-                  className="w-full sm:flex-1 bg-[#8B0000] border-[2px] border-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-[#6A0000] transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto sm:flex-1 bg-[#8B0000] border-[2px] border-[#8B0000] text-white py-3 md:py-4 rounded-xl md:rounded-[14px] font-extrabold text-base md:text-[18px] hover:bg-[#6A0000] transition-colors disabled:opacity-50"
                 >
                   Lanjutkan
                 </button>
