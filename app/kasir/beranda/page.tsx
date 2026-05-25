@@ -88,10 +88,10 @@ export default async function DashboardKasir() {
             <h4 className="font-bold text-[#6a1713] mb-4">Pesanan Aktif</h4>
 
             {/* Table Header */}
-            <div className="bg-[#FFC7C7] rounded-md py-3 px-4 grid grid-cols-3 text-sm font-bold mb-2">
-              <div>Nama Pelanggan</div>
-              <div className="text-center">Jumlah</div>
-              <div className="text-right">Harga</div>
+            <div className="bg-[#FFC7C7] rounded-md py-3 px-2 sm:px-4 grid grid-cols-[2fr_1fr_1.5fr] text-xs sm:text-sm font-bold mb-2 gap-2">
+              <div className="truncate">Nama Pelanggan</div>
+              <div className="text-center truncate">Jumlah</div>
+              <div className="text-right truncate">Harga</div>
             </div>
 
             {activeOrders.length === 0 ? (
@@ -101,17 +101,19 @@ export default async function DashboardKasir() {
                 <Link
                   key={order.id}
                   href={`/kasir/daftar-pesanan/detail/${order.id}`}
-                  className="grid grid-cols-3 items-center py-3 px-4 border-b border-gray-200 hover:bg-red-50 transition-colors"
+                  className="grid grid-cols-[2fr_1fr_1.5fr] items-center py-3 px-2 sm:px-4 border-b border-gray-200 hover:bg-red-50 transition-colors gap-2"
                 >
-                  <div className="flex items-center gap-3">
-                    <ReceiptIcon />
-                    <div>
-                      <p className="font-bold text-sm">{order.nama}</p>
-                      <p className="text-[#6a1713] text-xs font-semibold">{order.orderCode}</p>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="shrink-0 hidden sm:block">
+                      <ReceiptIcon />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-xs sm:text-sm truncate">{order.nama}</p>
+                      <p className="text-[#6a1713] text-[10px] sm:text-xs font-semibold truncate">{order.orderCode}</p>
                     </div>
                   </div>
-                  <div className="text-center text-sm font-medium">{order.jumlah}</div>
-                  <div className="text-right text-sm font-medium">{order.harga}</div>
+                  <div className="text-center text-xs sm:text-sm font-medium">{order.jumlah}</div>
+                  <div className="text-right text-xs sm:text-sm font-medium">{order.harga}</div>
                 </Link>
               ))
             )}
@@ -136,10 +138,10 @@ export default async function DashboardKasir() {
             </div>
 
             {/* Table Header */}
-            <div className="bg-[#FFC7C7] rounded-md py-3 px-4 grid grid-cols-4 text-sm font-bold mb-2">
-              <div className="col-span-2">Nama Pelanggan</div>
-              <div className="text-center">Jumlah</div>
-              <div className="text-right">Harga</div>
+            <div className="bg-[#FFC7C7] rounded-md py-3 px-2 sm:px-4 grid grid-cols-[2fr_1fr_1.5fr] text-xs sm:text-sm font-bold mb-2 gap-2">
+              <div className="truncate">Nama Pelanggan</div>
+              <div className="text-center truncate">Jumlah</div>
+              <div className="text-right truncate">Harga</div>
             </div>
 
             {recentOrders.length === 0 ? (
@@ -149,19 +151,21 @@ export default async function DashboardKasir() {
                 <Link
                   key={order.id}
                   href={`/kasir/daftar-pesanan/detail/${order.id}`}
-                  className="grid grid-cols-4 items-center py-3 px-4 border-b border-gray-200 hover:bg-red-50 transition-colors"
+                  className="grid grid-cols-[2fr_1fr_1.5fr] items-center py-3 px-2 sm:px-4 border-b border-gray-200 hover:bg-red-50 transition-colors gap-2"
                 >
-                  <div className="col-span-2 flex items-center gap-3">
-                    <ReceiptIcon />
-                    <div>
-                      <p className="font-bold text-sm">{order.nama}</p>
-                      <p className="text-[#6a1713] text-xs font-semibold">{order.orderCode}</p>
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="shrink-0 hidden sm:block">
+                      <ReceiptIcon />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-xs sm:text-sm truncate">{order.nama}</p>
+                      <p className="text-[#6a1713] text-[10px] sm:text-xs font-semibold truncate">{order.orderCode}</p>
                     </div>
                   </div>
-                  <div className="text-center text-sm font-medium">{order.jumlah}</div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{order.harga}</p>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${getStatusBadgeClass(order.status)}`}>
+                  <div className="text-center text-xs sm:text-sm font-medium">{order.jumlah}</div>
+                  <div className="text-right min-w-0">
+                    <p className="text-xs sm:text-sm font-medium truncate">{order.harga}</p>
+                    <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5 truncate max-w-full ${getStatusBadgeClass(order.status)}`}>
                       {getStatusLabel(order.status)}
                     </span>
                   </div>

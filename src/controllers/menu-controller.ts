@@ -204,7 +204,7 @@ export async function getPromoMenus(limit = 4): Promise<MenuListItem[]> {
     FROM menus m
     JOIN categories c ON c.id = m."categoryId"
     LEFT JOIN order_items oi ON oi."menuId" = m.id
-    WHERE m."isPromo" = true
+    WHERE m."isPromo" = true AND m."isAvailable" = true
     GROUP BY m.id, m.name, m.price, m."avgRating", m."imageUrl", m."isAvailable", m."discountPercent", c.name
     ORDER BY "totalOrdered" DESC, m."avgRating" DESC, m.price ASC
     LIMIT ${limit}
@@ -499,5 +499,31 @@ export async function getMenuWithReviews(menuId: string) {
   } catch (error: any) {
     console.error("EROR GET REVIEWS:", error.message);
     return { error: error.message }; 
+  }
+}
+
+/* ─── OWNER: Hapus menu ─── */
+export async function hapusMenu(menuId: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: 'Sesi tidak valid' };
+
+    // Check if it has order items (Restricted by foreign key)
+    const orderItemsCount = await prisma.orderItem.count({
+      where: { menuId }
+    });
+
+    if (orderItemsCount > 0) {
+      return { success: false, message: 'Menu tidak dapat dihapus karena sudah pernah dipesan pelanggan. Sebagai gantinya, Anda dapat mengubah statusnya menjadi "Tidak Tersedia".' };
+    }
+
+    await prisma.menu.delete({
+      where: { id: menuId }
+    });
+
+    return { success: true, message: 'Menu berhasil dihapus!' };
+  } catch (error: any) {
+    console.error('ERROR HAPUS MENU:', error);
+    return { success: false, message: 'Gagal menghapus menu. Error: ' + (error.message || 'Unknown error') };
   }
 }

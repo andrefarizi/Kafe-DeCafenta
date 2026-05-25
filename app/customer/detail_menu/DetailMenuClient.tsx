@@ -175,7 +175,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
 
               </div>
 
-              <div className="flex items-center gap-5">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 w-full">
                 <div className="bg-[#8B0000] rounded-3xl p-5 px-4 text-center border-2 border-[#FFF0F0] shrink-0">
                   <p className="bg-white rounded-xl p-2 px-4 text-[#8B0000] font-bold text-[15px] uppercase tracking-widest mb-4 -mt-3">
                     Rating
@@ -186,7 +186,7 @@ export default function DetailMenuClient({ menu, reviews }: DetailMenuClientProp
                   </div>
                 </div>
 
-                <div className="flex items-center gap-8 overflow-hidden">
+                <div className="flex items-start md:items-center gap-4 overflow-x-auto scrollbar-hide snap-x py-2 pb-4 flex-nowrap shrink-0 w-full md:w-auto flex-1">
                   {reviews.length === 0 ? (
                     <p className="text-sm font-bold text-gray-600">Belum ada ulasan.</p>
                   ) : (

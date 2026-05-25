@@ -89,8 +89,8 @@ export default function InvoiceClient({ order, backHref }: InvoiceClientProps) {
             </div>
 
             {/* Right: Invoice Number & Date */}
-            <div className="text-left md:text-right">
-              <h2 className="text-3xl md:text-4xl font-black text-black mb-1">{order.orderCode}</h2>
+            <div className="text-left md:text-right w-full sm:w-1/2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-black mb-1 break-all uppercase">{order.orderCode}</h2>
               <p className="text-xs md:text-sm text-gray-500 font-medium">{order.tanggal}, {order.waktu}</p>
             </div>
           </div>
@@ -114,37 +114,60 @@ export default function InvoiceClient({ order, backHref }: InvoiceClientProps) {
             </div>
           </div>
 
-          {/* Invoice Table */}
-          <div className="mb-12 overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="bg-[#FADCD9]">
-                  <th className="py-4 px-4 font-extrabold text-black text-sm w-2/5 rounded-l-md">Produk</th>
-                  <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-center">Harga</th>
-                  <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-center">Jumlah</th>
-                  <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-right rounded-r-md">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.items.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-200">
-                    <td className="py-6 px-4">
-                      <p className="font-extrabold text-black text-sm mb-0.5">{item.name}</p>
-                      <p className="text-[11px] text-gray-500">{item.note}</p>
-                    </td>
-                    <td className="py-6 px-4 text-center font-medium text-black text-sm">
-                      {formatPrice(item.price)}
-                    </td>
-                    <td className="py-6 px-4 text-center font-medium text-black text-sm">
-                      {item.qty}
-                    </td>
-                    <td className="py-6 px-4 text-right font-extrabold text-black text-sm">
+          {/* Invoice Items */}
+          <div className="mb-12">
+            {/* Mobile View (< sm) */}
+            <div className="block sm:hidden border-t border-gray-200 mt-6">
+              {order.items.map((item) => (
+                <div key={item.id} className="py-4 border-b border-gray-200 flex flex-col gap-2">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <p className="font-extrabold text-black text-sm leading-snug mb-0.5">{item.name}</p>
+                      {item.note && <p className="text-[11px] text-gray-500">{item.note}</p>}
+                    </div>
+                    <p className="font-extrabold text-black text-sm text-right whitespace-nowrap">
                       {formatPrice(item.price * item.qty)}
-                    </td>
+                    </p>
+                  </div>
+                  <div className="text-xs font-medium text-gray-600">
+                    {item.qty} x {formatPrice(item.price)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View (>= sm) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="bg-[#FADCD9]">
+                    <th className="py-4 px-4 font-extrabold text-black text-sm w-2/5 rounded-l-md">Produk</th>
+                    <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-center">Harga</th>
+                    <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-center">Jumlah</th>
+                    <th className="py-4 px-4 font-extrabold text-black text-sm w-1/5 text-right rounded-r-md">Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {order.items.map((item) => (
+                    <tr key={item.id} className="border-b border-gray-200">
+                      <td className="py-6 px-4">
+                        <p className="font-extrabold text-black text-sm mb-0.5">{item.name}</p>
+                        <p className="text-[11px] text-gray-500">{item.note}</p>
+                      </td>
+                      <td className="py-6 px-4 text-center font-medium text-black text-sm">
+                        {formatPrice(item.price)}
+                      </td>
+                      <td className="py-6 px-4 text-center font-medium text-black text-sm">
+                        {item.qty}
+                      </td>
+                      <td className="py-6 px-4 text-right font-extrabold text-black text-sm">
+                        {formatPrice(item.price * item.qty)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Summary Section */}

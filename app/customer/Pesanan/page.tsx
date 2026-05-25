@@ -129,7 +129,7 @@ export default function PesananPage() {
 
           <div className="flex overflow-x-auto gap-4 mb-8 pb-2 w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {[
-              { key: "semua",       label: "Semua",       img: "/group 135.png" },
+              { key: "semua",       label: "Semua",       img: "/Group 135.png" },
               { key: "masuk",       label: "Masuk",       img: "/Food Icon Illustrations Kit (1).png" },
               { key: "dimasak",     label: "Dimasak",     img: "/Food Icon Illustrations Kit (2).png" },
               { key: "siap_diambil",label: "Siap Diambil",img: "/Food Icon Illustrations Kit (3).png" },

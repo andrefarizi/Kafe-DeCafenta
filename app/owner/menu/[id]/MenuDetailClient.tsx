@@ -43,6 +43,16 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     setEditError('');
   };
 
+  const handleOpenPromoModal = () => {
+    if (!menu.isAvailable) {
+      toast.error('Menu sedang tidak tersedia! Promo tidak dapat ditambahkan atau diubah.');
+      return;
+    }
+    setDiscountInput(menu.isPromo ? String(menu.discountPercent ?? '') : '');
+    setDiscountError('');
+    setShowPromoModal(true);
+  };
+
   const handleSave = async () => {
     if (!isEditing) return;
     setIsSaving(true);
@@ -264,7 +274,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
   return (
     <>
       <div className="border-[2.5px] border-[#8B1A1A] rounded-[2rem] p-6 md:p-8 mb-8 bg-white shadow-sm relative">
-        <div className="flex flex-col md:flex-row gap-8 mb-8">
+        <div className="flex flex-col md:flex-row gap-8 mb-8 mt-6 md:mt-0">
           <div className="relative w-full md:w-1/2 aspect-[4/3] md:max-w-md flex items-center justify-center mx-auto md:mx-0 bg-gray-100 rounded-3xl overflow-hidden border-2 border-gray-100 shadow-sm group">
             <img
               src={menu.imageUrl}
@@ -274,64 +284,15 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
           </div>
 
           <div className="w-full md:w-1/2 flex flex-col justify-start pt-2">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
-              <div className="w-full flex-1 group cursor-pointer" onClick={() => handleEdit('name', menu.name)}>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors flex items-center gap-3">
-                  {menu.name}
-                  <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
-                </h2>
-                <p className="text-xs text-gray-500 mt-1">Klik pada nama untuk mengedit</p>
-              </div>
-              <div className="flex flex-row md:flex-col gap-2 shrink-0">
-                {/* Promo Button */}
-                {menu.isPromo ? (
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2 bg-yellow-100 border-2 border-yellow-500 rounded-full px-3 py-1.5">
-                      <Tag size={12} className="text-yellow-700" />
-                      <span className="text-xs font-black text-yellow-700">Promo {menu.discountPercent ?? 0}% OFF</span>
-                    </div>
-                    <div className="flex gap-1.5">
-                      <button
-                        disabled={isSaving}
-                        onClick={() => { setDiscountInput(String(menu.discountPercent ?? '')); setDiscountError(''); setShowPromoModal(true); }}
-                        className="flex-1 px-3 py-1.5 rounded-full text-xs font-bold border-2 bg-yellow-50 text-yellow-700 border-yellow-400 hover:bg-yellow-100 transition-all"
-                      >
-                        Ubah %
-                      </button>
-                      <button
-                        disabled={isSaving}
-                        onClick={handleRemovePromo}
-                        className="flex-1 px-3 py-1.5 rounded-full text-xs font-bold border-2 bg-red-50 text-red-700 border-red-300 hover:bg-red-100 transition-all"
-                      >
-                        Hapus Promo
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    disabled={isSaving}
-                    onClick={() => { setDiscountInput(''); setDiscountError(''); setShowPromoModal(true); }}
-                    className="px-4 py-2 rounded-full text-xs font-bold border-2 bg-gray-100 text-gray-700 border-gray-300 hover:bg-yellow-50 hover:border-yellow-400 hover:text-yellow-700 transition-all flex items-center gap-1.5"
-                  >
-                    <Tag size={12} /> Jadikan Promo
-                  </button>
-                )}
-
-                <button
-                  disabled={isSaving}
-                  onClick={handleToggleAvailable}
-                  className={`px-4 py-2 rounded-full text-xs font-bold border-2 transition-all ${
-                    menu.isAvailable 
-                      ? 'bg-green-100 text-green-700 border-green-500 hover:bg-green-200' 
-                      : 'bg-red-100 text-red-700 border-red-500 hover:bg-red-200'
-                  }`}
-                >
-                  {menu.isAvailable ? 'Tersedia' : 'Tidak Tersedia'}
-                </button>
-              </div>
+            <div className="w-full group cursor-pointer mb-6" onClick={() => handleEdit('name', menu.name)}>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-black group-hover:text-[#8B1A1A] transition-colors flex items-center gap-3">
+                {menu.name}
+                <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">Klik pada nama untuk mengedit</p>
             </div>
 
-            <div className="mb-8 group cursor-pointer" onClick={() => handleEdit('price', menu.price)}>
+            <div className="mb-6 group cursor-pointer" onClick={() => handleEdit('price', menu.price)}>
               <p className="text-4xl md:text-5xl font-black text-[#8B1A1A] group-hover:text-red-900 transition-colors flex items-center gap-3">
                 {formatRupiah(menu.price)}
                 <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
@@ -344,13 +305,59 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
               <p className="text-xs text-gray-500 mt-1">Klik pada harga untuk mengedit</p>
             </div>
 
-            <div className="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 mb-auto self-start">
+            <div className="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 mb-8 self-start">
               <span className="text-gray-700 font-extrabold text-lg">Rating</span>
               <div className="h-6 w-px bg-gray-300"></div>
               <div className="flex items-center gap-1.5">
                 <Star size={20} fill="#FFC700" className="text-[#FFC700]" />
                 <span className="text-black font-black text-xl">{menu.avgRating}</span>
               </div>
+            </div>
+
+            {/* Action Buttons Section */}
+            <div className="flex flex-wrap items-center gap-3 mt-auto pt-6 border-t border-gray-100">
+              <button
+                disabled={isSaving}
+                onClick={handleToggleAvailable}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold border-2 transition-all flex items-center gap-2 shadow-sm ${
+                  menu.isAvailable 
+                    ? 'bg-[#8B1A1A] text-white border-[#8B1A1A] hover:bg-red-900' 
+                    : 'bg-white text-[#8B1A1A] border-[#8B1A1A] hover:bg-red-50'
+                }`}
+              >
+                <div className={`w-2 h-2 rounded-full ${menu.isAvailable ? 'bg-white' : 'bg-[#8B1A1A]'} animate-pulse`}></div>
+                {menu.isAvailable ? 'Status: Tersedia' : 'Status: Tidak Tersedia'}
+              </button>
+
+              {menu.isPromo ? (
+                <>
+                  <button
+                    disabled={isSaving}
+                    onClick={handleOpenPromoModal}
+                    className="px-5 py-2.5 rounded-full text-sm font-bold border-2 bg-yellow-50 text-yellow-700 border-yellow-500 hover:bg-yellow-100 transition-all flex items-center gap-2 shadow-sm"
+                  >
+                    <Tag size={16} className="text-yellow-700" />
+                    Ubah Promo ({menu.discountPercent ?? 0}%)
+                  </button>
+                  <button
+                    disabled={isSaving}
+                    onClick={handleRemovePromo}
+                    className="px-5 py-2.5 rounded-full text-sm font-bold border-2 bg-white text-[#8B1A1A] border-[#8B1A1A] hover:bg-red-50 transition-all shadow-sm"
+                  >
+                    Hapus Promo
+                  </button>
+                </>
+              ) : (
+                <button
+                  disabled={isSaving}
+                  onClick={handleOpenPromoModal}
+                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 shadow-sm ${
+                    !menu.isAvailable ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300' : 'bg-[#FFC700] text-black hover:bg-yellow-500'
+                  }`}
+                >
+                  <Tag size={16} /> Jadikan Promo
+                </button>
+              )}
             </div>
           </div>
         </div>

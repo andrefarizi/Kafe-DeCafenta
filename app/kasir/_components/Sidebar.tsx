@@ -70,53 +70,7 @@ export default function KasirSidebar() {
         </nav>
       </aside>
 
-      {/* ── Tombol Hamburger Mobile ── */}
-      <button
-        id="kasir-hamburger-btn"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Buka menu navigasi"
-        className="md:hidden fixed top-3 left-3 z-50 w-10 h-10 bg-[#9b0d0d] rounded-lg flex items-center justify-center shadow-lg text-white"
-      >
-        <Menu size={20} />
-      </button>
 
-      {/* ── Overlay Mobile ── */}
-      {mobileOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* ── Drawer Mobile ── */}
-      <aside
-        className={`md:hidden fixed left-0 top-0 h-full w-64 bg-[#9b0d0d] text-white flex flex-col z-50 shadow-2xl transition-transform duration-300 ease-in-out ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        {/* Header Drawer */}
-        <div className="flex items-center justify-between px-4 py-5 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 flex items-center justify-center shrink-0">
-              <img src="/Group 2 1.png" alt="Logo D" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-white font-extrabold text-sm tracking-widest leading-tight">
-              DE CAFENTA
-            </span>
-          </div>
-          <button
-            onClick={() => setMobileOpen(false)}
-            aria-label="Tutup menu"
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <nav className="w-full sm:flex-1 py-3 overflow-y-auto">
-          <NavLinks />
-        </nav>
-      </aside>
 
       {/* ── Bottom Navigation Mobile ── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#9b0d0d] border-t border-white/10 flex items-center justify-around px-2 py-2 shadow-2xl">

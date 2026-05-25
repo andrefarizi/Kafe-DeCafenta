@@ -203,7 +203,17 @@ export default function DataStaffClient({
               <span className="ml-2 text-sm font-normal text-gray-400">({total} kasir)</span>
             </h2>
             <button
-              onClick={() => setAddModalOpen(true)}
+              onClick={() => {
+                const uniqueId = `STF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+                setNewKasir({
+                  nama: '',
+                  email: '',
+                  telepon: '',
+                  staffNumber: uniqueId
+                });
+                setFormErrors({ nama: '', email: '', telepon: '', staffNumber: '', general: '' });
+                setAddModalOpen(true);
+              }}
               className="flex items-center gap-2 bg-[#8B1A1A] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-900 transition-colors"
             >
               <Plus size={16} /> Tambah Staff
@@ -425,7 +435,7 @@ export default function DataStaffClient({
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-black mb-4">Tambah Kasir Baru</h3>
+            <h3 className="text-xl font-black mb-4">Tambah Staff Baru</h3>
             
             {formErrors.general && (
               <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm font-bold rounded-lg border border-red-200">
@@ -500,13 +510,8 @@ export default function DataStaffClient({
                   type="text"
                   required
                   value={newKasir.staffNumber}
-                  onChange={(e) => {
-                    setNewKasir({ ...newKasir, staffNumber: e.target.value });
-                    if (formErrors.staffNumber) setFormErrors(prev => ({ ...prev, staffNumber: '' }));
-                  }}
-                  className={`w-full border rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 ${
-                    formErrors.staffNumber ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#8B1A1A]'
-                  }`}
+                  readOnly
+                  className="w-full border rounded-xl p-2.5 text-sm bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none border-gray-300"
                   placeholder="STF-001"
                 />
                 {formErrors.staffNumber && <p className="text-xs text-red-500 font-bold mt-1">{formErrors.staffNumber}</p>}

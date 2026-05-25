@@ -7,6 +7,7 @@ import {
   getMenuReviews,
 } from '@/src/controllers/menu-controller';
 import MenuDetailClient from './MenuDetailClient';
+import DeleteMenuButton from './DeleteMenuButton';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -69,11 +70,14 @@ export default async function DetailMenu({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8 font-sans text-gray-900 max-w-5xl mx-auto pb-24 md:pb-8">
-      <div className="flex items-center mb-8">
-        <Link href="/owner/menu" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-          <ChevronLeft size={20} className="text-[#8B1A1A]" />
-        </Link>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-black">Detail Menu</h1>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center">
+          <Link href="/owner/menu" className="mr-4 p-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+            <ChevronLeft size={20} className="text-[#8B1A1A]" />
+          </Link>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-black">Detail Menu</h1>
+        </div>
+        <DeleteMenuButton menuId={menu.id} menuName={menu.name} />
       </div>
 
       <MenuDetailClient 

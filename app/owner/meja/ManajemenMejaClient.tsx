@@ -250,7 +250,13 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-extrabold text-[#8B1A1A]">Daftar Meja</h2>
           <button
-            onClick={() => { setModalState('tambah-meja'); setErrorMsg(''); }}
+            onClick={() => {
+              const uniqueTableCode = `TBL-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+              setNewMejaCode(uniqueTableCode);
+              setNewMejaName('');
+              setModalState('tambah-meja');
+              setErrorMsg('');
+            }}
             className="bg-[#8B1A1A] hover:bg-red-900 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors"
           >
             + Tambah Meja
@@ -433,16 +439,8 @@ export default function ManajemenMejaClient({ tables }: { tables: MejaData[] }) 
                 type="text"
                 placeholder="Misal: TBL-01"
                 value={newMejaCode}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (/[^a-zA-Z0-9\-]/.test(val)) {
-                    setErrorMsg('Kode Meja hanya boleh berisi huruf, angka, dan tanda hubung (-).');
-                  } else {
-                    if (errorMsg.includes('Kode Meja')) setErrorMsg('');
-                  }
-                  setNewMejaCode(val);
-                }}
-                className={`w-full border-2 rounded-lg p-2 text-sm outline-none ${errorMsg.includes('Kode Meja') ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+                readOnly
+                className="w-full border-2 rounded-lg p-2 text-sm bg-gray-100 text-gray-500 cursor-not-allowed outline-none border-gray-300"
               />
             </div>
 
