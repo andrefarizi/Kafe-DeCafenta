@@ -290,8 +290,8 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
       </div>
 
       {/* Product List Table */}
-      <div className="mb-8">
-        <table className="w-full text-left border-collapse">
+      <div className="mb-8 w-full overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[400px]">
           <thead>
             <tr>
               <th className="pb-4 font-extrabold text-black text-sm w-2/5">Produk</th>

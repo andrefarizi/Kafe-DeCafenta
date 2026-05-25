@@ -572,29 +572,31 @@ function CashPageInner() {
             )}
 
             {/* ── Tabel Produk ── */}
-            <div className="mb-10 w-full overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="border-b-[1.5px] border-black">
-                    <th className="pb-3 font-extrabold text-black text-[13px] w-2/5">Produk</th>
-                    <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Kategori</th>
-                    <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Jumlah</th>
-                    <th className="pb-3 font-extrabold text-black text-right text-[13px] w-1/5">Harga</th>
-                    {order.status === 'selesai' && <th className="pb-3 font-extrabold text-black text-center text-[13px] pl-4">Aksi</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map(item => (
-                    <ProductRowItem 
-                      key={item.id} 
-                      item={item} 
-                      isCompleted={order.status === 'selesai'} 
-                      isReviewed={item.isReviewed}
-                      onOpenReview={() => openReviewModal(item)}
-                    />
-                  ))}
-                </tbody>
-              </table>
+            <div className="mb-10 w-full">
+              <div className="overflow-x-auto w-full">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="border-b-[1.5px] border-black">
+                      <th className="pb-3 font-extrabold text-black text-[13px] w-2/5">Produk</th>
+                      <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Kategori</th>
+                      <th className="pb-3 font-extrabold text-black text-center text-[13px] w-1/5">Jumlah</th>
+                      <th className="pb-3 font-extrabold text-black text-right text-[13px] w-1/5">Harga</th>
+                      {order.status === 'selesai' && <th className="pb-3 font-extrabold text-black text-center text-[13px] pl-4">Aksi</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.items.map(item => (
+                      <ProductRowItem 
+                        key={item.id} 
+                        item={item} 
+                        isCompleted={order.status === 'selesai'} 
+                        isReviewed={item.isReviewed}
+                        onOpenReview={() => openReviewModal(item)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               <div className="border-t-[1.5px] border-black mt-1 pt-4 flex justify-end">
                 <h2 className="text-[17px] font-black text-[#8B1A1A]">

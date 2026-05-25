@@ -119,22 +119,24 @@ const DetailPesanan = () => {
                     </section>
 
                     {/* Table Produk */}
-                    <div className="overflow-x-auto mb-6 w-full text-left">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="text-black border-b border-gray-200">
-                                    <th className="pb-2 font-bold text-[11px] text-left">Produk</th>
-                                    <th className="pb-2 font-bold text-[11px] text-center">Kategori</th>
-                                    <th className="pb-2 font-bold text-[11px] text-center">Jumlah</th>
-                                    <th className="pb-2 font-bold text-[11px] text-right">Harga</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                <TableRow name="Nasi Goreng" category="Nasi" qty={1} price="Rp 20.000" note="Jangan pedas" img="/Rectangle 43.png" />
-                                <TableRow name="Nasi Goreng" category="Mie" qty={1} price="Rp 20.000" note="Jangan pedas" img="/Rectangle 43.png" />
-                                <TableRow name="Americano" category="Minuman" qty={1} price="Rp 20.000" note="Es nya dikit aja" img="/Rectangle 43 (1).png" />
-                            </tbody>
-                        </table>
+                    <div className="mb-6 w-full text-left">
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full min-w-[400px]">
+                                <thead>
+                                    <tr className="text-black border-b border-gray-200">
+                                        <th className="pb-2 font-bold text-[11px] text-left">Produk</th>
+                                        <th className="pb-2 font-bold text-[11px] text-center">Kategori</th>
+                                        <th className="pb-2 font-bold text-[11px] text-center">Jumlah</th>
+                                        <th className="pb-2 font-bold text-[11px] text-right">Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    <TableRow name="Nasi Goreng" category="Nasi" qty={1} price="Rp 20.000" note="Jangan pedas" img="/Rectangle 43.png" />
+                                    <TableRow name="Nasi Goreng" category="Mie" qty={1} price="Rp 20.000" note="Jangan pedas" img="/Rectangle 43.png" />
+                                    <TableRow name="Americano" category="Minuman" qty={1} price="Rp 20.000" note="Es nya dikit aja" img="/Rectangle 43 (1).png" />
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div className="border-t-1 border-black mt-4 pt-2 flex justify-end">
                             <h2 className="text-l font-bold text-[#8A0000]">Total 3 Menu : Rp 60.000</h2>
