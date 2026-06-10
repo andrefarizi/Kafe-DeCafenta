@@ -62,7 +62,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     if (isEditing === 'name') payload.name = editValue.trim();
     if (isEditing === 'price') payload.price = Number(editValue) || 0;
     if (isEditing === 'description') payload.description = editValue.trim();
-    if (isEditing === 'stock') payload.stock = editValue.trim() === '' ? 0 : Number(editValue);
+    if (isEditing === 'stock') payload.stock = editValue.trim() === '' ? 1 : Number(editValue);
 
     const res = await updateMenuDetail(menu.id, payload);
     setIsSaving(false);
@@ -141,18 +141,18 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
           ) : isEditing === 'stock' ? (
               <input
                 type="number"
+                min="0"
                 className={`w-full border-2 rounded-xl p-3 focus:outline-none font-medium ${editError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
                 value={editValue}
                 onChange={(e) => {
-                  const val = Number(e.target.value);
-                  if (e.target.value !== '' && val < 0) {
-                    setEditError('Stok tidak boleh negatif.');
-                  } else {
-                    setEditError('');
+                  let val = e.target.value;
+                  if (val.startsWith('-') || Number(val) < 0) {
+                    val = '0';
                   }
-                  setEditValue(e.target.value);
+                  setEditValue(val);
+                  setEditError('');
                 }}
-                placeholder="Kosongkan jika stok habis (0)"
+                placeholder="Kosongkan untuk set stok ke 1"
               />
           ) : isEditing === 'price' ? (
             <div className="relative">

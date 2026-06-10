@@ -287,14 +287,19 @@ export default function TambahMenuClient({ categories }: Props) {
               Stok Menu
               <span className="text-gray-400 text-sm font-normal ml-2">(Opsional)</span>
             </label>
-            <p className="text-xs text-gray-500 mb-3">Kosongkan jika stok habis (0).</p>
+            <p className="text-xs text-gray-500 mb-3">Kosongkan untuk set stok ke 1.</p>
             <input
               id="menu-stock"
               type="number"
+              min="0"
               name="stock"
               value={stock}
               onChange={(e) => {
-                setStock(e.target.value);
+                let val = e.target.value;
+                if (val.startsWith('-') || Number(val) < 0) {
+                  val = '0';
+                }
+                setStock(val);
                 if (errors.stock) setErrors(prev => { const x = {...prev}; delete x.stock; return x; });
               }}
               placeholder="Contoh: 50"

@@ -461,7 +461,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
         description: description || null,
         imageUrl,
         isAvailable: true,
-        stock: stockStr ? parseInt(stockStr, 10) : 0,
+        stock: stockStr ? parseInt(stockStr, 10) : 1,
       },
     });
 
