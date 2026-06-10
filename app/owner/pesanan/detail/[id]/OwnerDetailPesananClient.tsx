@@ -220,9 +220,15 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
           alt="Avatar" 
           className="w-14 h-14 object-contain mr-4" 
         />
-        <div>
+        <div className="flex-1">
           <p className="text-[10px] text-gray-500 font-medium">Nama Pelanggan</p>
           <p className="text-lg font-extrabold text-[#8B1A1A]">{order.customerName}</p>
+          {order.customerEmail && (
+            <p className="text-[11px] text-gray-600 font-medium mt-0.5">📧 {order.customerEmail}</p>
+          )}
+          {order.customerPhone && (
+            <p className="text-[11px] text-gray-600 font-medium mt-0.5">📞 {order.customerPhone}</p>
+          )}
         </div>
       </div>
 
@@ -269,7 +275,7 @@ export default function OwnerDetailPesananClient({ order }: { order: OrderDetail
       <div className="mb-10 space-y-5">
         <div>
           <h4 className="text-sm font-extrabold text-black mb-0.5">Metode Pembayaran</h4>
-          <p className="text-xs font-medium text-black">{order.paymentMethod}</p>
+          <p className="text-xs font-medium text-black">{order.paymentMethodDetail || order.paymentMethod}</p>
         </div>
         <div>
           <h4 className="text-sm font-extrabold text-black mb-0.5">Tipe Pesanan</h4>

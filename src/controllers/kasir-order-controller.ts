@@ -27,10 +27,13 @@ export type OrderDetailData = {
   id: string;
   orderCode: string;
   customerName: string;
+  customerEmail: string | null;
+  customerPhone: string | null;
   status: 'Masuk' | 'Dimasak' | 'Siap Diambil' | 'Selesai';
   tanggal: string;
   waktu: string;
   paymentMethod: string;
+  paymentMethodDetail: string;
   orderType: string;
   isPaid: boolean;
   totalPrice: number;
@@ -100,6 +103,10 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
     for (const item of data.items) {
       const menu = await prisma.menu.findUnique({ where: { id: item.menuId } });
       if (!menu) throw new Error(`Menu dengan ID ${item.menuId} tidak ditemukan.`);
+
+      if (menu.stock !== null && menu.stock < item.qty) {
+        return { success: false, message: `Maaf, sisa stock ${menu.name} hanya ${menu.stock} porsi.` };
+      }
 
       const itemSubtotal = Number(menu.price) * item.qty;
       subtotal += itemSubtotal;
@@ -178,6 +185,17 @@ export async function createKasirOrder(data: KasirCheckoutPayload): Promise<Crea
           subtotal: item.subtotal,
         })),
       });
+
+      // Kurangi Stock
+      for (const item of orderItemsInput) {
+        const menu = await tx.menu.findUnique({ where: { id: item.menuId } });
+        if (menu && menu.stock !== null) {
+          await tx.menu.update({
+            where: { id: item.menuId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
+      }
 
       return newOrder;
     });
@@ -332,14 +350,27 @@ export async function getKasirOrderDetail(orderId: string): Promise<OrderDetailD
       };
     });
 
+    // Extract specific payment method from notes if available
+    let paymentMethodDetail = order.paymentMethod === 'cash' ? 'Cash' : 'E-Wallet';
+    const notesStr = order.notes || '';
+    if (notesStr.includes('payment_method:gopay')) paymentMethodDetail = 'GoPay';
+    else if (notesStr.includes('payment_method:dana')) paymentMethodDetail = 'DANA / QRIS';
+    else if (notesStr.includes('payment_method:bank_va')) paymentMethodDetail = 'Bank (Virtual Account BCA)';
+    else if (notesStr.includes('Pembayaran: Gopay')) paymentMethodDetail = 'GoPay';
+    else if (notesStr.includes('Pembayaran: Dana')) paymentMethodDetail = 'DANA / QRIS';
+    else if (notesStr.includes('Pembayaran: Cash')) paymentMethodDetail = 'Cash';
+
     return {
       id: order.id,
       orderCode: `#${order.orderCode}`,
       customerName: namaPelanggan,
+      customerEmail: order.user?.email || null,
+      customerPhone: order.user?.phone || null,
       status: statusUI,
       tanggal: tanggal,
       waktu: waktu,
-      paymentMethod: order.paymentMethod === 'cash' ? 'Cash' : 'E-Wallet', // Bisa disesuaikan kalau notes menyimpan info spesifik Gopay/Dana
+      paymentMethod: order.paymentMethod === 'cash' ? 'Cash' : 'E-Wallet',
+      paymentMethodDetail: paymentMethodDetail,
       orderType: order.notes?.includes('Bawa Pulang') ? 'Bawa Pulang' : 'Makan Ditempat',
       isPaid: order.isPaid,
       totalPrice: Number(order.totalPrice),

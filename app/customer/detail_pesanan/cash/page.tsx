@@ -192,25 +192,6 @@ function StatusUpdateToast({ status, onClose }: { status: string; onClose: () =>
   );
 }
 
-function PaymentSuccessBanner({ onClose }: { onClose: () => void }) {
-  const [exiting, setExiting] = useState(false);
-  const close = () => { setExiting(true); setTimeout(onClose, 300); };
-  useEffect(() => { const t = setTimeout(close, 6000); return () => clearTimeout(t); }, []); // eslint-disable-line
-  return (
-    <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-[999] w-full max-w-[480px] px-4 ${exiting ? "notif-exit" : "notif-enter"}`}>
-      <div className="bg-white border-[2px] border-[#22C55E] rounded-2xl shadow-2xl flex items-start gap-4 px-5 py-4">
-        <div className="shrink-0 w-11 h-11 bg-[#DCFCE7] rounded-full flex items-center justify-center mt-0.5">
-          <CheckCircle2 size={24} className="text-[#16A34A]" />
-        </div>
-        <div className="flex-1">
-          <p className="font-extrabold text-black text-[15px] leading-tight">Pembayaran Berhasil! 🎉</p>
-          <p className="text-gray-500 text-[12px] mt-1">Transaksi dikonfirmasi. Pesanan Anda masuk ke antrian dapur.</p>
-        </div>
-        <button onClick={close} className="text-gray-400 hover:text-gray-600 text-[18px] shrink-0 mt-0.5">✕</button>
-      </div>
-    </div>
-  );
-}
 
 /* ═══════════════════════════════════
    MAIN PAGE
@@ -242,7 +223,6 @@ function CashPageInner() {
   const [midtransOrderId, setMidtransOrderId] = useState("");
   const [paymentError, setPaymentError]     = useState("");
   const [copied, setCopied]                 = useState(false);
-  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [showStatusToast, setShowStatusToast]     = useState(false);
   const isFirstLoad = useRef(true);
   const [isPolling, setIsPolling]           = useState(false);
@@ -287,7 +267,7 @@ function CashPageInner() {
         if (json.isPaid) {
           clearInterval(pollRef.current!);
           setIsPolling(false);
-          setShowSuccessBanner(true);
+          toast.success("Pembayaran Berhasil! Pesanan Anda masuk ke antrian dapur.", { duration: 4000 });
           await loadOrder();
           router.refresh(); 
         }
@@ -332,7 +312,7 @@ function CashPageInner() {
       const res  = await fetch(`/api/payment/check-status?orderId=${orderId}&midtransOrderId=${midtransOrderId}`);
       const json = await res.json();
       if (json.isPaid) {
-        setShowSuccessBanner(true);
+        toast.success("Pembayaran Berhasil! Pesanan Anda masuk ke antrian dapur.", { duration: 4000 });
         await loadOrder();
         router.refresh(); 
       }
@@ -403,7 +383,6 @@ function CashPageInner() {
 
   return (
     <div className="flex min-h-screen bg-white font-sans text-gray-900">
-      {showSuccessBanner && <PaymentSuccessBanner onClose={() => setShowSuccessBanner(false)} />}
       {showStatusToast && order && <StatusUpdateToast status={order.status} onClose={() => setShowStatusToast(false)} />}
 
       <Sidebar activeMenu="pesanan" />
@@ -568,7 +547,10 @@ function CashPageInner() {
                   <CheckCircle2 size={18} className="text-[#16A34A]" />
                   <h3 className="font-bold text-[14px] text-[#16A34A]">Pembayaran Terverifikasi</h3>
                 </div>
-                <p className="text-[12px] text-gray-600">Pesanan anda sedang diproses oleh dapur. Pantau status di atas.</p>
+                <p className="text-[13px] text-gray-700 font-medium mt-1">
+                  Metode: <span className="font-extrabold text-[#16A34A]">{selectedMethod ? PAYMENT_LABELS[selectedMethod] : (order.paymentMethod === 'cash' ? 'Cash' : 'E-Wallet')}</span>
+                </p>
+                <p className="text-[12px] text-gray-600 mt-1">Pesanan anda sedang diproses oleh dapur. Pantau status di atas.</p>
               </div>
             )}
 

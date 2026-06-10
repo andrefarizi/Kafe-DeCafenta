@@ -14,6 +14,7 @@ type MenuListItem = {
   imageUrl: string | null;
   categoryName: string;
   isAvailable?: boolean;
+  stock?: number | null;
   totalOrdered?: number;
 };
 
@@ -26,6 +27,7 @@ type MenuRow = {
   imageUrl: string | null;
   categoryName: string;
   isAvailable?: boolean;
+  stock?: number | null;
   totalOrdered?: number | null;
 };
 
@@ -38,6 +40,7 @@ type MenuDetail = {
   imageUrl: string | null;
   categoryName: string;
   isAvailable: boolean;
+  stock: number | null;
   isPromo: boolean;
   discountPercent: number;
   reviewCount: number;
@@ -65,6 +68,7 @@ const mapMenuRow = (menu: MenuRow): MenuListItem => ({
   imageUrl: menu.imageUrl,
   categoryName: menu.categoryName,
   isAvailable: menu.isAvailable,
+  stock: menu.stock,
   totalOrdered: menu.totalOrdered ? toNumber(menu.totalOrdered) : 0,
 });
 
@@ -86,6 +90,7 @@ export async function getGuestMenuList(): Promise<MenuListItem[]> {
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
+    stock: menu.stock,
   }));
 }
 
@@ -107,6 +112,7 @@ export async function getMenuCatalog(): Promise<MenuListItem[]> {
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
+    stock: menu.stock,
   }));
 }
 
@@ -133,6 +139,7 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
       imageUrl: menu.imageUrl,
       categoryName: menu.category.name,
       isAvailable: menu.isAvailable,
+      stock: menu.stock,
     }));
   }
 
@@ -158,6 +165,7 @@ export async function getBestSellerMenus(limit = 3): Promise<MenuListItem[]> {
       imageUrl: menu.imageUrl,
       categoryName: menu.category.name,
       isAvailable: menu.isAvailable,
+      stock: menu.stock,
       totalOrdered: toNumber(item._sum.quantity),
     });
   }
@@ -186,6 +194,7 @@ export async function getRecommendedMenus(limit = 4): Promise<MenuListItem[]> {
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
+    stock: menu.stock,
   }));
 }
 
@@ -198,6 +207,7 @@ export async function getPromoMenus(limit = 4): Promise<MenuListItem[]> {
            m."avgRating" AS "avgRating",
            m."imageUrl" AS "imageUrl",
            m."isAvailable" AS "isAvailable",
+           m."stock" AS "stock",
            m."discountPercent" AS "discountPercent",
            c.name AS "categoryName",
            COALESCE(SUM(oi.quantity), 0) AS "totalOrdered"
@@ -235,6 +245,7 @@ export async function getCustomerOrderHistoryMenus(
            m."avgRating" AS "avgRating",
            m."imageUrl" AS "imageUrl",
            m."isAvailable" AS "isAvailable",
+           m."stock" AS "stock",
            c.name AS "categoryName",
            COALESCE(SUM(oi.quantity), 0) AS "totalOrdered"
     FROM order_items oi
@@ -275,6 +286,7 @@ export async function getCustomerCartMenus(
     imageUrl: item.menu.imageUrl,
     categoryName: item.menu.category.name,
     isAvailable: item.menu.isAvailable,
+    stock: item.menu.stock,
     totalOrdered: item.quantity, 
   }));
 }
@@ -305,6 +317,7 @@ export async function getMenuDetail(menuId: string): Promise<MenuDetail | null> 
     imageUrl: menu.imageUrl,
     categoryName: menu.category.name,
     isAvailable: menu.isAvailable,
+    stock: menu.stock,
     isPromo: menu.isPromo,
     discountPercent: menu.discountPercent ?? 0,
     reviewCount: menu._count.reviews,
@@ -337,6 +350,68 @@ export async function getCategories() {
   return cats.map((c) => ({ id: c.id, name: c.name }));
 }
 
+/* ─── OWNER: Tambah kategori baru ─── */
+export async function createCategory(name: string): Promise<{ success: boolean; message: string; category?: { id: string; name: string } }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: 'Sesi tidak valid.' };
+
+    const trimmed = name.trim();
+    if (!trimmed) return { success: false, message: 'Nama kategori tidak boleh kosong.' };
+    if (trimmed.length > 50) return { success: false, message: 'Nama kategori maksimal 50 karakter.' };
+
+    // Cek duplikat (case-insensitive)
+    const existing = await prisma.category.findFirst({
+      where: { name: { equals: trimmed, mode: 'insensitive' } },
+    });
+    if (existing) return { success: false, message: 'Kategori dengan nama tersebut sudah ada.' };
+
+    const cat = await prisma.category.create({ data: { name: trimmed } });
+    return { success: true, message: 'Kategori berhasil ditambahkan!', category: { id: cat.id, name: cat.name } };
+  } catch (error: any) {
+    console.error('createCategory error:', error);
+    return { success: false, message: 'Gagal membuat kategori.' };
+  }
+}
+
+/* ─── OWNER: Hapus kategori ─── */
+export async function deleteCategory(categoryId: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: 'Sesi tidak valid.' };
+
+    // Cek apakah ada menu yang menggunakan kategori ini
+    const menuCount = await prisma.menu.count({ where: { categoryId } });
+    if (menuCount > 0) {
+      return { success: false, message: `Kategori tidak dapat dihapus karena masih digunakan oleh ${menuCount} menu.` };
+    }
+
+    await prisma.category.delete({ where: { id: categoryId } });
+    return { success: true, message: 'Kategori berhasil dihapus!' };
+  } catch (error: any) {
+    console.error('deleteCategory error:', error);
+    return { success: false, message: 'Gagal menghapus kategori.' };
+  }
+}
+
+/* ─── OWNER/KASIR: Update stock menu ─── */
+export async function updateMenuStock(menuId: string, stock: number | null): Promise<{ success: boolean; message: string }> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false, message: 'Sesi tidak valid.' };
+
+    await prisma.menu.update({
+      where: { id: menuId },
+      data: { stock },
+    });
+
+    return { success: true, message: 'Stock berhasil diperbarui!' };
+  } catch (error: any) {
+    console.error('updateMenuStock error:', error);
+    return { success: false, message: 'Gagal memperbarui stock.' };
+  }
+}
+
 /* ─── OWNER: Tipe hasil createMenu ─── */
 export type CreateMenuResult = {
   success: boolean;
@@ -350,6 +425,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
     const categoryId  = (formData.get('categoryId') as string | null)?.trim() ?? '';
     const priceStr    = (formData.get('price') as string | null)?.trim() ?? '';
     const description = (formData.get('description') as string | null)?.trim() ?? '';
+    const stockStr    = (formData.get('stock') as string | null)?.trim();
     const imageFile   = formData.get('image') as File | null;
 
     // Validasi server-side
@@ -385,6 +461,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
         description: description || null,
         imageUrl,
         isAvailable: true,
+        stock: stockStr ? parseInt(stockStr, 10) : 0,
       },
     });
 
@@ -398,7 +475,7 @@ export async function createMenu(formData: FormData): Promise<CreateMenuResult> 
 /* ─── OWNER: Update menu ─── */
 export async function updateMenuDetail(
   menuId: string, 
-  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; isPromo?: boolean; discountPercent?: number; }
+  data: { name?: string; price?: number; description?: string; isAvailable?: boolean; isPromo?: boolean; discountPercent?: number; stock?: number | null; }
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth();
@@ -413,6 +490,7 @@ export async function updateMenuDetail(
         ...(data.isAvailable !== undefined && { isAvailable: data.isAvailable }),
         ...(data.isPromo !== undefined && { isPromo: data.isPromo }),
         ...(data.discountPercent !== undefined && { discountPercent: data.discountPercent }),
+        ...(data.stock !== undefined && { stock: data.stock }),
       },
     });
 

@@ -91,6 +91,7 @@ export default async function DetailMenu({ params }: PageProps) {
           isAvailable: menu.isAvailable,
           isPromo: menu.isPromo,
           discountPercent: menu.discountPercent ?? 0,
+          stock: menu.stock ?? null,
         }} 
       />
 

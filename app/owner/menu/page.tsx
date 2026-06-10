@@ -35,6 +35,7 @@ export default async function ManajemenMenu() {
     image: menu.imageUrl || categoryFallbacks[menu.categoryName] || '/nasi goreng.png',
     category: menu.categoryName,
     isAvailable: menu.isAvailable ?? true,
+    stock: menu.stock ?? null,
   }));
 
   return (
@@ -43,10 +44,15 @@ export default async function ManajemenMenu() {
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <h1 className="text-3xl font-extrabold text-black">Manajemen Menu</h1>
-        <Link href="/owner/menu/tambah" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
-          <Plus size={16} strokeWidth={3} />
-          <span>Tambah Menu</span>
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Link href="/owner/kategori" className="flex items-center space-x-2 bg-white text-[#8B1A1A] border-2 border-[#8B1A1A] hover:bg-red-50 px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+            <span>Kelola Kategori</span>
+          </Link>
+          <Link href="/owner/menu/tambah" className="flex items-center space-x-2 bg-[#8B1A1A] hover:bg-red-900 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+            <Plus size={16} strokeWidth={3} />
+            <span>Tambah Menu</span>
+          </Link>
+        </div>
       </div>
 
       <MenuClient items={items} />

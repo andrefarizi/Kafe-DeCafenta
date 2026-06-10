@@ -19,6 +19,8 @@
     "@types/pg": "^8.20.0",
     "@vercel/blob": "^2.4.0",
     "bcryptjs": "^3.0.3",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.16.0",
     "midtrans-client": "^1.4.3",
     "next": "16.2.4",

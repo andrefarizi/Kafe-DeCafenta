@@ -36,6 +36,7 @@ type CartItem = {
   categoryName: string;
   qty: number;
   note: string;
+  stock: number | null;
 };
 
 type PaymentOption = "cash" | "gopay" | "dana" | "bank_va";
@@ -100,6 +101,7 @@ export default function KeranjangPage() {
     setItems(items.map((i) => (i.id === cartId ? { ...i, qty: newQty } : i)));
     const result = await updateCartQuantity(cartId, newQty);
     if (!result.success) {
+      toast.error(result.message);
       setItems(items.map((i) => (i.id === cartId ? { ...i, qty: currentQty } : i)));
     }
     window.dispatchEvent(new Event("cart-updated"));
@@ -202,7 +204,7 @@ export default function KeranjangPage() {
                     </div>
                     <div className="col-span-2 text-center text-black font-medium text-[14px]">{formatPrice(item.price)}</div>
                     <div className="col-span-2 flex items-center justify-center gap-4">
-                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, 1)} className="flex items-center justify-center w-[24px] h-[24px] bg-[#8B0000] rounded-[4px] hover:opacity-90 transition-opacity">
+                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, 1)} disabled={item.stock !== null && item.qty >= item.stock} className={`flex items-center justify-center w-[24px] h-[24px] rounded-[4px] transition-all ${item.stock !== null && item.qty >= item.stock ? "bg-gray-300 cursor-not-allowed" : "bg-[#8B0000] hover:opacity-90"}`}>
                         <span className="text-white font-bold select-none leading-none relative -top-[1.5px]">+</span>
                       </button>
                       <span className="font-extrabold text-black w-4 text-center text-[15px]">{item.qty}</span>
@@ -248,7 +250,7 @@ export default function KeranjangPage() {
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
                     <div className="flex items-center gap-3">
-                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, 1)} className="flex items-center justify-center w-7 h-7 bg-[#8B0000] rounded-md">
+                      <button onClick={() => handleUpdateQuantity(item.id, item.qty, 1)} disabled={item.stock !== null && item.qty >= item.stock} className={`flex items-center justify-center w-7 h-7 rounded-md ${item.stock !== null && item.qty >= item.stock ? 'bg-gray-300' : 'bg-[#8B0000]'}`}>
                         <span className="text-white font-bold text-lg leading-none">+</span>
                       </button>
                       <span className="font-extrabold text-black text-[15px] w-5 text-center">{item.qty}</span>

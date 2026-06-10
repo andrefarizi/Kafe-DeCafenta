@@ -17,6 +17,16 @@ export async function addToCart(menuId: string, quantity: number, notes: string)
       return { success: false, message: 'Silakan login terlebih dahulu untuk memesan.' };
     }
 
+    // Cek ketersediaan menu dan stok
+    const menu = await prisma.menu.findUnique({
+      where: { id: menuId },
+      select: { stock: true }
+    });
+
+    if (!menu) {
+      return { success: false, message: 'Menu tidak ditemukan.' };
+    }
+
     // 2. Cek apakah menu ini sudah ada di keranjang user
     const existingCartItem = await prisma.cart.findUnique({
       where: {
@@ -26,6 +36,11 @@ export async function addToCart(menuId: string, quantity: number, notes: string)
         },
       },
     });
+
+    const newTotalQty = (existingCartItem?.quantity || 0) + quantity;
+    if (menu.stock !== null && newTotalQty > menu.stock) {
+      return { success: false, message: `Maaf, sisa stock hanya ${menu.stock} porsi.` };
+    }
 
     if (existingCartItem) {
       await prisma.cart.update({
@@ -84,6 +99,7 @@ export async function getCustomerCart() {
     categoryName: item.menu.category.name,
     qty: item.quantity,          
     note: item.notes || "",      
+    stock: item.menu.stock,
   }));
 }
 
@@ -126,6 +142,20 @@ export async function updateCartQuantity(cartId: string, newQuantity: number) {
 
     if (newQuantity < 1) {
       return { success: false, message: 'Kuantitas minimal 1 porsi.' };
+    }
+
+    // Cek ketersediaan stok
+    const cartItem = await prisma.cart.findUnique({
+      where: { id: cartId },
+      include: { menu: { select: { stock: true, name: true } } }
+    });
+
+    if (!cartItem) {
+      return { success: false, message: 'Item tidak ditemukan.' };
+    }
+
+    if (cartItem.menu.stock !== null && newQuantity > cartItem.menu.stock) {
+      return { success: false, message: `Maaf, sisa stock ${cartItem.menu.name} hanya ${cartItem.menu.stock} porsi.` };
     }
 
     // Update kuantitas di database

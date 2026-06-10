@@ -23,11 +23,12 @@ type MenuProps = {
   isAvailable: boolean;
   isPromo: boolean;
   discountPercent?: number;
+  stock: number | null;
 };
 
 export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState<'name' | 'price' | 'description' | null>(null);
+  const [isEditing, setIsEditing] = useState<'name' | 'price' | 'description' | 'stock' | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [editError, setEditError] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
@@ -37,7 +38,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
   const [discountInput, setDiscountInput] = useState('');
   const [discountError, setDiscountError] = useState('');
 
-  const handleEdit = (field: 'name' | 'price' | 'description', currentValue: string | number | null) => {
+  const handleEdit = (field: 'name' | 'price' | 'description' | 'stock', currentValue: string | number | null) => {
     setIsEditing(field);
     setEditValue(currentValue?.toString() || '');
     setEditError('');
@@ -57,10 +58,11 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
     if (!isEditing) return;
     setIsSaving(true);
     
-    let payload: { name?: string; price?: number; description?: string } = {};
+    let payload: { name?: string; price?: number; description?: string; stock?: number | null } = {};
     if (isEditing === 'name') payload.name = editValue.trim();
     if (isEditing === 'price') payload.price = Number(editValue) || 0;
     if (isEditing === 'description') payload.description = editValue.trim();
+    if (isEditing === 'stock') payload.stock = editValue.trim() === '' ? 0 : Number(editValue);
 
     const res = await updateMenuDetail(menu.id, payload);
     setIsSaving(false);
@@ -122,7 +124,7 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-200">
           <h3 className="text-xl font-extrabold text-black mb-4">
-            Edit {isEditing === 'name' ? 'Nama' : isEditing === 'price' ? 'Harga' : 'Deskripsi'}
+            Edit {isEditing === 'name' ? 'Nama' : isEditing === 'price' ? 'Harga' : isEditing === 'stock' ? 'Stok' : 'Deskripsi'}
           </h3>
           
           {isEditing === 'description' ? (
@@ -135,6 +137,22 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
                   setEditError(e.target.value.length > 300 ? 'Deskripsi maksimal 300 karakter.' : '');
                 }}
                 placeholder="Masukkan deskripsi..."
+              />
+          ) : isEditing === 'stock' ? (
+              <input
+                type="number"
+                className={`w-full border-2 rounded-xl p-3 focus:outline-none font-medium ${editError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-[#8B1A1A]'}`}
+                value={editValue}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (e.target.value !== '' && val < 0) {
+                    setEditError('Stok tidak boleh negatif.');
+                  } else {
+                    setEditError('');
+                  }
+                  setEditValue(e.target.value);
+                }}
+                placeholder="Kosongkan jika stok habis (0)"
               />
           ) : isEditing === 'price' ? (
             <div className="relative">
@@ -297,12 +315,24 @@ export default function MenuDetailClient({ menu }: { menu: MenuProps }) {
                 {formatRupiah(menu.price)}
                 <Pencil size={20} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors" />
               </p>
-              {menu.isPromo && menu.discountPercent && menu.discountPercent > 0 && (
+              {menu.isPromo && menu.discountPercent && menu.discountPercent > 0 ? (
                 <p className="text-base font-bold text-green-600 mt-1">
                   Setelah diskon: {formatRupiah(Math.round(menu.price * (1 - menu.discountPercent / 100)))}
                 </p>
-              )}
+              ) : null}
               <p className="text-xs text-gray-500 mt-1">Klik pada harga untuk mengedit</p>
+            </div>
+
+            <div className="mb-6 group cursor-pointer" onClick={() => handleEdit('stock', menu.stock)}>
+              <div className="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 self-start group-hover:border-[#8B1A1A] transition-colors">
+                <span className="text-gray-700 font-extrabold text-lg">Stok</span>
+                <div className="h-6 w-px bg-gray-300"></div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-black font-black text-xl">{menu.stock === null ? 'Tidak Terbatas' : menu.stock}</span>
+                </div>
+                <Pencil size={16} strokeWidth={2.5} className="text-gray-400 group-hover:text-[#8B1A1A] transition-colors ml-2" />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Klik pada kotak stok untuk mengedit</p>
             </div>
 
             <div className="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-5 py-3 mb-8 self-start">

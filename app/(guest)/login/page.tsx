@@ -14,8 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successRedirect, setSuccessRedirect] = useState("/customer/beranda");
+
   const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({});
 
   const getRedirectByRole = (role?: string) => {
@@ -67,8 +66,8 @@ export default function LoginPage() {
         const session = await getSession();
         const role = (session?.user as { role?: string })?.role;
         const nextPath = getRedirectByRole(role);
-        setSuccessRedirect(nextPath);
-        setShowSuccessModal(true);
+        router.push(nextPath);
+        router.refresh();
       }
     } catch {
       setError("Terjadi kesalahan. Coba lagi nanti.");
@@ -109,30 +108,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#8b1c1c] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
 
-      {showSuccessModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md bg-white rounded-[2rem] border-2 border-[#8b1c1c] p-8 text-center shadow-2xl">
-            <div className="mx-auto mb-5 h-28 w-28 rounded-full bg-[#e7f7e7] flex items-center justify-center">
-              <img src="/Berhasil Icon.png" alt="Login berhasil" className="h-16 w-16 object-contain" />
-            </div>
-            <h2 className="text-3xl font-extrabold text-black">Login Berhasil</h2>
-            <p className="text-sm font-semibold text-gray-700 mt-2">Selamat datang kembali di De Cafenta</p>
-            <button
-              type="button"
-              onClick={() => {
-                setShowSuccessModal(false);
-                router.push(successRedirect);
-                router.refresh();
-              }}
-              className="mt-8 w-full py-3 bg-[#8b1c1c] text-white text-sm font-bold rounded-xl hover:bg-[#6b1d1d] transition-colors"
-            >
-              Lanjutkan
-            </button>
-          </div>
-        </div>
-      )}
 
-      *
 
       {/* Ornamen Desain Figma */}
       <img

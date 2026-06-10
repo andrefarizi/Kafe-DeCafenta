@@ -11,6 +11,7 @@ type OwnerMenuItem = {
   rating: string;
   category: string;
   isAvailable: boolean;
+  stock: number | null;
   image: string;
 };
 
@@ -99,7 +100,12 @@ export default function MenuClient({ items }: MenuClientProps) {
               <div className="w-full flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="font-bold text-black text-[12px] md:text-md mb-0.5 md:mb-1 line-clamp-2 leading-tight">{item.name}</h3>
-                  <p className="text-[11px] md:text-sm text-black font-medium">{item.price}</p>
+                  <div className="flex justify-between items-center mt-1">
+                    <p className="text-[11px] md:text-sm text-[#8B1A1A] font-extrabold">{item.price}</p>
+                    {item.stock !== null && (
+                      <p className="text-[10px] md:text-[11px] text-gray-500 font-medium">Stok: {item.stock}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="mt-2 md:mt-4">
                   <div className="w-full bg-[#8B0000] text-center text-white py-1.5 md:py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold hover:bg-[#6A0000] transition-colors">

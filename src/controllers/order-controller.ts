@@ -49,6 +49,13 @@ export async function createOrderFromCart(
       return { success: false, message: 'Keranjang kosong.' };
     }
 
+    // Validasi stock
+    for (const item of cartItems) {
+      if (item.menu.stock !== null && item.menu.stock < item.quantity) {
+        return { success: false, message: `Maaf, sisa stock ${item.menu.name} hanya ${item.menu.stock} porsi. Tidak mencukupi pesanan Anda.` };
+      }
+    }
+
     // Hitung total harga
     const totalPrice = cartItems.reduce(
       (acc, item) => acc + Number(item.menu.price) * item.quantity,
@@ -98,6 +105,16 @@ export async function createOrderFromCart(
           subtotal: Number(item.menu.price) * item.quantity,
         })),
       });
+
+      // Kurangi stock menu
+      for (const item of cartItems) {
+        if (item.menu.stock !== null) {
+          await tx.menu.update({
+            where: { id: item.menuId },
+            data: { stock: { decrement: item.quantity } },
+          });
+        }
+      }
 
       // Hapus keranjang user setelah order dibuat
       await tx.cart.deleteMany({

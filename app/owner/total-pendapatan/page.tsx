@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronDown, Banknote, Wallet } from 'lucide-react';
 import { getOwnerMonthlyReport } from '@/src/controllers/owner-controller';
 import DateCarouselClient from '../components/DateCarouselClient';
 import YearDropdownClient from '../components/YearDropdownClient';
-import ExportExcelButtonClient from '../components/ExportExcelButtonClient';
+import ExportPdfButtonClient from '../components/ExportPdfButtonClient';
 
 interface Props { searchParams?: Promise<{ month?: string; day?: string; year?: string }> }
 
@@ -46,7 +46,7 @@ export default async function DetailPendapatan(props: Props) {
 
       {/* Action Bar */}
       <div className="mb-6 flex items-center justify-end w-full gap-4">
-        <ExportExcelButtonClient report={report} type="pendapatan" />
+        <ExportPdfButtonClient report={report} type="pendapatan" />
         <YearDropdownClient currentYear={report.year} month={report.month ?? 1} />
       </div>
 

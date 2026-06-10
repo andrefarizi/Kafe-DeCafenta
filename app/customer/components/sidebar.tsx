@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingCart, ClipboardList } from 'lucide-react';
+import { Home, ShoppingCart, ClipboardList, LayoutGrid } from 'lucide-react';
 import CartBadge from './CartBadge';
 
 interface NavItemProps {
@@ -63,6 +63,12 @@ const Sidebar = ({ activeMenu }: { activeMenu?: string }) => {
       label: 'Pesanan',
       href: '/customer/Pesanan',
       key: 'pesanan',
+    },
+    {
+      icon: <LayoutGrid size={20} />,
+      label: 'Meja',
+      href: '/customer/meja',
+      key: 'meja',
     },
   ];
 

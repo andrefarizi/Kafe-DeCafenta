@@ -10,6 +10,7 @@ const navItems = [
   { label: 'Pesan Ditempat', href: '/kasir/pesan-ditempat',   match: '/kasir/pesan-ditempat',   icon: '/simple-icons_justeat.png' },
   { label: 'Daftar Pesanan', href: '/kasir/daftar-pesanan', match: '/kasir/daftar-pesanan', icon: '/lsicon_work-order-outline.png' },
   { label: 'Kelola Meja',    href: '/kasir/kelola-meja',      match: '/kasir/kelola-meja',      icon: '/Vector (4).png' },
+  { label: 'Kelola Stok',    href: '/kasir/kelola-stok',      match: '/kasir/kelola-stok',      icon: '/gridicons_menus.png' },
 ];
 
 export default function KasirSidebar() {

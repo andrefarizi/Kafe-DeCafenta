@@ -22,6 +22,7 @@ export default function TambahMenuClient({ categories }: Props) {
   const [name, setName]           = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
   const [price, setPrice]         = useState('');
+  const [stock, setStock]         = useState('');
   const [description, setDesc]    = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -41,6 +42,7 @@ export default function TambahMenuClient({ categories }: Props) {
     if (!price)               e.price = 'Harga wajib diisi.';
     else if (isNaN(p) || p <= 0) e.price = 'Harga harus berupa angka lebih dari 0.';
     else if (p > 10_000_000)  e.price = 'Harga terlalu besar (maks 10.000.000).';
+    if (stock && (isNaN(Number(stock)) || Number(stock) < 0)) e.stock = 'Stok tidak boleh negatif.';
     if (description.length > MAX_DESC) e.description = `Maks ${MAX_DESC} karakter. Sekarang ${description.length}.`;
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -87,6 +89,7 @@ export default function TambahMenuClient({ categories }: Props) {
     fd.append('name', name.trim());
     fd.append('categoryId', categoryId);
     fd.append('price', price.replace(/\D/g, ''));
+    if (stock.trim() !== '') fd.append('stock', stock.trim());
     fd.append('description', description.trim());
     if (imageFile) fd.append('image', imageFile);
 
@@ -276,6 +279,29 @@ export default function TambahMenuClient({ categories }: Props) {
               />
             </div>
             {errors.price && <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1"><AlertCircle size={12} />{errors.price}</p>}
+          </div>
+
+          {/* ── Stok ── */}
+          <div>
+            <label htmlFor="menu-stock" className="block text-lg font-extrabold text-black mb-1">
+              Stok Menu
+              <span className="text-gray-400 text-sm font-normal ml-2">(Opsional)</span>
+            </label>
+            <p className="text-xs text-gray-500 mb-3">Kosongkan jika stok habis (0).</p>
+            <input
+              id="menu-stock"
+              type="number"
+              name="stock"
+              value={stock}
+              onChange={(e) => {
+                setStock(e.target.value);
+                if (errors.stock) setErrors(prev => { const x = {...prev}; delete x.stock; return x; });
+              }}
+              placeholder="Contoh: 50"
+              className={`w-full bg-gray-100 border rounded-xl px-5 py-3.5 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-2 transition-all
+                ${errors.stock ? 'border-red-400 focus:ring-red-300' : 'border-gray-200 focus:ring-[#8B1A1A]'}`}
+            />
+            {errors.stock && <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1"><AlertCircle size={12} />{errors.stock}</p>}
           </div>
 
           {/* ── Deskripsi ── */}
